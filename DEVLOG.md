@@ -101,3 +101,19 @@ Coincide con prototipo (rw12: LB1=15 UB1=16 en ambos). C reproduce el oraculo.
 - Instrumented Phase 2: nsep (MIPSOL separation calls), ncuts (lazy cuts), nodes.
 - main.c prints [CALLBACK] line + writes results/logs/<inst>_p<P>_<mode>.log with CALLBACK_PROOF and is_branch_and_benders_cut flag. WARN loudly if ncuts==0.
 - pmed1 full: separation_calls=25, lazy_cuts=513, bb_nodes=223, is_branch_and_benders_cut=YES. Confirmed genuine branch-and-Benders-cut (cuts>0).
+
+### Task 3: WARM-START (paper's actual method)
+- New src/cutpool.{h,c}: deep-copy store of Benders cuts.
+- phase1_run now takes CutPool* out_pool (collects generated cuts).
+- phase2_run now takes const CutPool* warm: preloads those cuts as normal constraints before B&B. NULL => clean start.
+- main.c: warm by default; --coldstart flag for comparison. Logs warm_cuts + start mode.
+- Comparison (results/warmstart_comparison.csv), all OPT_MATCH:
+  | inst | warm nodes/lazy | cold nodes/lazy |
+  |------|-----------------|-----------------|
+  | pmed1 | 1 / 90  | 223 / 513 |
+  | pmed6 | 7 / 240 | 632 / 1053 |
+  | pmed11| 1 / 308 | 352 / 1768 |
+  Warm-start drastically cuts B&B nodes and lazy cuts. HONEST CAVEAT: on these
+  sub-second instances wall-time is mixed (pmed1 warm faster 0.016<0.047; pmed6/11
+  warm slower in wall-clock due to preload + heavier root LP). Node/cut reduction is
+  unambiguous; wall-time benefit needs larger instances to manifest (not run here).

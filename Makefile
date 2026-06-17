@@ -30,7 +30,7 @@ ifeq ($(SOLVER),gurobi)
 endif
 
 CORE_SRC  := src/instance.c src/sortsites.c src/separation.c
-SOLVE_SRC := src/heuristic.c src/phase1.c src/phase2.c src/logging.c \
+SOLVE_SRC := src/heuristic.c src/phase1.c src/phase2.c src/cutpool.c src/logging.c \
              src/solver_gurobi.c src/main.c
 
 # --- binario principal (Fase 1 + Fase 2, requiere Gurobi) ---

@@ -22,6 +22,7 @@ typedef struct {
     int     added_this_iter;
     int    *ind;     /* buffer reusable tamano M+1 */
     double *val;
+    CutPool *pool;   /* opcional: acumula cortes para warm-start de Fase 2 */
 } P1Ctx;
 
 /* sink: agrega el corte (ec.20)  theta_i + sum coef_j y_j >= rhs  al maestro */
@@ -35,11 +36,13 @@ static void p1_add_cut(int client, const Cut *cut, void *user) {
         c->val[t + 1] = cut->val[t];
     }
     solver_add_constr(c->s, len, c->ind, c->val, '>', cut->rhs);
+    if (c->pool) cutpool_add(c->pool, client, cut->rhs, cut->len, cut->ind, cut->val);
     c->ncuts++;
     c->added_this_iter++;
 }
 
-Phase1Result phase1_run(const Instance *inst, const SortSites *ss, int verbose) {
+Phase1Result phase1_run(const Instance *inst, const SortSites *ss, int verbose,
+                        CutPool *out_pool) {
     int N = inst->N, M = inst->M;
     Solver *s = solver_create(1);
 
@@ -62,7 +65,7 @@ Phase1Result phase1_run(const Instance *inst, const SortSites *ss, int verbose) 
     double *thetabar = calloc(N, sizeof(double));
     for (int j = 0; j < M; j++) ybar[j] = (double)inst->p / M;  /* arranque uniforme */
 
-    P1Ctx ctx = { s, M, 0, 0, malloc((M + 1) * sizeof(int)), malloc((M + 1) * sizeof(double)) };
+    P1Ctx ctx = { s, M, 0, 0, malloc((M + 1) * sizeof(int)), malloc((M + 1) * sizeof(double)), out_pool };
 
     Phase1Result res = { 0.0, INFINITY, malloc(inst->p * sizeof(int)), 0, 0 };
     int *roundset = malloc(inst->p * sizeof(int));

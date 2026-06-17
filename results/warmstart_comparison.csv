@@ -1,0 +1,7 @@
+instance,N,p,start,opt,T2_s,bb_nodes,lazy_cuts,warm_cuts,status
+pmed1,100,5,warm,5819.0,0.016,1,90,337,OPT_MATCH
+pmed1,100,5,cold,5819.0,0.047,223,513,0,OPT_MATCH
+pmed6,200,5,warm,7824.0,0.6,7,240,694,OPT_MATCH
+pmed6,200,5,cold,7824.0,0.143,632,1053,0,OPT_MATCH
+pmed11,300,5,warm,7696.0,0.94,1,308,1285,OPT_MATCH
+pmed11,300,5,cold,7696.0,0.03,352,1768,0,OPT_MATCH

@@ -4,6 +4,7 @@
 
 #include "instance.h"
 #include "sortsites.h"
+#include "cutpool.h"
 
 typedef struct {
     double LB1;       /* cota inferior = relajacion LP del maestro */
@@ -13,7 +14,9 @@ typedef struct {
     long   ncuts;     /* cortes agregados en total */
 } Phase1Result;
 
-/* Corre Fase 1. El llamador libera result.best_set. */
-Phase1Result phase1_run(const Instance *inst, const SortSites *ss, int verbose);
+/* Corre Fase 1. El llamador libera result.best_set.
+ * Si out_pool != NULL, acumula ahi el pool de cortes generados (para warm-start). */
+Phase1Result phase1_run(const Instance *inst, const SortSites *ss, int verbose,
+                        CutPool *out_pool);
 
 #endif

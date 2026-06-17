@@ -10,6 +10,7 @@
 #include "sortsites.h"
 #include "phase1.h"
 #include "phase2.h"
+#include "cutpool.h"
 #include "logging.h"
 #include <stdio.h>
 #include <stdlib.h>
@@ -22,7 +23,7 @@ int main(int argc, char **argv) {
         return 2;
     }
     const char *path = argv[1];
-    int p_override = -1, verbose = 0;
+    int p_override = -1, verbose = 0, coldstart = 0;
     const char *mode = "full";
     double opt_known = NAN;
     for (int i = 2; i < argc; i++) {
@@ -30,6 +31,7 @@ int main(int argc, char **argv) {
         else if (!strcmp(argv[i], "--mode") && i + 1 < argc) mode = argv[++i];
         else if (!strcmp(argv[i], "-v")) verbose = 1;
         else if (!strcmp(argv[i], "--opt") && i + 1 < argc) opt_known = atof(argv[++i]);
+        else if (!strcmp(argv[i], "--coldstart")) coldstart = 1;   /* Fase 2 sin warm-start */
     }
 
     Instance *inst = instance_load(path, p_override);
@@ -48,8 +50,9 @@ int main(int argc, char **argv) {
     char status[16] = "ok";
     if (!isnan(opt_known)) snprintf(optbuf, sizeof optbuf, "%.0f", opt_known);
 
+    CutPool *pool = coldstart ? NULL : cutpool_create();
     double t0 = wall_seconds();
-    Phase1Result r1 = phase1_run(inst, ss, verbose);
+    Phase1Result r1 = phase1_run(inst, ss, verbose, pool);
     T1 = wall_seconds() - t0;
     LB1 = r1.LB1; UB1 = r1.UB1; iter = r1.iters;
     printf("[Fase 1] LB1=%.4f UB1=%.1f iter=%d cuts=%ld T1=%.3f s\n",
@@ -58,16 +61,17 @@ int main(int argc, char **argv) {
     double finalval = UB1;
     if (!strcmp(mode, "full")) {
         double t2 = wall_seconds();
-        Phase2Result r2 = phase2_run(inst, ss, verbose);
+        Phase2Result r2 = phase2_run(inst, ss, verbose, pool);
         double T2 = wall_seconds() - t2;
         nodes = r2.nodes;
         finalval = r2.objval;
-        printf("[Fase 2] opt=%.1f cuts=%ld nodes=%.0f T2=%.3f s set={", r2.objval, r2.ncuts, r2.nodes, T2);
+        printf("[Fase 2] opt=%.1f cuts=%ld nodes=%.0f T2=%.3f s start=%s set={",
+               r2.objval, r2.ncuts, r2.nodes, T2, coldstart ? "cold" : "warm");
         for (int t = 0; t < inst->p; t++) printf("%s%d", t?",":"", r2.open_set[t]);
         printf("}\n");
         /* PRUEBA DE CALLBACK (branch-and-Benders-cut): separaciones, cortes lazy, nodos */
-        printf("[CALLBACK] separaciones(MIPSOL)=%ld  cortes_lazy=%ld  nodos_B&B=%.0f\n",
-               r2.nsep, r2.ncuts, r2.nodes);
+        printf("[CALLBACK] warm_cuts=%ld  separaciones(MIPSOL)=%ld  cortes_lazy=%ld  nodos_B&B=%.0f\n",
+               r2.nwarm, r2.nsep, r2.ncuts, r2.nodes);
         if (r2.ncuts == 0)
             printf("[CALLBACK][WARN] cortes_lazy=0 => NO es branch-and-Benders-cut!\n");
         if (!isnan(opt_known))
@@ -84,7 +88,8 @@ int main(int argc, char **argv) {
                     bn, inst->N, inst->M, inst->p, mode);
             fprintf(lf, "phase1 LB1=%.4f UB1=%.4f iter=%d cuts=%ld T1=%.3f\n",
                     r1.LB1, r1.UB1, r1.iters, r1.ncuts, T1);
-            fprintf(lf, "phase2 opt=%.4f T2=%.3f\n", r2.objval, T2);
+            fprintf(lf, "phase2 opt=%.4f T2=%.3f start=%s warm_cuts=%ld\n",
+                    r2.objval, T2, coldstart ? "cold" : "warm", r2.nwarm);
             fprintf(lf, "CALLBACK_PROOF separation_calls=%ld lazy_cuts=%ld bb_nodes=%.0f\n",
                     r2.nsep, r2.ncuts, r2.nodes);
             fprintf(lf, "is_branch_and_benders_cut=%s\n", r2.ncuts > 0 ? "YES" : "NO");
@@ -106,6 +111,7 @@ int main(int argc, char **argv) {
                "gurobi", mode, LB1, UB1, T1, gap, iter, nodes, Ttot, optbuf, status);
 
     free(r1.best_set);
+    if (pool) cutpool_free(pool);
     sortsites_free(ss);
     instance_free(inst);
     return 0;

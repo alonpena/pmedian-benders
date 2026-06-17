@@ -43,7 +43,8 @@ static void p2_lazy_fn(SolverCB *cb, void *user) {
     separation_all(c->ss, ybar, thetabar, P2_TOL, p2_add_lazy, c);
 }
 
-Phase2Result phase2_run(const Instance *inst, const SortSites *ss, int verbose) {
+Phase2Result phase2_run(const Instance *inst, const SortSites *ss, int verbose,
+                        const CutPool *warm) {
     int N = inst->N, M = inst->M;
     Solver *s = solver_create(verbose ? 0 : 1);
 
@@ -60,6 +61,21 @@ Phase2Result phase2_run(const Instance *inst, const SortSites *ss, int verbose) 
     solver_add_constr(s, M, yidx, yval, '=', (double)inst->p);
     free(yidx); free(yval);
 
+    /* warm-start: precargar el pool de cortes de Fase 1 como restricciones normales */
+    long nwarm = 0;
+    if (warm && warm->n > 0) {
+        int *wi = malloc((M + 1) * sizeof(int));
+        double *wv = malloc((M + 1) * sizeof(double));
+        for (int c = 0; c < warm->n; c++) {
+            const Cut *cu = &warm->cuts[c];
+            wi[0] = M + cu->client; wv[0] = 1.0;        /* theta_i */
+            for (int t = 0; t < cu->len; t++) { wi[t+1] = cu->ind[t]; wv[t+1] = cu->val[t]; }
+            solver_add_constr(s, cu->len + 1, wi, wv, '>', cu->rhs);
+            nwarm++;
+        }
+        free(wi); free(wv);
+    }
+
     /* gaps ajustados (brief 4.2): probar optimalidad exacta */
     solver_set_dbl_param(s, "MIPGap", 1e-10);
 
@@ -74,6 +90,7 @@ Phase2Result phase2_run(const Instance *inst, const SortSites *ss, int verbose) 
     res.objval = solver_objval(s);
     res.ncuts  = ctx.ncuts;
     res.nsep   = ctx.nsep;
+    res.nwarm  = nwarm;
     res.nodes  = solver_node_count(s);
     res.open_set = malloc(inst->p * sizeof(int));
     double *y = malloc(M * sizeof(double));
