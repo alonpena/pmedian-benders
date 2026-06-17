@@ -16,9 +16,9 @@ Proyecto del curso **Optimización Computacional** (PUCV). El objetivo es constr
 | 2 | Evaluador fuerza bruta (oráculo) | ✅ hecho |
 | 3 | Matriz S (sitios ordenados) | ✅ hecho |
 | 4 | Separación (Alg. 1 y 2) | ✅ hecho (cross-check vs prototipo) |
-| 5 | Fase 1 (maestro LP + loop de cortes) | en curso |
-| 6 | Fase 2 (branch-and-Benders-cut) | pendiente |
-| 7 | Generación de instancias + benchmark | pendiente |
+| 5 | Fase 1 (maestro LP + loop de cortes) | ✅ hecho |
+| 6 | Fase 2 (branch-and-Benders-cut) | ✅ hecho (pmed1/2/3/6 = óptimo) |
+| 7 | Generación de instancias + benchmark | en curso |
 | 8 | Análisis preliminar + informe | pendiente |
 
 El plan completo y la hoja de ruta están en [`PLAN.md`](PLAN.md) (en inglés).

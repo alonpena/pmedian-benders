@@ -53,3 +53,27 @@ ASSUMPTION: OR-Library duplicate-edge policy = last-occurrence-wins (documented 
 - `scripts/gen_rw.py`: generador RW (matriz aleatoria entera [1,n], asimetrica opc.).
 
 **Next:** Stage 5 — solver layer (src/solver.h + solver_gurobi.c) + Phase 1 (LP master + cut loop + rounding) en C, validar LB1/UB1 en toy y pmed1 contra prototipo.
+
+## 2026-06-17 — C Stages 5-6 DONE (solver layer + Phase 1 + Phase 2)
+
+- `src/solver.{h,c=solver_gurobi.c}`: capa delgada (add_vars, add_constr, optimize, get_x, node_count, lazy callback). Backend Gurobi 12.0.0, firmas segun SOLVER_NOTES. `__stdcall grb_cb` -> on MIPSOL llama lazy_fn.
+- `src/heuristic.{h,c}`: redondeo (abre p mayores y, evalua exacto).
+- `src/phase1.{h,c}`: maestro LP (y in [0,1], theta>=0, sum y=p), loop separar/agregar/redondear. Devuelve LB1,UB1,iter,ncuts.
+- `src/phase2.{h,c}`: maestro MIP (y binarias) + lazy callback que corre Alg.1 y agrega cortes (ec.20) con GRBcblazy.
+- `src/logging.{h,c}`: wall_seconds + append a results/benchmark.csv.
+- `src/main.c`: CLI `pmedian <inst> [--p P] [--mode phase1|full] [-v] [--opt V]`.
+- Makefile: target `pmedian` (autolink Gurobi). Build limpio sin warnings.
+
+**Resultados (todos OPTIMAL_MATCH vs optimo oficial):**
+| inst | N | p | LB1 | UB1 | F2 opt | nodes |
+|------|---|---|-----|-----|--------|-------|
+| toy1 | 4 | 2 | 6 | 6 | 6 | 1 |
+| rw12 | 12| 3 | 15 | 16 | 16 | 11 |
+| pmed1|100| 5 | 5819| 5819| 5819 | 223 |
+| pmed2|100|10 | 4088.5|4116| 4093 | 479 |
+| pmed3|100|10 | 4240.5|4250| 4250 | 327 |
+| pmed6|200| 5 | 7783.5|7867| 7824 | 632 |
+
+Coincide con prototipo (rw12: LB1=15 UB1=16 en ambos). C reproduce el oraculo.
+
+**Next:** Stages 7-8 — parsers TSP-Library + gen_birch, runner de benchmark, comparacion vs Tablas del paper, plots, finalizar brief.

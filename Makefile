@@ -29,7 +29,18 @@ ifeq ($(SOLVER),gurobi)
   SOLVER_LDLIBS  := -l$(GRB_LIBNAME)
 endif
 
-CORE_SRC := src/instance.c src/sortsites.c src/separation.c
+CORE_SRC  := src/instance.c src/sortsites.c src/separation.c
+SOLVE_SRC := src/heuristic.c src/phase1.c src/phase2.c src/logging.c \
+             src/solver_gurobi.c src/main.c
+
+# --- binario principal (Fase 1 + Fase 2, requiere Gurobi) ---
+.PHONY: all
+all: pmedian
+
+pmedian: $(CORE_SRC) $(SOLVE_SRC)
+	$(CC) $(CFLAGS) $(SOLVER_CFLAGS) $(CORE_SRC) $(SOLVE_SRC) \
+	    $(SOLVER_LDFLAGS) $(SOLVER_LDLIBS) $(LDLIBS) -o $@
+	@echo "Listo. Ejecutar con: DYLD_LIBRARY_PATH=$(GRB_LIB) ./pmedian <inst> --mode full"
 
 # --- tests del nucleo (no requieren solver) ---
 .PHONY: test
