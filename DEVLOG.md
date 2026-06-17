@@ -26,3 +26,16 @@ Append-only. Timestamps in local time (America/Santiago). Newest entries at bott
 - Distances: Euclidean **floored** (paper convention) for coord instances; integer matrix for RW. Store integer distances as `long`, accumulate objective as `double`.
 
 **Next:** build `prototype/pmp_benders.py` (F3 ref + Phase 1 + Phase 2), validate toy=6.
+
+## 2026-06-17 — Stage: Python prototype (oracle) DONE
+
+- Wrote `prototype/pmp_benders.py`: instance parser (A/B), d(i,j) floored euclid, S matrix, separation O(NM) (Alg.2 k̃_i, ec.18, ec.20 cut), F3 reference oracle, brute force, Phase 1 (LP master + cut loop + rounding), Phase 2 (lazy callback branch-and-Benders-cut).
+- Validated **toy1**: brute=6, F3=6, Phase1 LB1=UB1=6 (iter=3), Phase2=6. All agree with hand optimum.
+- Wrote `scripts/parse_orlib.py` (graph -> all-pairs shortest path -> Variante B matrix).
+- Fetched OR-Library **pmed1** from `https://www.brunel.ac.uk/~mastjjb/jeb/orlib/files/pmed1.txt` (brunel `people.brunel` host now 404s; `www.brunel` works).
+- **Bug found + fixed (duplicate edges):** pmed1 has 2 parallel edges with differing costs ({19,20}=[22,30], {30,70}=[5,74]). Taking the *min* (natural for shortest path) gave optimum 5718; OR-Library's official `pmedopt.txt` says **5819**. Local-search test confirmed: min->5718, max/last-wins->5819. OR-Library convention = **last occurrence overwrites**. Fixed parser to overwrite. Verified Dijkstra==Floyd-Warshall on the matrix (two independent SP algos) before concluding the issue was edge-merge policy, not SP.
+- After fix, **pmed1**: F3=5819, Phase1 LB1=UB1=5819 (iter=6), Phase2=5819 cuts=582 nodes=471. Matches official optimum.
+
+ASSUMPTION: OR-Library duplicate-edge policy = last-occurrence-wins (documented in parser). Holds for pmed1; will spot-check other pmed files when used.
+
+**Next:** C Stages 1-4 (instance/distances, brute-force oracle, S matrix, separation), cross-checked vs this prototype.
