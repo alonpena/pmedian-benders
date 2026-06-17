@@ -1,0 +1,7 @@
+# toy1: 4 puntos en rectangulo, p=2, optimo conocido = 6
+# formato: ver docs/INSTANCE_FORMAT.md (Variante A, coordenadas)
+4 4 2
+0 0 0
+1 0 3
+2 4 0
+3 4 3
