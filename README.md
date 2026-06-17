@@ -18,8 +18,8 @@ Proyecto del curso **Optimización Computacional** (PUCV). El objetivo es constr
 | 4 | Separación (Alg. 1 y 2) | ✅ hecho (cross-check vs prototipo) |
 | 5 | Fase 1 (maestro LP + loop de cortes) | ✅ hecho |
 | 6 | Fase 2 (branch-and-Benders-cut) | ✅ hecho (pmed1/2/3/6 = óptimo) |
-| 7 | Generación de instancias + benchmark | en curso |
-| 8 | Análisis preliminar + informe | pendiente |
+| 7 | Generación de instancias + benchmark | ✅ hecho (orlib/tsplib/rw/birch) |
+| 8 | Análisis preliminar + informe | ✅ hecho (15/15 óptimo, plots) |
 
 El plan completo y la hoja de ruta están en [`PLAN.md`](PLAN.md) (en inglés).
 La teoría completa y las entregas del curso van en [`docs/PMEDIAN_BENDERS_PROJECT_BRIEF.md`](docs/PMEDIAN_BENDERS_PROJECT_BRIEF.md) (en español, pendiente).

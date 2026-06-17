@@ -77,3 +77,15 @@ ASSUMPTION: OR-Library duplicate-edge policy = last-occurrence-wins (documented 
 Coincide con prototipo (rw12: LB1=15 UB1=16 en ambos). C reproduce el oraculo.
 
 **Next:** Stages 7-8 — parsers TSP-Library + gen_birch, runner de benchmark, comparacion vs Tablas del paper, plots, finalizar brief.
+
+## 2026-06-17 — C Stages 7-8 DONE (instances, benchmark, analysis) — CORE COMPLETE
+
+- `scripts/parse_tsplib.py` (EUC_2D coords -> Variante A), `scripts/gen_birch.py` (clusters 2D), `scripts/run_benchmark.py` (runner -> benchmark.csv + comparison_vs_paper.csv), `scripts/plot_results.py` (3 figuras).
+- **OR-Library pmed1-15** (N=100/200/300, p=5..100): Fase 2 = optimo oficial en las 15, delta=0. `results/comparison_vs_paper.csv`.
+- **TSP-Library kroA100** (coords): C Fase 2 = prototipo F3 = 30539. Valida camino geometrico.
+- Figuras: time_vs_N (todo <0.2s), gap1_vs_p (brecha F1 chica), nodes_vs_p.
+- Brief: agregada seccion "11-bis Resultados de la replicacion" (resultados reales, hallazgo de aristas duplicadas, comparacion honesta vs paper con celdas NA por PDF ausente).
+- `STATUS.md` escrito (handoff). README status table 0-8 = hecho.
+- Cleanliness: `make clean && make pmedian` OK; pmedian/build/gurobi.log ignorados; sin artefactos staged.
+
+**Core del paper replicado y validado.** Pendientes = enhancements (warm-start F2, RCF, constraint reduction, backend SCIP, instancias grandes) — document-only por Pareto cut.

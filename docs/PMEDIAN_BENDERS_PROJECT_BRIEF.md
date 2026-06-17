@@ -442,6 +442,49 @@ El plan completo, la estructura del repositorio y las etapas (0 a 8) están en *
 
 ---
 
+## 11-bis. Resultados de la replicación (análisis preliminar)
+
+> Esta sección reporta resultados **reales** de la implementación (no del paper).
+> Máquina: Apple M1, Gurobi 12.0.0, backend único Gurobi. Sin PopStar (arranque
+> uniforme + redondeo), sin *reduced-cost fixing* ni *constraint reduction*
+> (enhancements documentados pero no implementados, ver `PLAN.md` §2).
+
+### Correctitud
+
+- **toy1** (N=4, p=2): óptimo a mano = 6. Fuerza bruta, F3, Fase 1 y Fase 2 dan **6**.
+- **OR-Library pmed1–15** (N=100/200/300; p de 5 a 100): Fase 2 alcanza el **óptimo oficial** (`pmedopt.txt`) en las **15** instancias, brecha 0 % (delta = 0). Ver `results/comparison_vs_paper.csv`.
+- **TSP-Library kroA100** (N=100, p=10, coords euclidianas truncadas): Fase 2 = **30539**, idéntico al oráculo F3 del prototipo Python.
+- **RW asimétrica** (matriz aleatoria, N=12): C y prototipo coinciden (óptimo 16). Valida el caso no euclidiano / asimétrico.
+- El separador en C reproduce **exactamente** el oráculo Python (suma de $\mathrm{OPT}(SP_i)$ en $y=p/M$ uniforme: toy 6.0, rw12 20.5, pmed1 7263.35).
+
+### Hallazgo de datos (OR-Library, aristas duplicadas)
+
+`pmed1` trae 2 aristas paralelas con costo distinto. Tomar el **mínimo** (lo natural
+para caminos mínimos) da óptimo 5718; el oficial es **5819**. La convención correcta
+de OR-Library es **la última ocurrencia sobrescribe**. Documentado en
+`scripts/parse_orlib.py`. Verificado con Dijkstra ≡ Floyd-Warshall antes de concluir.
+
+### Observaciones cuantitativas (figuras en `results/`)
+
+- `plot_time_vs_N.png`: el tiempo total crece con $N$ pero todo el conjunto pmed
+  (hasta N=300) se resuelve en **< 0.2 s**. El costo está dominado por Fase 2.
+- `plot_gap1_vs_p.png`: la **brecha de Fase 1** $(UB_1-LB_1)/UB_1$ es pequeña
+  (frecuentemente 0 %); muchas instancias quedan **resueltas o casi** ya en Fase 1,
+  consistente con lo reportado por el paper (sección 10.4).
+- `plot_nodes_vs_p.png`: los nodos del B&B aumentan con $p$ intermedio (el árbol se
+  expande), también coherente con "dónde sufre" del paper (sección 10.5).
+
+### Comparación contra el paper
+
+`results/comparison_vs_paper.csv` enfrenta nuestro $LB_1/UB_1/$óptimo/tiempos contra
+el **óptimo oficial de OR-Library** (que es lo que el método del paper resuelve para
+esa familia): delta = 0 en las 15 instancias. Las columnas `paper_LB1/UB1/time`
+quedan como **`NA (PDF ausente)`**: el PDF del paper no está en el repo, así que —por
+la regla de no fabricar (kickoff §11)— no se transcriben las Tablas 2–9. Si se
+proveen, el runner las puede incorporar como columnas de referencia.
+
+---
+
 ## 12. Checklist de conceptos clave (dominar antes/durante la implementación)
 
 - [ ] **F1, F2, F3, F4** y por qué comparten relajación pero rinden distinto (densidad).
