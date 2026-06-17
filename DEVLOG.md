@@ -89,3 +89,10 @@ Coincide con prototipo (rw12: LB1=15 UB1=16 en ambos). C reproduce el oraculo.
 - Cleanliness: `make clean && make pmedian` OK; pmedian/build/gurobi.log ignorados; sin artefactos staged.
 
 **Core del paper replicado y validado.** Pendientes = enhancements (warm-start F2, RCF, constraint reduction, backend SCIP, instancias grandes) — document-only por Pareto cut.
+
+## 2026-06-17 — Finishing pass
+
+### Task 1: EDGE RULE justified + tested
+- Copied paper PDF to docs/Benders_decom_pMedian.pdf.
+- Found AUTHORITATIVE rule on OR-Library's own pmedinfo.html (Beasley): "Read each edge line IN TURN: set c(i,j)=k ... only the last such cost is used." Saved docs/orlib_pmed_format_spec.txt. Rule is independent of the 5819 target (it's the maintainer's documented Floyd-prep). Wrote docs/ADR/0002.
+- tests/data/dup_edge.orlib (hand-made, KNOWN answer): last-wins => p-median p=1 = 13; min rule => 4. tests/test_parse_orlib.py PASS, discriminates the two rules. Does NOT depend on pmed1.
