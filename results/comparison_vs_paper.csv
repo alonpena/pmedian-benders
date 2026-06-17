@@ -1,16 +1,10 @@
-instance,our_LB1,our_UB1,our_opt_proven,our_iter,our_nodes,our_T1_s,our_T2_s,orlib_official_opt,delta,paper_LB1,paper_UB1,paper_time,status,note
-pmed1,5819.0,5819.0,5819.0,6,223,0.019,0.057,5819,0.0,NA (PDF ausente),NA (PDF ausente),NA (PDF ausente),OPT_MATCH,"ref = optimo oficial OR-Library; maquina Apple M1, sin PopStar/RCF"
-pmed2,4088.5,4116.0,4093.0,6,479,0.007,0.083,4093,0.0,NA (PDF ausente),NA (PDF ausente),NA (PDF ausente),OPT_MATCH,"ref = optimo oficial OR-Library; maquina Apple M1, sin PopStar/RCF"
-pmed3,4240.5,4250.0,4250.0,6,327,0.007,0.062,4250,0.0,NA (PDF ausente),NA (PDF ausente),NA (PDF ausente),OPT_MATCH,"ref = optimo oficial OR-Library; maquina Apple M1, sin PopStar/RCF"
-pmed4,3034.0,3034.0,3034.0,5,237,0.005,0.053,3034,0.0,NA (PDF ausente),NA (PDF ausente),NA (PDF ausente),OPT_MATCH,"ref = optimo oficial OR-Library; maquina Apple M1, sin PopStar/RCF"
-pmed5,1355.0,1355.0,1355.0,5,1215,0.004,0.078,1355,0.0,NA (PDF ausente),NA (PDF ausente),NA (PDF ausente),OPT_MATCH,"ref = optimo oficial OR-Library; maquina Apple M1, sin PopStar/RCF"
-pmed6,7783.5,7867.0,7824.0,6,632,0.023,0.146,7824,0.0,NA (PDF ausente),NA (PDF ausente),NA (PDF ausente),OPT_MATCH,"ref = optimo oficial OR-Library; maquina Apple M1, sin PopStar/RCF"
-pmed7,5631.0,5631.0,5631.0,6,839,0.019,0.121,5631,0.0,NA (PDF ausente),NA (PDF ausente),NA (PDF ausente),OPT_MATCH,"ref = optimo oficial OR-Library; maquina Apple M1, sin PopStar/RCF"
-pmed8,4445.0,4445.0,4445.0,5,836,0.01,0.141,4445,0.0,NA (PDF ausente),NA (PDF ausente),NA (PDF ausente),OPT_MATCH,"ref = optimo oficial OR-Library; maquina Apple M1, sin PopStar/RCF"
-pmed9,2734.0,2734.0,2734.0,6,12806,0.008,0.686,2734,0.0,NA (PDF ausente),NA (PDF ausente),NA (PDF ausente),OPT_MATCH,"ref = optimo oficial OR-Library; maquina Apple M1, sin PopStar/RCF"
-pmed10,1255.0,1255.0,1255.0,9,3002,0.01,0.321,1255,0.0,NA (PDF ausente),NA (PDF ausente),NA (PDF ausente),OPT_MATCH,"ref = optimo oficial OR-Library; maquina Apple M1, sin PopStar/RCF"
-pmed11,7693.3333,7696.0,7696.0,9,352,0.062,0.206,7696,0.0,NA (PDF ausente),NA (PDF ausente),NA (PDF ausente),OPT_MATCH,"ref = optimo oficial OR-Library; maquina Apple M1, sin PopStar/RCF"
-pmed12,6625.75,6638.0,6634.0,7,875,0.046,0.285,6634,0.0,NA (PDF ausente),NA (PDF ausente),NA (PDF ausente),OPT_MATCH,"ref = optimo oficial OR-Library; maquina Apple M1, sin PopStar/RCF"
-pmed13,4374.0,4374.0,4374.0,5,3752,0.023,0.678,4374,0.0,NA (PDF ausente),NA (PDF ausente),NA (PDF ausente),OPT_MATCH,"ref = optimo oficial OR-Library; maquina Apple M1, sin PopStar/RCF"
-pmed14,2967.2,2971.0,2968.0,8,1968,0.015,0.701,2968,0.0,NA (PDF ausente),NA (PDF ausente),NA (PDF ausente),OPT_MATCH,"ref = optimo oficial OR-Library; maquina Apple M1, sin PopStar/RCF"
-pmed15,1729.0,1729.0,1729.0,7,2127,0.016,0.442,1729,0.0,NA (PDF ausente),NA (PDF ausente),NA (PDF ausente),OPT_MATCH,"ref = optimo oficial OR-Library; maquina Apple M1, sin PopStar/RCF"
+instance,N,p,paper_OPT,our_opt_proven,delta_OPT,opt_comparison,paper_LB1,our_LB1,paper_UB1,our_UB1,paper_iter,our_iter,paper_nodes,our_nodes,paper_Ttot_s,our_Ttot_s,time_note
+rl1304,1304,5,3099073,3099073,0,OK,3099073,3099073,3099073,3099073,9,6,0,1,2.8,3.85,MACHINE_DEPENDENT (paper XEON W-2145/CPLEX20.1; us M1/Gurobi12)
+rl1304,1304,10,2134295,2134295,0,OK,2131788,2131788,2134295,2243679,12,8,160,329,15.4,11.77,MACHINE_DEPENDENT (paper XEON W-2145/CPLEX20.1; us M1/Gurobi12)
+rl1304,1304,20,1412108,1412108,0,OK,1412108,1412108,1412108,1412108,8,7,0,1,2.3,1.98,MACHINE_DEPENDENT (paper XEON W-2145/CPLEX20.1; us M1/Gurobi12)
+rl1304,1304,50,795012,795012,0,OK,795012,795012,795012,795012,9,7,0,1,1.5,1.15,MACHINE_DEPENDENT (paper XEON W-2145/CPLEX20.1; us M1/Gurobi12)
+rl1304,1304,100,491639,491639,0,OK,491507,491506,491788,496403,19,8,37,157,2.4,1.42,MACHINE_DEPENDENT (paper XEON W-2145/CPLEX20.1; us M1/Gurobi12)
+rl1304,1304,200,268573,268573,0,OK,268573,268573,268573,268573,11,8,0,1,0.5,0.47,MACHINE_DEPENDENT (paper XEON W-2145/CPLEX20.1; us M1/Gurobi12)
+rl1304,1304,300,177326,177326,0,OK,177318,177318,177339,179952,12,7,0,1,0.5,0.36,MACHINE_DEPENDENT (paper XEON W-2145/CPLEX20.1; us M1/Gurobi12)
+rl1304,1304,400,128332,128332,0,OK,128332,128332,128332,128332,10,9,0,1,0.2,0.3,MACHINE_DEPENDENT (paper XEON W-2145/CPLEX20.1; us M1/Gurobi12)
+rl1304,1304,500,97024,97024,0,OK,97018,97018,97034,97034,14,13,0,1,0.4,0.32,MACHINE_DEPENDENT (paper XEON W-2145/CPLEX20.1; us M1/Gurobi12)

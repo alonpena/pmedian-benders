@@ -117,3 +117,10 @@ Coincide con prototipo (rw12: LB1=15 UB1=16 en ambos). C reproduce el oraculo.
   sub-second instances wall-time is mixed (pmed1 warm faster 0.016<0.047; pmed6/11
   warm slower in wall-clock due to preload + heavier root LP). Node/cut reduction is
   unambiguous; wall-time benefit needs larger instances to manifest (not run here).
+
+### Task 4: PAPER COMPARISON (PDF uploaded)
+- Paper Tables 2-9 = TSP/BIRCH/RW/ODM. NONE are OR-Library (paper only says OR-Library "solved in seconds", no per-instance table). So OR-Library check moved to results/orlib_optima_check.csv.
+- Valid comparison done on **Table 2 (small TSP), instance rl1304**, all 9 p-values. Paper values TRANSCRIBED from extracted PDF text (traceable, scripts/compare_paper.py).
+- **Distance convention confirmed:** rl1304 p=5 with FLOORED euclid => 3,099,073 = paper OPT exactly. Paper uses floor (not TSPLIB nint). Validates brief's convention.
+- Result: **9/9 OPT match paper exactly (delta=0).** our_LB1 == paper_LB1 (±1 tie). our_UB1 weaker than paper (we use uniform+rounding, paper uses PopStar) — expected, documented. Times marked MACHINE_DEPENDENT (paper XEON/CPLEX20.1; us M1/Gurobi12). iter/nodes differ (init heuristic + solver) — informative only.
+- results/comparison_vs_paper.csv: OPT & gap comparisons VALID; time/iter/nodes flagged non-comparable.
