@@ -1,12 +1,25 @@
 # STATUS — pmedian-benders
 
-_Snapshot: 2026-06-17. Sobrescrito en cada actualización._
+_Snapshot: 2026-06-17 (post finishing-pass). Sobrescrito en cada actualización._
 
 ## Estado global
 
-**Núcleo completo y validado.** Etapas 0–8 implementadas. Fase 1 (LP + cortes +
-redondeo) y Fase 2 (branch-and-Benders-cut con lazy callback) en C funcionan y
-alcanzan el óptimo en todo el subconjunto probado. Prototipo Python = oráculo.
+**Núcleo completo y validado + finishing pass.** Etapas 0–8 + 6 tareas de cierre.
+Fase 1 (LP + cortes + redondeo) y Fase 2 (branch-and-Benders-cut con lazy callback,
+**confirmado**: pmed1 lazy_cuts=513, is_branch_and_benders_cut=YES) en C funcionan y
+alcanzan el óptimo. Prototipo Python = oráculo. **Warm-start** (método del paper)
+implementado, clean-start tras `--coldstart`. **Comparación vs paper Tabla 2 (rl1304):
+9/9 OPT exactos.** Evidencia por afirmación en `docs/AUDIT.md`.
+
+### Finishing pass (todo commiteado)
+1. EDGE RULE: `docs/ADR/0002` + `docs/orlib_pmed_format_spec.txt` (regla del spec de Beasley) + `tests/test_parse_orlib.py` (instancia hecha a mano, NO pmed1).
+2. CALLBACK PROOF: `results/logs/*.log` con separation_calls/lazy_cuts/nodes; WARN si cuts==0.
+3. WARM-START: `src/cutpool.{h,c}`; `results/warmstart_comparison.csv` (nodos 632→7). Caveat wall-time en STATUS/AUDIT.
+4. PAPER COMPARISON: `results/comparison_vs_paper.csv` (rl1304, 9/9 OPT match). OR-Library → `results/orlib_optima_check.csv` (no está en tablas del paper).
+5. PLOTS: 4 PNGs solo de CSVs reales (`results/plot_a..d_*.png`).
+6. SELF-AUDIT: `docs/AUDIT.md` (evidencia por afirmación, UNVERIFIED donde no hay artefacto).
+
+> NOTA callback: lazy_cuts > 0 confirmado, NO degenera a B&B normal.
 
 | Etapa | Estado |
 |-------|--------|

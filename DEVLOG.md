@@ -133,3 +133,10 @@ Coincide con prototipo (rw12: LB1=15 UB1=16 en ambos). C reproduce el oraculo.
   (d) plot_d_iter_nodes_vs_p.png: iter & nodes vs p (twin axis)
 - Fixed run_benchmark.py to write results/orlib_optima_check.csv (comparison_vs_paper.csv now owned by compare_paper.py) and dropped NA paper columns from it.
 - benchmark.csv regenerated clean: 19 full rows, all OPTIMAL_MATCH, N in {100,200,300,1304}, p 5..500.
+
+### Task 6: SELF-AUDIT + HANDOFF
+- docs/AUDIT.md: 13 VERIFIED claims (each with evidence file + reproduce command) + 7 UNVERIFIED (Zebra not run, warm-start wall-time, RW/BIRCH/ODM/medium-large TSP tables, PopStar UB1, CPLEX/SCIP, O(NM) at scale, RCF/constraint-reduction). Spot-checked claims 1/10/12 live: make test PASS, kroA100=30539, 0 warnings.
+- STATUS.md updated (finishing-pass summary, callback confirmed B&Benders-cut).
+- Finishing pass complete. STOP per instruction — no optional enhancements (RCF, SCIP, huge instances).
+
+HANDOFF: repo green, all committed+pushed. Resume from STATUS.md + this DEVLOG.
