@@ -96,3 +96,8 @@ Coincide con prototipo (rw12: LB1=15 UB1=16 en ambos). C reproduce el oraculo.
 - Copied paper PDF to docs/Benders_decom_pMedian.pdf.
 - Found AUTHORITATIVE rule on OR-Library's own pmedinfo.html (Beasley): "Read each edge line IN TURN: set c(i,j)=k ... only the last such cost is used." Saved docs/orlib_pmed_format_spec.txt. Rule is independent of the 5819 target (it's the maintainer's documented Floyd-prep). Wrote docs/ADR/0002.
 - tests/data/dup_edge.orlib (hand-made, KNOWN answer): last-wins => p-median p=1 = 13; min rule => 4. tests/test_parse_orlib.py PASS, discriminates the two rules. Does NOT depend on pmed1.
+
+### Task 2: CALLBACK PROOF
+- Instrumented Phase 2: nsep (MIPSOL separation calls), ncuts (lazy cuts), nodes.
+- main.c prints [CALLBACK] line + writes results/logs/<inst>_p<P>_<mode>.log with CALLBACK_PROOF and is_branch_and_benders_cut flag. WARN loudly if ncuts==0.
+- pmed1 full: separation_calls=25, lazy_cuts=513, bb_nodes=223, is_branch_and_benders_cut=YES. Confirmed genuine branch-and-Benders-cut (cuts>0).

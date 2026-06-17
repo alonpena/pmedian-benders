@@ -65,8 +65,34 @@ int main(int argc, char **argv) {
         printf("[Fase 2] opt=%.1f cuts=%ld nodes=%.0f T2=%.3f s set={", r2.objval, r2.ncuts, r2.nodes, T2);
         for (int t = 0; t < inst->p; t++) printf("%s%d", t?",":"", r2.open_set[t]);
         printf("}\n");
+        /* PRUEBA DE CALLBACK (branch-and-Benders-cut): separaciones, cortes lazy, nodos */
+        printf("[CALLBACK] separaciones(MIPSOL)=%ld  cortes_lazy=%ld  nodos_B&B=%.0f\n",
+               r2.nsep, r2.ncuts, r2.nodes);
+        if (r2.ncuts == 0)
+            printf("[CALLBACK][WARN] cortes_lazy=0 => NO es branch-and-Benders-cut!\n");
         if (!isnan(opt_known))
             strcpy(status, fabs(r2.objval - opt_known) < 0.5 ? "OPTIMAL_MATCH" : "MISMATCH");
+
+        /* log de prueba por corrida */
+        system("mkdir -p results/logs");
+        const char *bn = strrchr(path, '/'); bn = bn ? bn + 1 : path;
+        char logpath[512];
+        snprintf(logpath, sizeof logpath, "results/logs/%s_p%d_%s.log", bn, inst->p, mode);
+        FILE *lf = fopen(logpath, "w");
+        if (lf) {
+            fprintf(lf, "instance=%s N=%d M=%d p=%d backend=gurobi mode=%s\n",
+                    bn, inst->N, inst->M, inst->p, mode);
+            fprintf(lf, "phase1 LB1=%.4f UB1=%.4f iter=%d cuts=%ld T1=%.3f\n",
+                    r1.LB1, r1.UB1, r1.iters, r1.ncuts, T1);
+            fprintf(lf, "phase2 opt=%.4f T2=%.3f\n", r2.objval, T2);
+            fprintf(lf, "CALLBACK_PROOF separation_calls=%ld lazy_cuts=%ld bb_nodes=%.0f\n",
+                    r2.nsep, r2.ncuts, r2.nodes);
+            fprintf(lf, "is_branch_and_benders_cut=%s\n", r2.ncuts > 0 ? "YES" : "NO");
+            fprintf(lf, "opt_known=%s status=%s gap=%.6f\n",
+                    optbuf, status, (finalval>0)?(finalval-LB1)/finalval:0.0);
+            fclose(lf);
+            printf("[CALLBACK] log -> %s\n", logpath);
+        }
         free(r2.open_set);
     }
     Ttot = wall_seconds() - t0;

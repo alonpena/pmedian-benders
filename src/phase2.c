@@ -18,6 +18,7 @@ typedef struct {
     int    *ind;     /* buffer tamano M+1 */
     double *val;
     long    ncuts;
+    long    nsep;    /* numero de llamadas al separador (callbacks MIPSOL) */
     SolverCB *cb;    /* contexto vivo durante el callback */
 } P2Ctx;
 
@@ -35,6 +36,7 @@ static void p2_add_lazy(int client, const Cut *cut, void *user) {
 static void p2_lazy_fn(SolverCB *cb, void *user) {
     P2Ctx *c = user;
     c->cb = cb;
+    c->nsep++;
     solver_cb_get_solution(cb, c->sol);            /* [y(0..M-1), theta(0..N-1)] */
     const double *ybar = c->sol;
     const double *thetabar = c->sol + c->M;
@@ -62,7 +64,7 @@ Phase2Result phase2_run(const Instance *inst, const SortSites *ss, int verbose) 
     solver_set_dbl_param(s, "MIPGap", 1e-10);
 
     P2Ctx ctx = { ss, N, M, malloc((M + N) * sizeof(double)),
-                  malloc((M + 1) * sizeof(int)), malloc((M + 1) * sizeof(double)), 0, NULL };
+                  malloc((M + 1) * sizeof(int)), malloc((M + 1) * sizeof(double)), 0, 0, NULL };
 
     solver_enable_lazy(s);
     solver_set_lazy_callback(s, p2_lazy_fn, &ctx);
@@ -71,6 +73,7 @@ Phase2Result phase2_run(const Instance *inst, const SortSites *ss, int verbose) 
     Phase2Result res;
     res.objval = solver_objval(s);
     res.ncuts  = ctx.ncuts;
+    res.nsep   = ctx.nsep;
     res.nodes  = solver_node_count(s);
     res.open_set = malloc(inst->p * sizeof(int));
     double *y = malloc(M * sizeof(double));

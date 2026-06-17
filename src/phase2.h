@@ -10,6 +10,7 @@ typedef struct {
     double  objval;    /* optimo probado */
     int    *open_set;  /* tamano p */
     long    ncuts;     /* cortes perezosos agregados */
+    long    nsep;      /* invocaciones del separador (callbacks MIPSOL) */
     double  nodes;     /* nodos del B&B */
 } Phase2Result;
 
