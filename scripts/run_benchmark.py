@@ -95,18 +95,17 @@ def main():
         r = run_one(n, official)
         if r:
             rows.append(r)
-    comp = os.path.join(RESULTS, "comparison_vs_paper.csv")
+    comp = os.path.join(RESULTS, "orlib_optima_check.csv")
     with open(comp, "w", newline="") as f:
         w = csv.writer(f)
         w.writerow(["instance", "our_LB1", "our_UB1", "our_opt_proven", "our_iter",
                     "our_nodes", "our_T1_s", "our_T2_s", "orlib_official_opt", "delta",
-                    "paper_LB1", "paper_UB1", "paper_time", "status", "note"])
+                    "status", "note"])
         for r in rows:
             w.writerow([r["instance"], r["LB1"], r["UB1"], r["our_opt"], r["iter"],
                         f"{r['nodes']:.0f}", r["T1"], r["T2"], r["official_opt"], r["delta"],
-                        "NA (PDF ausente)", "NA (PDF ausente)", "NA (PDF ausente)",
                         r["status"],
-                        "ref = optimo oficial OR-Library; maquina Apple M1, sin PopStar/RCF"])
+                        "ref = optimo oficial OR-Library (pmedopt.txt); NO es tabla del paper"])
     print(f"\nEscrito {comp} ({len(rows)} filas)")
 
 

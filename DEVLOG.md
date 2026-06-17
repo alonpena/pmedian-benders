@@ -124,3 +124,12 @@ Coincide con prototipo (rw12: LB1=15 UB1=16 en ambos). C reproduce el oraculo.
 - **Distance convention confirmed:** rl1304 p=5 with FLOORED euclid => 3,099,073 = paper OPT exactly. Paper uses floor (not TSPLIB nint). Validates brief's convention.
 - Result: **9/9 OPT match paper exactly (delta=0).** our_LB1 == paper_LB1 (±1 tie). our_UB1 weaker than paper (we use uniform+rounding, paper uses PopStar) — expected, documented. Times marked MACHINE_DEPENDENT (paper XEON/CPLEX20.1; us M1/Gurobi12). iter/nodes differ (init heuristic + solver) — informative only.
 - results/comparison_vs_paper.csv: OPT & gap comparisons VALID; time/iter/nodes flagged non-comparable.
+
+### Task 5: PLOTS (4, real CSVs only)
+- Rewrote scripts/plot_results.py -> 4 figures, no NA/fabricated columns:
+  (a) plot_a_bounds_orlib.png: LB1/UB1/OPT per OR-Library instance (from orlib_optima_check.csv)
+  (b) plot_b_time_vs_N.png: Ttot vs N log-log (benchmark.csv, N=100..1304)
+  (c) plot_c_gap_vs_pM.png: Phase-1 gap (UB1-LB1)/UB1 vs p/M
+  (d) plot_d_iter_nodes_vs_p.png: iter & nodes vs p (twin axis)
+- Fixed run_benchmark.py to write results/orlib_optima_check.csv (comparison_vs_paper.csv now owned by compare_paper.py) and dropped NA paper columns from it.
+- benchmark.csv regenerated clean: 19 full rows, all OPTIMAL_MATCH, N in {100,200,300,1304}, p 5..500.
