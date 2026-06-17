@@ -39,3 +39,17 @@ Append-only. Timestamps in local time (America/Santiago). Newest entries at bott
 ASSUMPTION: OR-Library duplicate-edge policy = last-occurrence-wins (documented in parser). Holds for pmed1; will spot-check other pmed files when used.
 
 **Next:** C Stages 1-4 (instance/distances, brute-force oracle, S matrix, separation), cross-checked vs this prototype.
+
+## 2026-06-17 — C Stages 1-4 DONE (instance, brute oracle, S matrix, separation)
+
+- `src/instance.{h,c}`: parser (Variante A coords floored-euclid / Variante B matriz), d(i,j) as long, eval_open_set, brute_force (recursive C(M,p)).
+- `src/sortsites.{h,c}`: matriz S (N*M) via qsort de pares (dist,site), empate estable. O(NM log M).
+- `src/separation.{h,c}`: Alg.2 k̃_i en O(M), separation_client (ec.18 OPT + ec.20 cut), separation_all (Alg.1) con callback cut_sink.
+- `tests/test_core.c` + `Makefile` (autodetecta Gurobi 12.0.0). `make test`.
+- **toy1 PASS:** distancias a mano, brute opt=6, S[0]=[0,1,2,3], separacion(y*)=6, cortes no recortan el optimo.
+- **rw12** (RW asimetrica generada, M=12): C brute opt=16 set{0,4,11} == prototype. separacion(y*)=16.
+- **Cross-check separador C vs prototipo** (sum OPT en y=p/M uniforme), coincidencia exacta:
+  toy=6.0, rw12=20.5, pmed1=7263.35. Confirma que el separador C reproduce el oraculo Python.
+- `scripts/gen_rw.py`: generador RW (matriz aleatoria entera [1,n], asimetrica opc.).
+
+**Next:** Stage 5 — solver layer (src/solver.h + solver_gurobi.c) + Phase 1 (LP master + cut loop + rounding) en C, validar LB1/UB1 en toy y pmed1 contra prototipo.

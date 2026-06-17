@@ -10,12 +10,13 @@ Proyecto del curso **Optimización Computacional** (PUCV). El objetivo es constr
 
 | Etapa | Descripción | Estado |
 |-------|-------------|--------|
-| 0 | Esqueleto, plan, instancia toy | en curso |
-| 1 | Parser de instancias + distancias | pendiente |
-| 2 | Evaluador fuerza bruta (oráculo) | pendiente |
-| 3 | Matriz S (sitios ordenados) | pendiente |
-| 4 | Separación (Alg. 1 y 2) | pendiente |
-| 5 | Fase 1 (maestro LP + loop de cortes) | pendiente |
+| 0 | Esqueleto, plan, instancia toy | ✅ hecho |
+| — | Prototipo Python+Gurobi (oráculo) | ✅ hecho (toy=6, pmed1=5819) |
+| 1 | Parser de instancias + distancias | ✅ hecho |
+| 2 | Evaluador fuerza bruta (oráculo) | ✅ hecho |
+| 3 | Matriz S (sitios ordenados) | ✅ hecho |
+| 4 | Separación (Alg. 1 y 2) | ✅ hecho (cross-check vs prototipo) |
+| 5 | Fase 1 (maestro LP + loop de cortes) | en curso |
 | 6 | Fase 2 (branch-and-Benders-cut) | pendiente |
 | 7 | Generación de instancias + benchmark | pendiente |
 | 8 | Análisis preliminar + informe | pendiente |
