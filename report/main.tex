@@ -16,20 +16,10 @@
 \usepackage{geometry}
 \usepackage{xcolor}
 \usepackage{listings}
-\usepackage{etoolbox}
 \usepackage{hyperref}
 \usepackage{caption}
 \geometry{margin=2.5cm}
 \hypersetup{colorlinks=true,linkcolor=blue!50!black,citecolor=blue!50!black,urlcolor=blue!50!black}
-
-% --- macro \todo: marca inline en rojo + acumula para la lista final ---
-\newcommand{\TodoList}{}
-\newcounter{todocnt}
-\newcommand{\todo}[1]{%
-  \stepcounter{todocnt}%
-  \textcolor{red}{\textbf{[FALTA \arabic{todocnt}: #1]}}%
-  \listgadd{\TodoList}{#1}%
-}
 
 % --- entorno para "intuición" ---
 \newtheorem{definicion}{Definición}
@@ -64,12 +54,15 @@ compacta F4, una propuesta teórica de relajación lagrangiana, y la \textbf{des
 Benders} de Duran-Mateluna, Ales \& Elloumi (2023), cuyo subproblema admite \textbf{solución
 cerrada} y permite separar los cortes en tiempo $O(NM)$ sin resolver ningún LP. El método se
 implementó en C modular sobre una capa de solver (Gurobi) con un algoritmo de dos fases
-(relajación lineal + branch-and-Benders-cut con \textit{lazy constraints}). El separador fue
-\textbf{verificado por tres vías independientes}: derivación a mano, test unitario y un oráculo
-en Python (0 diferencias). En las 15 instancias OR-Library se alcanza el óptimo oficial con
-brecha $0\%$, y en TSPLIB \texttt{rl1304} (hasta $p=500$) se reproducen exactamente los 9
-óptimos del paper. Todos los números reportados provienen de corridas reales registradas en
-\texttt{results/}.
+(relajación lineal + branch-and-Benders-cut con \textit{lazy constraints}). El alcance del
+proyecto es una \textbf{replicación algorítmica completa} del mecanismo central y una
+\textbf{replicación computacional parcial documentada}. El separador fue \textbf{verificado por
+tres vías independientes}: derivación a mano, test unitario y un oráculo en Python (0
+diferencias). En las 15 instancias OR-Library se alcanza el óptimo oficial con brecha $0\%$, y
+en TSPLIB \texttt{rl1304} (hasta $p=500$) se reproducen exactamente los 9 óptimos del paper.
+Zebra y la campaña completa de gran escala no se reejecutaron; esas comparaciones se tratan como
+resultados reportados por el paper, no como resultados locales. Todos los números reportados
+provienen de corridas reales registradas en \texttt{results/}.
 \end{abstract}
 
 \tableofcontents
@@ -107,15 +100,5 @@ brecha $0\%$, y en TSPLIB \texttt{rl1304} (hasta $p=500$) se reproducen exactame
 
 \appendix
 \input{sections/anexo_codigo}
-
-\clearpage
-\section*{Lista consolidada de pendientes (\texttt{\textbackslash todo})}
-\addcontentsline{toc}{section}{Lista de pendientes}
-Generada automáticamente desde las marcas \texttt{\textbackslash todo} del documento.
-Si esta lista aparece vacía, no quedan huecos marcados.
-\begin{enumerate}\setlength\itemsep{1pt}
-\renewcommand*{\do}[1]{\item #1}
-\dolistloop{\TodoList}
-\end{enumerate}
 
 \end{document}

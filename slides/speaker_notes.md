@@ -1,5 +1,7 @@
 # Notas del orador — Presentación final (≈15 min, 8 diapositivas)
 
+**Mensaje de alcance:** replicación algorítmica completa del mecanismo central + replicación computacional parcial documentada. No decir “nuestra implementación supera a Zebra”. Decir: el paper reporta esa comparación; Zebra no fue reejecutado localmente.
+
 > Objetivo: comunicar problema, modelo, método y resultados con lenguaje simple pero riguroso.
 > Tiempo sugerido por slide entre paréntesis. Todos los números provienen de `results/`.
 
@@ -83,7 +85,8 @@ Fase 2 solo certifica.
   simple y rápido."
 - "Las buenas cotas tempranas son útiles para decidir con tiempo limitado en un caso real."
 **Limitaciones (decirlas, suma credibilidad):** escala probada hasta $N=1304$; no reejecutamos
-Zebra ni las familias enormes; PopStar y reduced-cost fixing quedaron fuera del alcance.
+Zebra ni las familias enormes; PopStar, reduced-cost fixing y constraint reduction quedaron fuera
+del alcance. La comparación con Zebra es literatura del paper, no resultado local.
 Terminar invitando preguntas.
 
 ---

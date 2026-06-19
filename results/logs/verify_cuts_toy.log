@@ -1,0 +1,7 @@
+Instancia /Users/apena/benders-pmedian/instances/toy/toy1.pmp: N=4 M=4 p=2 (coords)
+Matriz S construida en 0.000 s
+dump-cuts: abiertos = {0,1}
+i=0 ktilde=0 opt=0 cut: theta_0 >= 0
+i=1 ktilde=0 opt=0 cut: theta_1 >= 0
+i=2 ktilde=2 opt=4 cut: theta_2 >= 4 - 4*y_2 - 1*y_3
+i=3 ktilde=2 opt=4 cut: theta_3 >= 4 - 4*y_3 - 1*y_2

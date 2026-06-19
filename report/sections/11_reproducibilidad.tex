@@ -5,14 +5,14 @@
 \begin{itemize}[noitemsep]
   \item \textbf{Hardware:} Apple M1. \textbf{Compilador:} Apple clang (C11).
   \item \textbf{Solver:} Gurobi 12.0.0 (licencia académica), autodetectado por el \texttt{Makefile}
-        en \texttt{/Library/gurobi*/macos\_universal2}.
+        si \texttt{GUROBI\_HOME} no está definido.
   \item \textbf{Python:} 3.x con \texttt{gurobipy} y \texttt{matplotlib} (solo para oráculo,
         generadores y figuras).
 \end{itemize}
 
 \subsection{Comandos}
 \begin{lstlisting}[language=bash,numbers=none]
-export GUROBI_HOME=/Library/gurobi1200/macos_universal2
+export GUROBI_HOME=$HOME/gurobi1200/macos_universal2   # ajustar a la instalacion local
 export DYLD_LIBRARY_PATH=$GUROBI_HOME/lib
 
 make test            # tests del nucleo + verificacion del separador (toy=6)
@@ -24,12 +24,12 @@ make pmedian         # binario principal
 
 # verificacion del separador (3 vias)
 ./pmedian instances/toy/toy1.pmp --p 2 --dump-cuts 0 1     # cortes a mano
-python scripts/verify_cuts.py                              # C == Python (0 diffs)
+.venv/bin/python scripts/verify_cuts.py                    # C == Python (0 diffs)
 
 # benchmark, comparacion con el paper y figuras
-python scripts/run_benchmark.py
-python scripts/compare_paper.py
-python scripts/plot_results.py
+.venv/bin/python scripts/run_benchmark.py
+.venv/bin/python scripts/compare_paper.py
+.venv/bin/python scripts/plot_results.py
 \end{lstlisting}
 
 \subsection{Artefactos y trazabilidad}
@@ -57,7 +57,7 @@ no verificado en lugar de rellenarlo.
 \begin{enumerate}[noitemsep]
   \item \texttt{make clean \&\& make pmedian} compila sin \emph{warnings}.
   \item \texttt{make test} imprime \texttt{RESULT: PASS} en ambos tests.
-  \item \texttt{python scripts/verify\_cuts.py} imprime \texttt{PASS} (0 diffs).
+  \item \texttt{.venv/bin/python scripts/verify\_cuts.py} imprime \texttt{PASS} (0 diffs).
   \item \texttt{pdflatex report/main.tex} (dos pasadas) compila y las 4 figuras se incrustan.
   \item \texttt{pdflatex slides/main.tex} compila las 8 diapositivas.
   \item Las tablas del informe coinciden con los CSV vigentes en \texttt{results/}.

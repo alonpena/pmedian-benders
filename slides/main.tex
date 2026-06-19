@@ -15,7 +15,7 @@
 \newcommand{\kt}{\tilde{k}}
 
 \title[Benders para p-medianas]{Descomposición de Benders eficiente\\para el problema de las \textit{p}-medianas}
-\subtitle{Replicación e implementación en C}
+\subtitle{Replicación algorítmica completa + replicación computacional parcial documentada}
 \author{Alonso Peña Domarchi}
 \institute[PUCV]{Optimización Computacional — PUCV}
 \date{Junio 2026}
@@ -47,7 +47,7 @@ Lo \textbf{fácil}: la asignación,\\ dado $S$ (cada cliente $\to$ más cercano)
 \end{column}
 \end{columns}
 \vfill
-\footnotesize Referencia: Duran-Mateluna, Ales \& Elloumi (2023), \textit{EJOR}.
+\footnotesize Referencia: Duran-Mateluna, Ales \& Elloumi (2023), \textit{EJOR}. Alcance: se replica el mecanismo algorítmico central; la campaña computacional local es parcial.
 \end{frame}
 
 % ---------- 2 ----------
@@ -211,9 +211,11 @@ pmed11 & 352 & \textbf{1} \\
   \item \textbf{Buenas cotas tempranas} (Fase 1) son accionables para un decisor real.
   \item \textbf{Verificar el componente crítico paga:} separador validado por 3 vías.
 \end{itemize}
-\begin{block}{Limitaciones (honestas)}
-Escala probada hasta $N=1304$; familias grandes (TSP $>10^4$, BIRCH, ODM, RW grande) y Zebra
-\emph{no} reejecutadas; PopStar / reduced-cost fixing no implementados.
+\begin{block}{Alcance y limitaciones (honestas)}
+Replicación algorítmica completa + replicación computacional parcial documentada. Escala probada
+hasta $N=1304$; familias grandes (TSP $>10^4$, BIRCH, ODM, RW grande) y Zebra \emph{no}
+reejecutadas. La superioridad frente a Zebra es un resultado reportado por el paper, no local.
+PopStar / reduced-cost fixing / constraint reduction no implementados.
 \end{block}
 \centering \textbf{¿Preguntas?}
 \end{frame}

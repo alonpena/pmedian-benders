@@ -4,58 +4,61 @@ Replicación en C de la descomposición de Benders eficiente para el **problema 
 
 > Duran-Mateluna, C., Ales, Z. & Elloumi, S. (2023). *An efficient Benders decomposition for the p-median problem*. European Journal of Operational Research, 308, 84–96.
 
-Proyecto del curso **Optimización Computacional** (PUCV). El objetivo es construir un repositorio limpio, modular, documentado y reproducible que reproduzca la lógica central del paper y sirva de base para futuras optimizaciones de modelamiento y solver.
+Proyecto del curso **Optimización Computacional** (PUCV).
+
+## Alcance de la replicación
+
+- **Replicación algorítmica completa del núcleo:** F3, maestro de Benders, subproblema primal/dual, cortes de optimalidad, separación cerrada `O(NM)`, Fase 1 LP, Fase 2 branch-and-Benders-cut y warm-start por cortes de Fase 1.
+- **Replicación computacional parcial documentada:** solo instancias efectivamente ejecutadas y registradas en `results/`.
+- **Zebra no fue reejecutado localmente.** El paper reporta que el método supera a Zebra; este proyecto no valida esa comparación como resultado local.
+- **No corrido localmente:** campaña completa de gran escala del paper (TSP grandes/huge, BIRCH, RW grande, ODM).
+- **No implementado:** PopStar, reduced-cost fixing, constraint reduction, CPLEX/SCIP.
 
 ## Estado del proyecto
 
-| Etapa | Descripción | Estado |
-|-------|-------------|--------|
-| 0 | Esqueleto, plan, instancia toy | ✅ hecho |
-| — | Prototipo Python+Gurobi (oráculo) | ✅ hecho (toy=6, pmed1=5819) |
-| 1 | Parser de instancias + distancias | ✅ hecho |
-| 2 | Evaluador fuerza bruta (oráculo) | ✅ hecho |
-| 3 | Matriz S (sitios ordenados) | ✅ hecho |
-| 4 | Separación (Alg. 1 y 2) | ✅ hecho (cross-check vs prototipo) |
-| 5 | Fase 1 (maestro LP + loop de cortes) | ✅ hecho |
-| 6 | Fase 2 (branch-and-Benders-cut) | ✅ hecho (pmed1/2/3/6 = óptimo) |
-| 7 | Generación de instancias + benchmark | ✅ hecho (orlib/tsplib/rw/birch) |
-| 8 | Análisis preliminar + informe | ✅ hecho (15/15 óptimo, plots) |
+| Componente | Estado | Evidencia |
+|---|---|---|
+| Núcleo C + Gurobi | Implementado | `src/` |
+| Separador Alg. 1/2 | Verificado 3 vías | `make test`, `scripts/verify_cuts.py`, `results/logs/verify_cuts_oracle_diff.log` |
+| Fase 1 LP + cortes | Implementada | `src/phase1.c`, `results/benchmark.csv` |
+| Fase 2 branch-and-Benders-cut | Implementada | `src/phase2.c`, `results/logs/*full.log` |
+| Warm-start por cortes Fase 1 | Implementado | `results/warmstart_comparison.csv` |
+| OR-Library pmed1–15 | Corrido localmente, 15/15 óptimos | `results/orlib_optima_check.csv` |
+| TSPLIB rl1304 | Corrido localmente, 9/9 óptimos vs paper Tabla 2 | `results/comparison_vs_paper.csv` |
+| Zebra | No implementado, no corrido | tratado como claim del paper |
 
-El plan completo y la hoja de ruta están en [`PLAN.md`](PLAN.md) (en inglés).
-La teoría completa y las entregas del curso van en [`docs/PMEDIAN_BENDERS_PROJECT_BRIEF.md`](docs/PMEDIAN_BENDERS_PROJECT_BRIEF.md) (en español, pendiente).
+## Arquitectura
 
-## Arquitectura (resumen)
+- **Núcleo en C:** lectura de instancias, distancias `d(i,j)`, matriz `S`, separación `O(NM)`, Fase 1, Fase 2, warm-start, logging.
+- **Solver:** API C de **Gurobi** detrás de `src/solver.h`.
+- **Prototipo Python+Gurobi:** oráculo legible para validar F3, callbacks y separador.
+- **Scripts:** parsers OR-Library/TSPLIB, generadores RW/BIRCH, benchmark y figuras.
 
-- **Núcleo en C:** lectura de instancias, acceso a distancias `d(i,j)`, matriz S, algoritmo de separación O(NM), loop de Fase 1, heurística de redondeo, cotas y logging.
-- **Motor:** API de C de **Gurobi** para resolver el maestro (LP en Fase 1; MIP + callback de lazy constraints en Fase 2).
-- **Prototipo opcional en Python+Gurobi:** referencia legible de los callbacks y oráculo de correctitud sobre instancias pequeñas.
+## Requisitos
 
-## Requisitos (preliminar)
+- Compilador C y `make`.
+- Gurobi con licencia activa (`GUROBI_HOME` o autodetección del `Makefile`).
+- Python 3 para scripts y prototipo.
 
-- Compilador C (gcc/clang) y `make`.
-- Gurobi con licencia académica activa (variable `GUROBI_HOME`).
-- Python 3 (solo para scripts de generación/benchmark y prototipo).
-
-## Uso (preliminar — se completará en Etapa 5)
+## Uso
 
 ```bash
-# compilar
-make
+make test
+make pmedian
 
-# ejecutar (modo a elección)
-./pmedian instances/toy/toy1.pmp --p 2 --mode phase1
 ./pmedian instances/toy/toy1.pmp --p 2 --mode full
+./pmedian instances/orlib/pmed1.pmp --mode full --opt 5819
+
+.venv/bin/python scripts/verify_cuts.py
+.venv/bin/python scripts/run_benchmark.py
+.venv/bin/python scripts/compare_paper.py
+.venv/bin/python scripts/plot_results.py
 ```
 
-## Control de versiones
+## Documentos clave
 
-```bash
-cd pmedian-benders
-git init
-git add .
-git commit -m "Etapa 0: esqueleto, plan e instancia toy"
-```
-
-## Formato de instancias
-
-Ver [`docs/INSTANCE_FORMAT.md`](docs/INSTANCE_FORMAT.md).
+- `docs/CONSISTENCY_AND_REPLICATION_AUDIT.md` — auditoría honesta de alcance.
+- `docs/PAPER_REPLICATION_MATRIX.md` — matriz paper vs repo.
+- `docs/NUMERICAL_CLAIMS_TRACE.md` — trazabilidad de números del informe/slides.
+- `docs/FINAL_SUBMISSION_AUDIT.md` — checklist final de entrega.
+- `overleaf/README_OVERLEAF.md` — paquetes Overleaf limpios.

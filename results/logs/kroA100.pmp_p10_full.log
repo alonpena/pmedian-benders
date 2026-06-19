@@ -1,0 +1,6 @@
+instance=kroA100.pmp N=100 M=100 p=10 backend=gurobi mode=full
+phase1 LB1=30530.0000 UB1=30545.0000 iter=8 cuts=306 T1=0.023
+phase2 opt=30539.0000 T2=0.060 start=warm warm_cuts=306
+CALLBACK_PROOF separation_calls=12 lazy_cuts=162 bb_nodes=1
+is_branch_and_benders_cut=YES
+opt_known=NA status=ok gap=0.000295

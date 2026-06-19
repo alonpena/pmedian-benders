@@ -1,3 +1,32 @@
+# Respuesta honesta sobre replicación del paper
+
+Replicamos completamente el mecanismo algorítmico central propuesto por Duran-Mateluna et al. —F3, maestro, subproblema, dual, cortes, separación O(NM), dos fases y warm-start—. En lo computacional, reproducimos y verificamos un subconjunto de instancias disponible en el repositorio. No reejecutamos Zebra ni toda la campaña de gran escala, por lo que esas comparaciones se citan como resultados del paper, no como resultados locales.
+
+## Preguntas probables sobre alcance
+
+### ¿Replicaste el paper completo?
+No completo en sentido computacional. Sí replicamos completo el mecanismo algorítmico central: F3, Benders, subproblema primal/dual, cortes, separación O(NM), dos fases y warm-start. La campaña computacional local es parcial: OR-Library, `rl1304`, `kroA100`, `toy1` y validación pequeña RW.
+
+### ¿Por qué no corriste Zebra?
+Porque Zebra es un código/método externo de branch-cut-and-price, no incluido en este repo, y reimplementarlo sería otro proyecto. Por honestidad, no afirmamos superioridad local frente a Zebra. Decimos que el paper reporta esa comparación y que aquí no fue revalidada.
+
+### ¿Entonces qué comparaste realmente?
+Comparamos contra óptimos oficiales OR-Library (`pmed1`–`pmed15`) y contra la Tabla 2 del paper para `rl1304` (9 valores de `p`). También validamos `kroA100` contra el oráculo F3 Python y el separador contra derivación manual + oráculo Python.
+
+### ¿Qué significa que sea “replicación algorítmica”?
+Significa que reprodujimos la construcción matemática y computacional del método: maestro de Benders, subproblema, dual, cortes de optimalidad, separación cerrada, Fase 1, Fase 2 y warm-start. No significa que hayamos repetido todos los experimentos ni todos los comparadores del paper.
+
+### ¿Qué queda pendiente?
+Zebra, PopStar, reduced-cost fixing, constraint reduction, CPLEX/SCIP y la campaña de gran escala: TSP grandes/huge, BIRCH, RW grande y ODM. También faltaría perfilar separación/construcción de `S` a escala masiva.
+
+### ¿Por qué igual es válido para el curso?
+Porque el curso evalúa formulación, relajación, dualidad, cotas, descomposición, algoritmo y validación computacional. El proyecto cubre esas partes con evidencia local trazable y declara explícitamente qué parte experimental no fue replicada.
+
+### ¿Qué evidencia demuestra que el separador está correcto?
+Tres vías: cortes derivados a mano en `toy1`, test C (`tests/test_separation_toy.c`) y comparación C vs oráculo Python con 0 diferencias (`results/logs/verify_cuts_oracle_diff.log`). Además, las corridas OR-Library y `rl1304` cierran a óptimos conocidos.
+
+---
+
 # Defensa oral — 8 preguntas probables del profesor
 
 > Respuestas en español simple pero riguroso, de 3–4 frases, para memorizar.

@@ -40,7 +40,7 @@ Convención de lectura: cada bloque marcado **Intuición** explica la idea en pa
 
 **Qué aportan los autores.** Aplican **descomposición de Benders** a la mejor formulación conocida (F3). El hallazgo clave: el subproblema de Benders del pMP es tan simple que su **dual tiene solución cerrada**, por lo que los **cortes de Benders se separan en tiempo lineal $O(NM)$** sin resolver ningún programa lineal (LP). Envuelven esto en un **algoritmo de dos fases** (relajación + branch-and-cut con cortes perezosos).
 
-**Por qué es eficiente y por qué mejora a Zebra.** El método anterior estado-del-arte, **Zebra** (García, Labbé & Marín, 2011), es un *branch-cut-and-price* sobre F2 que va agregando variables $z$ poco a poco. Sufre problemas de memoria en instancias grandes. La descomposición de Benders aquí propuesta **nunca materializa las variables $z$**: las reemplaza por una variable continua $\theta_i$ por cliente y genera cortes solo cuando se violan. Resultado: **supera a Zebra por un orden de magnitud** en tiempo, no tiene los problemas de memoria, y resuelve **por primera vez a optimalidad** varias instancias enormes (TSP hasta 238.025 puntos, BIRCH hasta 89.600).
+**Por qué es eficiente y qué reporta el paper frente a Zebra.** El método anterior estado-del-arte, **Zebra** (García, Labbé & Marín, 2011), es un *branch-cut-and-price* sobre F2 que va agregando variables $z$ poco a poco. Sufre problemas de memoria en instancias grandes. La descomposición de Benders aquí propuesta **nunca materializa las variables $z$**: las reemplaza por una variable continua $\theta_i$ por cliente y genera cortes solo cuando se violan. **El paper reporta** que esto supera a Zebra por un orden de magnitud en tiempo, evita sus problemas de memoria y resuelve por primera vez a optimalidad varias instancias enormes (TSP hasta 238.025 puntos, BIRCH hasta 89.600). **Este repositorio no reejecuta Zebra**, así que esa comparación es literatura, no evidencia local.
 
 ---
 
@@ -92,7 +92,7 @@ Se itera: el maestro propone $\bar y$; los subproblemas evalúan esa propuesta y
 - **Cota inferior (LB):** valor que el óptimo no puede ser menor (lo da la relajación / el dual).
 - **Cota superior (UB):** valor de una solución factible (lo da una heurística o una solución entera).
 - **Gap de optimalidad:** $\text{gap}=\frac{UB-LB}{UB}$ (o similar). Gap $0\%$ = óptimo probado.
-- **Heurística:** método rápido que da una solución factible (UB) sin garantía de optimalidad. Aquí se usa **PopStar** (Resende & Werneck, 2004), la mejor heurística conocida para pMP, para arrancar con buen UB.
+- **Heurística:** método rápido que da una solución factible (UB) sin garantía de optimalidad. El paper usa **PopStar** (Resende & Werneck, 2004) para arrancar con buen UB; este repositorio lo reemplaza por arranque uniforme + redondeo.
 
 ### 2.9 Reduced cost fixing (fijación por costos reducidos)
 Tras resolver la relajación LP, cada variable $y_j$ tiene un **costo reducido** $rc_j$ (cuánto empeoraría el objetivo al forzar un cambio unitario). Si, dadas las cotas $LB$ y $UB$, abrir/cerrar un sitio implicaría superar $UB$, esa variable puede **fijarse** (a 0 o a 1) antes de ramificar, reduciendo el árbol. Es efectivo cuando $p$ es pequeño respecto de $M$ (ratio $p/M<20\%$).
@@ -390,7 +390,7 @@ Se resuelve el maestro **sin integralidad** (con $y\in[0,1]$), iterando:
    - Si $\bar y$ es fraccionaria: **heurística de redondeo** = abrir los $p$ sitios con mayor $\bar y_j$ → solución entera $y^r$ con valor $UB^r$; si mejora, actualizar $UB_1,y_1$.
 4. Devolver $LB_1, y_1, UB_1$.
 
-- **Solución inicial (PopStar):** un buen $UB$ inicial reduce mucho las iteraciones. (En nuestra implementación lo reemplazaremos por *greedy*/aleatorio + redondeo.)
+- **Solución inicial (PopStar):** un buen $UB$ inicial reduce mucho las iteraciones. En esta implementación se reemplaza por arranque uniforme + redondeo; por tanto los $UB_1$ pueden ser peores que los del paper.
 - **Heurística de redondeo:** como en Fase 1 casi todas las soluciones del LP son fraccionarias, abrir los $p$ sitios de mayor $y$ produce soluciones factibles que mejoran $UB$.
 - **Condición de término:** no se hallan más cortes violados → se obtuvo el valor de la **relajación lineal**.
 
@@ -415,16 +415,18 @@ Se agregan las restricciones de integralidad sobre $y$ y se resuelve con **branc
 - **UFL/KG:** instancias del problema de localización **con costos de apertura** (extensión del método).
 
 ### 10.2 Qué es Zebra
-**Zebra** (García, Labbé & Marín, 2011) es el método exacto estado-del-arte previo: *branch-cut-and-price* sobre F2 que agrega variables $z$ de forma incremental. Resolvía hasta $N=85.900$, pero sufre **falta de memoria** en instancias grandes y **no maneja instancias asimétricas** (RW).
+**Zebra** (García, Labbé & Marín, 2011) es el método exacto estado-del-arte previo: *branch-cut-and-price* sobre F2 que agrega variables $z$ de forma incremental. Según el paper, resolvía hasta $N=85.900$, pero sufría **falta de memoria** en instancias grandes y **no manejaba instancias asimétricas** (RW). Este repositorio no contiene ni ejecuta Zebra.
 
 ### 10.3 Métricas reportadas
-$LB_1, UB_1$ (cotas al final de Fase 1), $T_1$ (tiempo Fase 1), **gap** final, **iter** (separaciones), **nodes** (nodos del B&B), **Ttot** (tiempo total), y la comparación de tiempos con Zebra y heurísticas (normalizando por *benchmark score* de las máquinas).
+El paper reporta $LB_1, UB_1$ (cotas al final de Fase 1), $T_1$ (tiempo Fase 1), **gap** final, **iter** (separaciones), **nodes** (nodos del B&B), **Ttot** (tiempo total), y comparación de tiempos con Zebra y heurísticas (normalizando por *benchmark score* de las máquinas). Este repositorio reproduce localmente esas métricas solo para el subconjunto corrido.
 
-### 10.4 Qué muestran los resultados
-- Supera a Zebra **por un orden de magnitud** en tiempo promedio (p. ej. medianas TSP: 467 s vs 2022 s).
-- **No** tiene problemas de memoria donde Zebra sí los tiene.
-- Resuelve **por primera vez a optimalidad** instancias enormes (TSP 115.455 y 238.025; BIRCH hasta 89.600).
-- $LB_1$ y $UB_1$ de Fase 1 ya son muy buenos: muchas instancias quedan resueltas (o casi) sin entrar a Fase 2.
+### 10.4 Qué muestran los resultados del paper
+- El paper reporta que supera a Zebra **por un orden de magnitud** en tiempo promedio (p. ej. medianas TSP: 467 s vs 2022 s).
+- El paper reporta que evita problemas de memoria donde Zebra sí los tiene.
+- El paper reporta resolver **por primera vez a optimalidad** instancias enormes (TSP 115.455 y 238.025; BIRCH hasta 89.600).
+- El paper reporta que $LB_1$ y $UB_1$ de Fase 1 ya son muy buenos: muchas instancias quedan resueltas (o casi) sin entrar a Fase 2.
+
+**Estado local:** este repositorio no reejecuta Zebra ni esas familias enormes. La validación local se limita a OR-Library, `rl1304`, `kroA100`, `toy1` y `rw12` según `results/` y `docs/CONSISTENCY_AND_REPLICATION_AUDIT.md`.
 
 ### 10.5 Dónde brilla y dónde sufre
 - **Brilla:** instancias euclidianas/geométricas grandes (TSP, BIRCH); valores de $p$ grandes.
@@ -436,9 +438,9 @@ $LB_1, UB_1$ (cotas al final de Fase 1), $T_1$ (tiempo Fase 1), **gap** final, *
 
 El plan completo, la estructura del repositorio y las etapas (0 a 8) están en **`PLAN.md`**. Resumen de la arquitectura:
 - **Núcleo en C:** parsing, distancias, matriz $S$, separación (Alg. 1 y 2), loop de Fase 1, redondeo, cotas, logging.
-- **Capa de solver (interfaz delgada):** backends **Gurobi** (principal), **CPLEX** (el del paper), y una opción **abierta** (SCIP/HiGHS) para reproducibilidad sin licencia. Resuelve el maestro (LP en Fase 1; MIP + callback de *lazy constraints* en Fase 2).
+- **Capa de solver (interfaz delgada):** backend **Gurobi** implementado. CPLEX (el del paper) y opciones abiertas (SCIP/HiGHS) quedaron documentadas pero no implementadas. Resuelve el maestro (LP en Fase 1; MIP + callback de *lazy constraints* en Fase 2).
 - **Prototipo Python+Gurobi:** referencia legible de callbacks + oráculo de correctitud + resultados tempranos.
-- **Benchmark vs. paper:** comparar nuestros $LB_1/UB_1/$gap$/T_{tot}$ contra las Tablas 2–9 del paper para el subconjunto elegido.
+- **Benchmark vs. paper:** comparación local realizada solo contra la Tabla 2 (`rl1304`) y contra óptimos oficiales OR-Library. Tablas 3–9 no se reejecutaron.
 
 ---
 
@@ -452,7 +454,7 @@ El plan completo, la estructura del repositorio y las etapas (0 a 8) están en *
 ### Correctitud
 
 - **toy1** (N=4, p=2): óptimo a mano = 6. Fuerza bruta, F3, Fase 1 y Fase 2 dan **6**.
-- **OR-Library pmed1–15** (N=100/200/300; p de 5 a 100): Fase 2 alcanza el **óptimo oficial** (`pmedopt.txt`) en las **15** instancias, brecha 0 % (delta = 0). Ver `results/comparison_vs_paper.csv`.
+- **OR-Library pmed1–15** (N=100/200/300; p de 5 a 100): Fase 2 alcanza el **óptimo oficial** (`pmedopt.txt`) en las **15** instancias, brecha 0 % (delta = 0). Ver `results/orlib_optima_check.csv`.
 - **TSP-Library kroA100** (N=100, p=10, coords euclidianas truncadas): Fase 2 = **30539**, idéntico al oráculo F3 del prototipo Python.
 - **RW asimétrica** (matriz aleatoria, N=12): C y prototipo coinciden (óptimo 16). Valida el caso no euclidiano / asimétrico.
 - El separador en C reproduce **exactamente** el oráculo Python (suma de $\mathrm{OPT}(SP_i)$ en $y=p/M$ uniforme: toy 6.0, rw12 20.5, pmed1 7263.35).
@@ -466,22 +468,17 @@ de OR-Library es **la última ocurrencia sobrescribe**. Documentado en
 
 ### Observaciones cuantitativas (figuras en `results/`)
 
-- `plot_time_vs_N.png`: el tiempo total crece con $N$ pero todo el conjunto pmed
-  (hasta N=300) se resuelve en **< 0.2 s**. El costo está dominado por Fase 2.
-- `plot_gap1_vs_p.png`: la **brecha de Fase 1** $(UB_1-LB_1)/UB_1$ es pequeña
+- `plot_b_time_vs_N.png`: el tiempo total crece con $N$; todo el conjunto OR-Library
+  (hasta N=300) se resuelve localmente en **< 0.36 s** (`results/benchmark.csv`).
+- `plot_c_gap_vs_pM.png`: la **brecha de Fase 1** $(UB_1-LB_1)/UB_1$ es pequeña
   (frecuentemente 0 %); muchas instancias quedan **resueltas o casi** ya en Fase 1,
   consistente con lo reportado por el paper (sección 10.4).
-- `plot_nodes_vs_p.png`: los nodos del B&B aumentan con $p$ intermedio (el árbol se
+- `plot_d_iter_nodes_vs_p.png`: los nodos del B&B aumentan con $p$ intermedio (el árbol se
   expande), también coherente con "dónde sufre" del paper (sección 10.5).
 
 ### Comparación contra el paper
 
-`results/comparison_vs_paper.csv` enfrenta nuestro $LB_1/UB_1/$óptimo/tiempos contra
-el **óptimo oficial de OR-Library** (que es lo que el método del paper resuelve para
-esa familia): delta = 0 en las 15 instancias. Las columnas `paper_LB1/UB1/time`
-quedan como **`NA (PDF ausente)`**: el PDF del paper no está en el repo, así que —por
-la regla de no fabricar (kickoff §11)— no se transcriben las Tablas 2–9. Si se
-proveen, el runner las puede incorporar como columnas de referencia.
+`results/comparison_vs_paper.csv` compara nuestro $LB_1/UB_1$/óptimo/tiempos contra la Tabla 2 del paper para `rl1304`: 9/9 óptimos coinciden (delta = 0) y $LB_1$ coincide a tolerancia de redondeo. `results/orlib_optima_check.csv` compara OR-Library contra óptimos oficiales de Beasley: 15/15 delta = 0. Las Tablas 3–9 del paper (TSP grandes, BIRCH, RW, ODM) y Zebra no se reejecutaron.
 
 ---
 

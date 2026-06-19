@@ -11,6 +11,10 @@ gurobi.log
 *.lp
 *.mps
 
+# Keep curated proof logs under results/logs
+!results/logs/
+!results/logs/*.log
+
 # Python
 __pycache__/
 *.pyc
@@ -19,6 +23,9 @@ venv/
 
 # Results scratch (keep curated CSVs by force-adding)
 results/tmp/
+
+# Generated final PDFs (sources live in report/, slides/, overleaf/)
+informe/
 
 # OS / editor
 .DS_Store

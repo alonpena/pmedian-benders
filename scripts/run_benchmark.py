@@ -1,16 +1,15 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
-Runner de benchmark: ejecuta ./pmedian sobre un conjunto de instancias OR-Library,
-agrega filas a results/benchmark.csv (lo hace el binario) y produce
-results/comparison_vs_paper.csv comparando nuestro optimo probado contra el
-optimo OFICIAL de OR-Library (pmedopt.txt).
+Runner de benchmark: ejecuta ./pmedian sobre instancias OR-Library, agrega filas a
+results/benchmark.csv (lo hace el binario) y produce results/orlib_optima_check.csv
+comparando nuestro optimo probado contra el optimo OFICIAL de OR-Library
+(pmedopt.txt).
 
-NOTA (honestidad, kickoff section 11): el PDF del paper no esta en el repo, asi que
-NO se transcriben aqui las Tablas 2-9 (LB1/UB1/tiempos por instancia del paper).
-La columna de referencia es el optimo oficial de OR-Library, que es exactamente lo
-que el metodo del paper resuelve para esa familia. Las celdas del paper quedan como
-'NA (PDF ausente)'; el humano puede completarlas si provee las tablas.
+NOTA de honestidad: OR-Library no corresponde a una tabla transcrita del paper en este
+repo; la referencia local es el optimo oficial de Beasley. La comparacion contra la
+Tabla 2 del paper (rl1304) vive en scripts/compare_paper.py y
+results/comparison_vs_paper.csv. Zebra no se ejecuta aqui.
 
 Uso:
   python scripts/run_benchmark.py            # corre el set por defecto
@@ -30,7 +29,7 @@ GRB_LIB = "/Library/gurobi1200/macos_universal2/lib"
 # p por defecto de cada pmed (OR-Library): pmed1..5 p=5,10,10,20,33 ... usamos los
 # que vienen en el header del archivo (no hardcodear): el binario toma el p del .pmp.
 
-DEFAULT_SET = ["pmed1", "pmed2", "pmed3", "pmed6", "pmed7", "pmed8"]
+DEFAULT_SET = [f"pmed{i}" for i in range(1, 16)]
 
 
 def load_official_opt():

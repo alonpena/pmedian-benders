@@ -140,3 +140,12 @@ Coincide con prototipo (rw12: LB1=15 UB1=16 en ambos). C reproduce el oraculo.
 - Finishing pass complete. STOP per instruction — no optional enhancements (RCF, SCIP, huge instances).
 
 HANDOFF: repo green, all committed+pushed. Resume from STATUS.md + this DEVLOG.
+
+## 2026-06-19 — Consistency and replication honesty audit
+
+- Final framing changed to: **algorithmic replication complete + computational replication subset documented**.
+- Zebra was **not** implemented or rerun locally. Any Zebra comparison is now literature-only wording.
+- OR-Library evidence is `results/orlib_optima_check.csv`; paper Table 2 (`rl1304`) evidence is `results/comparison_vs_paper.csv`.
+- Large campaign from the paper (large/huge TSP, BIRCH, RW large, ODM) remains NOT_RUN.
+- PopStar, reduced-cost fixing, and constraint reduction remain NOT_IMPLEMENTED.
+- Added final consistency audit, numerical-claims trace, and refreshed paper replication matrix.

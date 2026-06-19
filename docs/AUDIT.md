@@ -18,19 +18,19 @@
 |---|-----------|---------------------|--------------------------|
 | 1 | toy1 óptimo = 6 (a mano), núcleo C concuerda | salida de `make test` (`tests/test_core.c`) "RESULT: PASS", incluye "toy opt = 6" | `make test` |
 | 2 | Separador C ≡ oráculo Python (suma OPT en y=p/M): toy 6.0, rw12 20.5, pmed1 7263.35 | DEVLOG 2026-06-17 (C Stages 1-4); línea `[xcheck]` de test_core | `./build/test_core instances/orlib/pmed1.pmp` y comparar con `prototype/pmp_benders.py` |
-| 3 | OR-Library pmed1–15: Fase 2 = óptimo oficial, delta=0 (15/15) | `results/orlib_optima_check.csv` (col delta=0, status OPT_MATCH); `instances/orlib/pmedopt.txt` | `python scripts/run_benchmark.py $(for n in $(seq 1 15);do echo pmed$n;done)` |
+| 3 | OR-Library pmed1–15: Fase 2 = óptimo oficial, delta=0 (15/15) | `results/orlib_optima_check.csv` (col delta=0, status OPT_MATCH); `instances/orlib/pmedopt.txt` | `.venv/bin/python scripts/run_benchmark.py $(for n in $(seq 1 15);do echo pmed$n;done)` |
 | 4 | pmed1 = 5819 con regla de aristas correcta | `results/orlib_optima_check.csv` fila pmed1; `tests/test_parse_orlib.py` PASS | `python tests/test_parse_orlib.py` |
 | 5 | Regla aristas duplicadas = última-gana, justificada por el spec (no por 5819) | `docs/orlib_pmed_format_spec.txt` (texto de Beasley); `docs/ADR/0002` | n/a (cita textual del spec) |
 | 6 | Fase 2 ES branch-and-Benders-cut (cortes lazy reales) | `results/logs/pmed1.pmp_p5_full.log`: `lazy_cuts=513`, `is_branch_and_benders_cut=YES`, `separation_calls=...` | `./pmedian instances/orlib/pmed1.pmp --mode full --opt 5819` |
 | 7 | Warm-start reduce drásticamente nodos y cortes lazy | `results/warmstart_comparison.csv` (warm vs cold: pmed6 632→7 nodos) | `./pmedian instances/orlib/pmed6.pmp --mode full --opt 7824` y `... --coldstart` |
-| 8 | Paper Tabla 2 (rl1304): 9/9 OPT coinciden, delta=0 | `results/comparison_vs_paper.csv` (col delta_OPT=0) | `python scripts/compare_paper.py` |
+| 8 | Paper Tabla 2 (rl1304): 9/9 OPT coinciden, delta=0 | `results/comparison_vs_paper.csv` (col delta_OPT=0) | `.venv/bin/python scripts/compare_paper.py` |
 | 9 | El paper usa euclidiana FLOORED (no nint TSPLIB) | `results/comparison_vs_paper.csv` rl1304 p=5 our_opt=3099073=paper_OPT | `./pmedian instances/tsplib/rl1304_p5.pmp --mode full --opt 3099073` |
 | 10 | kroA100 (TSP coords): C Fase 2 = oráculo F3 = 30539 | DEVLOG (Stages 7-8) | `./pmedian instances/tsplib/kroA100.pmp --mode full` vs `python prototype/pmp_benders.py instances/tsplib/kroA100.pmp --mode f3` |
-| 11 | 4 figuras generadas solo de CSVs reales | `results/plot_a_bounds_orlib.png`, `plot_b_time_vs_N.png`, `plot_c_gap_vs_pM.png`, `plot_d_iter_nodes_vs_p.png` | `python scripts/plot_results.py` |
+| 11 | 4 figuras generadas solo de CSVs reales | `results/plot_a_bounds_orlib.png`, `plot_b_time_vs_N.png`, `plot_c_gap_vs_pM.png`, `plot_d_iter_nodes_vs_p.png` | `.venv/bin/python scripts/plot_results.py` |
 | 12 | Build limpio, sin warnings introducidos | salida de `make pmedian` (sin `warning:`) | `make clean && make pmedian` |
 | 13 | our_LB1 ≈ paper_LB1 (Fase 1) en rl1304 | `results/comparison_vs_paper.csv` (paper_LB1 vs our_LB1, ±1) | `python scripts/compare_paper.py` |
 | 14 | Separador C concuerda con cortes derivados A MANO (toy1, ȳ={1,1,0,0}): PASS | `make test` (`tests/test_separation_toy.c` "RESULT: PASS"); `results/logs/verify_cuts_toy.log` | `make test` o `./pmedian instances/toy/toy1.pmp --p 2 --dump-cuts 0 1` |
-| 15 | Separador C ≡ oraculo Python por-cliente (mismo ȳ): 0 diffs en const+coeficientes | `results/logs/verify_cuts_oracle_diff.log` (`diffs=0`) | `python scripts/verify_cuts.py` |
+| 15 | Separador C ≡ oraculo Python por-cliente (mismo ȳ): 0 diffs en const+coeficientes | `results/logs/verify_cuts_oracle_diff.log` (`diffs=0`) | `.venv/bin/python scripts/verify_cuts.py` |
 
 ### Escenario de verificación del separador (afirmaciones 14–15)
 
@@ -55,7 +55,8 @@ ajusta la fórmula para forzar coincidencia (una discrepancia = bug real a inves
 ## Afirmaciones UNVERIFIED (no probadas con artefacto en este repo)
 
 - **UNVERIFIED — superación a Zebra "un orden de magnitud":** no ejecutamos Zebra.
-  Los tiempos de Zebra en `comparison_vs_paper.csv`/Tabla 2 son del paper, no nuestros.
+  El paper reporta esa comparación; este repo no contiene binario, scripts ni logs de Zebra.
+  Por tanto, Zebra se cita como afirmación de literatura, no como resultado local.
 - **UNVERIFIED — ventaja en WALL-TIME del warm-start en general:** solo está probada la
   reducción de **nodos y cortes** (`warmstart_comparison.csv`). En instancias sub-segundo
   el wall-time es mixto (a veces warm es más lento por el preload). No se probó en

@@ -1,0 +1,3 @@
+instancia=/Users/apena/benders-pmedian/instances/toy/toy1.pmp p=2 abiertos=[0, 1]
+clientes comparados=4
+diffs=0 (C ≡ Python en const y todos los coeficientes)

@@ -1,0 +1,6 @@
+instance=pmed11.pmp N=300 M=300 p=5 backend=gurobi mode=full
+phase1 LB1=7693.3333 UB1=7696.0000 iter=9 cuts=1285 T1=0.061
+phase2 opt=7696.0000 T2=0.293 start=warm warm_cuts=1285
+CALLBACK_PROOF separation_calls=12 lazy_cuts=308 bb_nodes=1
+is_branch_and_benders_cut=YES
+opt_known=7696 status=OPTIMAL_MATCH gap=0.000347

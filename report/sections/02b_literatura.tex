@@ -28,6 +28,7 @@ cita y sobre el que se construye; cada una corrige una debilidad estructural de 
 subproblema de Benders del pMP es tan simple que su \textbf{dual tiene solución cerrada}; los
 cortes se separan en $O(NM)$ \emph{sin resolver ningún LP}. Envuelven esto en un algoritmo de
 dos fases (relajación lineal con loop de cortes; luego branch-and-Benders-cut que hereda esos
-cortes) y, con ello, superan a Zebra en tiempo, evitan sus problemas de memoria y resuelven por
-primera vez a optimalidad varias instancias de gran tamaño. Este informe reproduce ese núcleo
-—formulaciones, separación, dos fases— y lo valida con datos propios.
+cortes). El paper reporta que, con ese mecanismo, supera a Zebra en tiempo, evita sus problemas
+de memoria y resuelve por primera vez a optimalidad varias instancias de gran tamaño. Este
+informe reproduce ese núcleo —formulaciones, separación, dos fases— y lo valida con datos
+propios; no reejecuta Zebra, por lo que esa comparación queda como afirmación de literatura.

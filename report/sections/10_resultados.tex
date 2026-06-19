@@ -7,10 +7,11 @@
         $LB_1=UB_1=$ óptimo (Tabla~\ref{tab:orlib}): la relajación lineal del maestro de Benders es
         muy ajustada y el redondeo encuentra la solución óptima. La Fase 2 solo \emph{certifica}.
         Coincide con lo reportado por el paper (su Fase 1 ya deja muchas instancias resueltas).
-  \item \textbf{El método es correcto a escala creciente.} 15/15 óptimos en OR-Library y 9/9 en
-        \texttt{rl1304} ($N=1304$, hasta $p=500$) con $\Delta=0$ respecto del paper
+  \item \textbf{El método es correcto en la escala local probada.} 15/15 óptimos en OR-Library y
+        9/9 en \texttt{rl1304} ($N=1304$, hasta $p=500$) con $\Delta=0$ respecto del paper
         (Tabla~\ref{tab:paper}). El separador, validado por tres vías (mano, test, oráculo), es la
-        base de esta confianza.
+        base de esta confianza. Esta es evidencia de replicación computacional parcial, no de la
+        campaña completa del paper.
   \item \textbf{El warm-start reduce el árbol, no necesariamente el tiempo.} Heredar los cortes de
         Fase 1 baja los nodos de B\&B de cientos a $1$--$7$ (Tabla~\ref{tab:warm}), pero en
         instancias sub-segundo la precarga de cientos de cortes puede costar más que el ahorro: el
@@ -39,8 +40,8 @@
   \item \textbf{Escala probada moderada:} hasta $N=1304$. Las familias enormes del paper (TSP
         $>10^4$, BIRCH, ODM, RW grande) \emph{no} se ejecutaron; las afirmaciones de
         escalabilidad son conceptuales, no medidas (\texttt{docs/AUDIT.md}).
-  \item \textbf{Sin comparación directa con Zebra:} no se reejecutó; los tiempos del paper son
-        ajenos a nuestra máquina.
+  \item \textbf{Sin comparación directa con Zebra:} no se reejecutó; los tiempos y conclusiones
+        frente a Zebra pertenecen al paper y se citan como literatura, no como resultado local.
   \item \textbf{Mejoras no implementadas:} PopStar, reduced-cost fixing y constraint reduction
         quedan documentadas pero fuera del alcance.
   \item \textbf{Construcción de $S$:} a gran escala dominaría el tiempo total ($O(NM\log M)$); no
@@ -64,7 +65,10 @@
 
 \subsection{Conclusión}
 Se replicó e implementó en C, de forma modular y reproducible, la descomposición de Benders
-eficiente para el pMP. El método alcanza el óptimo en todas las instancias probadas (OR-Library
-15/15, \texttt{rl1304} 9/9 vs paper), con un separador verificado por tres vías independientes.
-El trabajo cumple los objetivos del curso: formulación rigurosa, propuesta lagrangiana, diseño y
+eficiente para el pMP. La contribución local es una \textbf{replicación algorítmica completa} del
+mecanismo central del paper —F3, Benders, separación cerrada, dos fases y warm-start— más una
+\textbf{replicación computacional parcial documentada}. El método alcanza el óptimo en todas las
+instancias probadas (OR-Library 15/15, \texttt{rl1304} 9/9 vs paper), con un separador verificado
+por tres vías independientes. No se reejecutó Zebra ni la campaña completa de gran escala. El
+trabajo cumple los objetivos del curso: formulación rigurosa, propuesta lagrangiana, diseño y
 justificación de Benders, e implementación con análisis honesto de alcances y límites.

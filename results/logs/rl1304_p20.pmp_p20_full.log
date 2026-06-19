@@ -1,0 +1,6 @@
+instance=rl1304_p20.pmp N=1304 M=1304 p=20 backend=gurobi mode=full
+phase1 LB1=1412108.0000 UB1=1412108.0000 iter=7 cuts=4465 T1=0.738
+phase2 opt=1412108.0000 T2=1.239 start=warm warm_cuts=4465
+CALLBACK_PROOF separation_calls=3 lazy_cuts=1845 bb_nodes=1
+is_branch_and_benders_cut=YES
+opt_known=1412108 status=OPTIMAL_MATCH gap=0.000000
