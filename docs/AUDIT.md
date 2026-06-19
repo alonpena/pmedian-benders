@@ -29,6 +29,26 @@
 | 11 | 4 figuras generadas solo de CSVs reales | `results/plot_a_bounds_orlib.png`, `plot_b_time_vs_N.png`, `plot_c_gap_vs_pM.png`, `plot_d_iter_nodes_vs_p.png` | `python scripts/plot_results.py` |
 | 12 | Build limpio, sin warnings introducidos | salida de `make pmedian` (sin `warning:`) | `make clean && make pmedian` |
 | 13 | our_LB1 ≈ paper_LB1 (Fase 1) en rl1304 | `results/comparison_vs_paper.csv` (paper_LB1 vs our_LB1, ±1) | `python scripts/compare_paper.py` |
+| 14 | Separador C concuerda con cortes derivados A MANO (toy1, ȳ={1,1,0,0}): PASS | `make test` (`tests/test_separation_toy.c` "RESULT: PASS"); `results/logs/verify_cuts_toy.log` | `make test` o `./pmedian instances/toy/toy1.pmp --p 2 --dump-cuts 0 1` |
+| 15 | Separador C ≡ oraculo Python por-cliente (mismo ȳ): 0 diffs en const+coeficientes | `results/logs/verify_cuts_oracle_diff.log` (`diffs=0`) | `python scripts/verify_cuts.py` |
+
+### Escenario de verificación del separador (afirmaciones 14–15)
+
+toy1, p=2, sitios abiertos = {0,1} (ȳ = {1,1,0,0}). Cortes esperados (derivados a
+mano; ver cabecera de `tests/test_separation_toy.c`):
+
+| cliente | k̃ | OPT(SP) | corte |
+|---------|----|---------|-------|
+| 0 | 0 | 0 | θ₀ ≥ 0 |
+| 1 | 0 | 0 | θ₁ ≥ 0 |
+| 2 | 2 | 4 | θ₂ ≥ 4 − 4·y₂ − 1·y₃ |
+| 3 | 2 | 4 | θ₃ ≥ 4 − 4·y₃ − 1·y₂ |
+
+Derivación cliente 2: sitio abierto más cercano = sitio 0 a distancia 4; dentro del
+radio D^k̃=3 caen sitio 2 (d=0) y sitio 3 (d=3) → coeficientes 4 y 1. El test usa
+comparación exacta en enteros y compara k̃, OPT(SP), constante y cada coeficiente
+(order-independent). Si algo discrepa, imprime esperado-vs-real y FALLA — no se
+ajusta la fórmula para forzar coincidencia (una discrepancia = bug real a investigar).
 
 ---
 

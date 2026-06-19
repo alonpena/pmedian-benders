@@ -44,11 +44,16 @@ pmedian: $(CORE_SRC) $(SOLVE_SRC)
 
 # --- tests del nucleo (no requieren solver) ---
 .PHONY: test
-test: build/test_core
+test: build/test_core build/test_separation_toy
 	@DYLD_LIBRARY_PATH=$(GRB_LIB) ./build/test_core instances/toy/toy1.pmp
+	@echo ""
+	@DYLD_LIBRARY_PATH=$(GRB_LIB) ./build/test_separation_toy instances/toy/toy1.pmp
 
 build/test_core: $(CORE_SRC) tests/test_core.c | build
 	$(CC) $(CFLAGS) $(CORE_SRC) tests/test_core.c $(LDLIBS) -o $@
+
+build/test_separation_toy: $(CORE_SRC) tests/test_separation_toy.c | build
+	$(CC) $(CFLAGS) $(CORE_SRC) tests/test_separation_toy.c $(LDLIBS) -o $@
 
 build:
 	@mkdir -p build

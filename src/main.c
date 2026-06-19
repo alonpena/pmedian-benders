@@ -8,6 +8,7 @@
  */
 #include "instance.h"
 #include "sortsites.h"
+#include "separation.h"
 #include "phase1.h"
 #include "phase2.h"
 #include "cutpool.h"
@@ -16,6 +17,37 @@
 #include <stdlib.h>
 #include <string.h>
 #include <math.h>
+
+/* --dump-cuts: dado un conjunto de sitios abiertos, imprime para cada cliente
+ * la linea  i=<i> ktilde=<k> opt=<v> cut: theta_i >= <const> [ - <coef>*y_<j> ...]
+ * Es la prueba legible de que el separador concuerda con la derivacion a mano y
+ * con el oraculo Python. No resuelve nada: solo separa en el ȳ dado. */
+static int dump_cuts(Instance *inst, SortSites *ss, const int *open, int nopen) {
+    double *ybar = calloc((size_t)inst->M, sizeof(double));
+    for (int t = 0; t < nopen; t++) {
+        if (open[t] < 0 || open[t] >= inst->M) {
+            fprintf(stderr, "sitio %d fuera de rango [0,%d)\n", open[t], inst->M);
+            free(ybar); return 2;
+        }
+        ybar[open[t]] = 1.0;
+    }
+    printf("dump-cuts: abiertos = {");
+    for (int t = 0; t < nopen; t++) printf("%s%d", t?",":"", open[t]);
+    printf("}\n");
+    Cut cut;
+    cut.ind = malloc((size_t)inst->M * sizeof(int));
+    cut.val = malloc((size_t)inst->M * sizeof(double));
+    for (int i = 0; i < inst->N; i++) {
+        int kt = separation_k_tilde(ss, i, ybar);
+        double opt = separation_client(ss, i, ybar, &cut);
+        printf("i=%d ktilde=%d opt=%g cut: theta_%d >= %g", i, kt, opt, i, cut.rhs);
+        for (int t = 0; t < cut.len; t++)
+            printf(" - %g*y_%d", cut.val[t], cut.ind[t]);
+        printf("\n");
+    }
+    free(cut.ind); free(cut.val); free(ybar);
+    return 0;
+}
 
 int main(int argc, char **argv) {
     if (argc < 2) {
@@ -26,12 +58,19 @@ int main(int argc, char **argv) {
     int p_override = -1, verbose = 0, coldstart = 0;
     const char *mode = "full";
     double opt_known = NAN;
+    int dump = 0, ndump = 0;
+    int *dumpsites = malloc((size_t)argc * sizeof(int));
     for (int i = 2; i < argc; i++) {
         if (!strcmp(argv[i], "--p") && i + 1 < argc) p_override = atoi(argv[++i]);
         else if (!strcmp(argv[i], "--mode") && i + 1 < argc) mode = argv[++i];
         else if (!strcmp(argv[i], "-v")) verbose = 1;
         else if (!strcmp(argv[i], "--opt") && i + 1 < argc) opt_known = atof(argv[++i]);
         else if (!strcmp(argv[i], "--coldstart")) coldstart = 1;   /* Fase 2 sin warm-start */
+        else if (!strcmp(argv[i], "--dump-cuts")) {
+            dump = 1;   /* el resto de args son indices de sitios abiertos */
+            for (int j = i + 1; j < argc; j++) dumpsites[ndump++] = atoi(argv[j]);
+            break;
+        }
     }
 
     Instance *inst = instance_load(path, p_override);
@@ -43,6 +82,12 @@ int main(int argc, char **argv) {
     SortSites *ss = sortsites_build(inst);
     double t_S = wall_seconds() - t_s;
     printf("Matriz S construida en %.3f s\n", t_S);
+
+    if (dump) {
+        int rc = dump_cuts(inst, ss, dumpsites, ndump);
+        free(dumpsites); sortsites_free(ss); instance_free(inst);
+        return rc;
+    }
 
     double LB1 = 0, UB1 = 0, T1 = 0, nodes = 0, Ttot = 0;
     long iter = 0;
@@ -111,6 +156,7 @@ int main(int argc, char **argv) {
                "gurobi", mode, LB1, UB1, T1, gap, iter, nodes, Ttot, optbuf, status);
 
     free(r1.best_set);
+    free(dumpsites);
     if (pool) cutpool_free(pool);
     sortsites_free(ss);
     instance_free(inst);

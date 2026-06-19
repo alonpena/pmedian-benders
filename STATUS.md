@@ -21,6 +21,14 @@ implementado, clean-start tras `--coldstart`. **Comparación vs paper Tabla 2 (r
 
 > NOTA callback: lazy_cuts > 0 confirmado, NO degenera a B&B normal.
 
+### Arnés de verificación del separador (nuevo)
+- `tests/test_separation_toy.c` (en `make test`): toy1 p=2, ȳ={1,1,0,0}, ASSERTa los 4
+  cortes derivados A MANO (k̃, OPT(SP), const, cada coef, order-independent, enteros exactos). PASS.
+- `--dump-cuts` en el binario: `./pmedian <inst> --p P --dump-cuts <sitios...>` imprime corte por cliente.
+  Corrida toy1 {0,1} → `results/logs/verify_cuts_toy.log`.
+- `scripts/verify_cuts.py`: cross-check C vs oráculo Python (mismo ȳ) → `results/logs/verify_cuts_oracle_diff.log` (`diffs=0`).
+- Evidencia: `docs/AUDIT.md` afirmaciones 14–15 + tabla del escenario.
+
 | Etapa | Estado |
 |-------|--------|
 | 0 esqueleto | ✅ |
