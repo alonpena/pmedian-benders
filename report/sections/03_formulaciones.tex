@@ -5,6 +5,16 @@ Presentamos cuatro formulaciones MILP equivalentes en óptimo entero pero con \e
 muy distinta. La formulación final usada como base de la descomposición es \textbf{F3}; su
 relajación, escrita de forma compacta sobre $\theta$, es \textbf{F4}.
 
+\paragraph{Marco del curso: relajación LP, brecha de integridad y fortaleza.} Para un MILP de
+minimización, reemplazar $y_j\in\{0,1\}$ por $y_j\in[0,1]$ da la \emph{relajación lineal}, cuya
+solución $v(\text{LP})$ es una \textbf{cota inferior}: $v(\text{LP})\le v(\text{MILP})$. La
+\textbf{brecha de integridad} $v(\text{MILP})-v(\text{LP})\ge0$ mide la fortaleza de la
+formulación: brecha pequeña $\Rightarrow$ formulación \emph{fuerte} $\Rightarrow$ mejores cotas y
+menos nodos en branch-and-bound. Un hecho central de esta sección es que \textbf{F1, F2, F3 y F4
+tienen exactamente la misma relajación LP} (y por tanto la misma brecha de integridad); difieren
+solo en cuántas variables y qué tan densa es su matriz, lo que el solver explota de forma muy
+distinta en la práctica.
+
 \subsection{F1 — formulación clásica (ReVelle \& Swain, 1970)}
 \textbf{Variables:} $y_j\in\{0,1\}$ (abrir el sitio $j$); $x_{ij}\in[0,1]$ (asignar el cliente
 $i$ al sitio $j$).
@@ -30,7 +40,15 @@ Para cada cliente $i$ sea $K_i\le M$ el número de \emph{distancias distintas} a
 ordenadas $D^1_i<D^2_i<\dots<D^{K_i}_i$. Se introduce $z^k_i=1$ si y solo si el cliente $i$
 \emph{aún no está cubierto} al radio $D^k_i$ (no hay sitio abierto a distancia $\le D^k_i$).
 
-\subsection{F2 — formulación de radios (Cornuejols, Nemhauser \& Wolsey, 1980)}
+\subsection{Por qué F2 mejora a F1: radios y umbral de distancia (Cornuejols, Nemhauser \& Wolsey, 1980)}
+\textbf{La idea (antes del álgebra).} F1 razona por \emph{asignación}: ``¿a qué sitio mando cada
+cliente?'', lo que cuesta una variable $x_{ij}$ por cada par. F2 razona por \emph{umbral de
+distancia}: para cada cliente, ``¿a qué \textbf{radio} llega su sitio abierto más cercano?''.
+Como muchos pares cliente--sitio comparten distancia (sobre todo si $N=M$), basta una variable
+$z^k_i$ por cada \emph{radio distinto} $D^k_i$, y los radios distintos $K_i$ suelen ser muchos
+menos que $M$. Esa es la razón estructural por la que F2 nunca es mayor que F1 y normalmente es
+mucho menor, manteniendo la misma cota LP.
+
 \begin{align}
   \min\ & \sum_{i=1}^{N}\Big[\,D^1_i + \sum_{k=1}^{K_i-1}\big(D^{k+1}_i-D^k_i\big)z^k_i\,\Big] \label{eq:f2obj}\\
   \text{s.a.}\ & \sum_{j=1}^{M} y_j=p \nonumber\\
@@ -49,7 +67,7 @@ La restricción \eqref{eq:f2cov} fuerza $z^k_i=1$ cuando no hay sitio abierto de
 F2 tiene $K=\sum_i K_i$ variables $z$ (con $K\le N\times M$, usualmente $K\ll N\times M$) y
 \textbf{la misma relajación lineal} que F1.
 
-\subsection{F3 — misma formulación, matriz mucho más rala (Elloumi, 2010)}
+\subsection{Por qué F3 mejora a F2: la misma formulación con matriz mucho más rala (Elloumi, 2010)}
 Como los $z^k_i$ son monótonos decrecientes en $k$ ($z^{k-1}_i=0\Rightarrow z^k_i=0$), la
 cobertura ``$\le D^k_i$'' puede reescribirse usando solo los sitios a distancia \emph{exactamente}
 $D^k_i$:

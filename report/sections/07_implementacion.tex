@@ -2,7 +2,7 @@
 \label{sec:implementacion}
 
 \subsection{Algoritmo de dos fases}
-La implementación sigue el esquema de dos fases del paper:
+La implementación reproduce \textbf{exactamente} el esquema de dos fases del paper (Sección~3.5):
 \begin{description}[leftmargin=1.5em]
   \item[Fase 1 — relajación lineal del maestro.] Se resuelve \eqref{eq:master} con $y\in[0,1]$,
         iterando: resolver el maestro LP, separar cortes violados (Alg.~1), agregarlos y aplicar
@@ -17,9 +17,23 @@ La implementación sigue el esquema de dos fases del paper:
 Como mejora, la Fase 2 \textbf{hereda el pool de cortes de la Fase 1} (warm-start): los cortes ya
 encontrados se precargan como restricciones del MIP en lugar de partir vacíos.
 
+\begin{quote}
+\textbf{Precisión sobre el término ``warm-start''.} Aquí warm-start significa \emph{heredar los
+cortes y cotas de la Fase 1} hacia la Fase 2 —transferencia de información entre fases, el
+``warm start'' del Cap.~3—. \textbf{No} se refiere al \emph{preprocesamiento}: la construcción de
+la matriz $S$ y de los radios ordenados $D^k_i$ (\texttt{sortsites\_build}) es una etapa previa,
+común a ambas fases, independiente del warm-start. Confundir ambas cosas sería un error
+conceptual: una es estructura de datos calculada una vez; la otra es reutilización de cortes de
+Benders.
+\end{quote}
+
 \subsection{Mapa de las matemáticas a los módulos en C}
-La implementación es modular: un núcleo en C (sin solver) y una capa delgada de solver
-(Gurobi). El núcleo se valida contra un oráculo en Python.
+La implementación usa un \textbf{diseño modular con encapsulación por \texttt{struct}s e
+interfaces}, inspirado en principios de orientación a objetos (C no es un lenguaje orientado a
+objetos): un núcleo en C sin dependencias del solver y una capa delgada de solver (Gurobi) detrás
+de una interfaz opaca (\texttt{src/solver.h}, \texttt{struct Solver}). El núcleo se valida contra
+un oráculo en Python. La implementación es \emph{evidencia} de que la teoría funciona, no la
+contribución del trabajo.
 
 \begin{table}[h]\centering\small
 \begin{tabular}{>{\raggedright}p{5.2cm} l l}

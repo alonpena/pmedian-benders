@@ -5,7 +5,7 @@
 
 \usepackage[utf8]{inputenc}
 \usepackage[T1]{fontenc}
-\usepackage[spanish,es-noindentfirst]{babel}
+\usepackage[spanish,es-noindentfirst,es-noshorthands]{babel}
 \usepackage{amsmath,amssymb,amsthm}
 \usepackage{mathtools}
 \usepackage{graphicx}
@@ -16,10 +16,20 @@
 \usepackage{geometry}
 \usepackage{xcolor}
 \usepackage{listings}
+\usepackage{etoolbox}
 \usepackage{hyperref}
 \usepackage{caption}
 \geometry{margin=2.5cm}
 \hypersetup{colorlinks=true,linkcolor=blue!50!black,citecolor=blue!50!black,urlcolor=blue!50!black}
+
+% --- macro \todo: marca inline en rojo + acumula para la lista final ---
+\newcommand{\TodoList}{}
+\newcounter{todocnt}
+\newcommand{\todo}[1]{%
+  \stepcounter{todocnt}%
+  \textcolor{red}{\textbf{[FALTA \arabic{todocnt}: #1]}}%
+  \listgadd{\TodoList}{#1}%
+}
 
 % --- entorno para "intuición" ---
 \newtheorem{definicion}{Definición}
@@ -67,6 +77,7 @@ brecha $0\%$, y en TSPLIB \texttt{rl1304} (hasta $p=500$) se reproducen exactame
 
 \input{sections/01_motivacion}
 \input{sections/02_definicion}
+\input{sections/02b_literatura}
 \input{sections/03_formulaciones}
 \input{sections/04_lagrangiana}
 \input{sections/05_benders}
@@ -90,6 +101,21 @@ brecha $0\%$, y en TSPLIB \texttt{rl1304} (hasta $p=500$) se reproducen exactame
 \item ReVelle, C.S. \& Swain, R.W. (1970). \textit{Central facilities location}. Geographical Analysis 2(1), 30--42.
 \item Reinelt, G. (1991). \textit{TSPLIB — a traveling salesman problem library}. ORSA J. Comput. 3(4), 376--384.
 \item Resende, M.G.C. \& Werneck, R.F. (2004). \textit{A hybrid heuristic for the p-median problem}. J. Heuristics 10(1), 59--88.
+\item Fischetti, M., Ljubić, I. \& Sinnl, M. (2017). \textit{Redesigning Benders decomposition for large-scale facility location}. Management Science 63(7), 2146--2162.
+\item Magnanti, T.L. \& Wong, R.T. (1981). \textit{Accelerating Benders decomposition: algorithmic enhancement and model selection criteria}. Operations Research 29(3), 464--484.
 \end{itemize}
+
+\appendix
+\input{sections/anexo_codigo}
+
+\clearpage
+\section*{Lista consolidada de pendientes (\texttt{\textbackslash todo})}
+\addcontentsline{toc}{section}{Lista de pendientes}
+Generada automáticamente desde las marcas \texttt{\textbackslash todo} del documento.
+Si esta lista aparece vacía, no quedan huecos marcados.
+\begin{enumerate}\setlength\itemsep{1pt}
+\renewcommand*{\do}[1]{\item #1}
+\dolistloop{\TodoList}
+\end{enumerate}
 
 \end{document}

@@ -4,6 +4,28 @@
 Esta sección corresponde a la \textbf{Entrega 3}: maestro, subproblema primal y dual, derivación
 de los cortes y justificación de validez.
 
+\subsection{Recordatorio: Benders genérico (forma del curso) y su especialización al pMP}
+El curso (Cap.~3) plantea Benders sobre la forma canónica
+$\min_{x\in X,\,y\ge0}\ c^\top x + d^\top y$ s.a. $Ax+By\ge b$, con $x$ \emph{complicantes}
+(discretas) e $y$ operacionales. Fijado $\bar x$, el subproblema en $y$ es un LP; su función de
+recurso $\theta(x)=\min\{d^\top y: By\ge b-Ax,\ y\ge0\}$ es \emph{convexa} (máximo de funciones
+lineales en su dual), y el maestro la reemplaza por una variable $\eta\ge\theta(x)$:
+\[
+  \min_{x\in X,\,\eta}\ c^\top x+\eta,\qquad \eta\ge\theta(x).
+\]
+El subproblema dual vive en el poliedro $\Pi=\{\pi\ge0:B^\top\pi\le d\}$, que \emph{no depende de
+$\bar x$}. Por \textbf{dualidad fuerte}, si el subproblema es factible y acotado, un \textbf{punto
+extremo} $\pi^\star$ de $\Pi$ da el \textbf{corte de optimalidad} $\eta\ge\pi^{\star\top}(b-Ax)$;
+si el subproblema es infactible, un \textbf{rayo extremo} $\hat\pi$ da el \textbf{corte de
+factibilidad} $\hat\pi^\top(b-Ax)\le0$. Como $\Pi$ tiene un número \emph{finito} de puntos y
+rayos extremos, el algoritmo termina en finitas iteraciones.
+
+\paragraph{Especialización al pMP.} Aquí las complicantes son las aperturas $y$ (el ``$x$'' del
+curso) y el recurso se \emph{desagrega por cliente}: $\eta\equiv\sum_{i=1}^N\theta_i$, donde cada
+$\theta_i$ aproxima la distancia de asignación del cliente $i$. El resto de la sección instancia
+esta plantilla y muestra que, por la estructura del pMP, el subproblema es siempre factible y
+acotado (solo puntos extremos $\Rightarrow$ solo cortes de optimalidad).
+
 \subsection{Qué se fija, qué se elimina, qué aparece}
 Partimos de \textbf{F3}. Fijado $y=\bar y$, F3 se separa en $N$ subproblemas independientes (uno
 por cliente), cada uno calculando la distancia de asignación de ese cliente. Las variables $z$
@@ -93,3 +115,26 @@ La forma cerrada de $\bar v$ (Sección~\ref{sec:separacion}) convierte \eqref{eq
 desigualdad que se construye sin resolver el dual explícitamente. Notablemente, las
 desigualdades resultantes coinciden con las que se obtienen sobre F1 (Cornuejols et al., 1980;
 Magnanti \& Wong, 1981), aunque aquí se derivaron desde F3.
+
+\subsection{¿Por qué este Benders es mejor que el Benders clásico?}
+\label{sub:porque-mejor}
+El Benders clásico (Cap.~3) resuelve, en cada iteración, un \emph{LP} de subproblema para obtener
+$\pi^\star$ y el corte. La propuesta del paper mejora esto en cinco aspectos concretos:
+\begin{enumerate}[leftmargin=1.6em]
+  \item \textbf{Parte de una formulación fuerte.} La descomposición se construye sobre \textbf{F3},
+        cuya relajación LP es ajustada y cuya matriz es rala; el maestro hereda esa calidad.
+  \item \textbf{El subproblema tiene estructura especial.} No es un LP genérico: es el cálculo de
+        la distancia de un cliente, con una cadena de restricciones $z^k_i-z^{k-1}_i\ge\cdots$
+        cuya solución óptima es monótona.
+  \item \textbf{No se resuelve ningún LP.} Esa estructura permite obtener el dual óptimo
+        $\bar v$ por fórmula (complementariedad), evitando llamar al solver por cada corte.
+  \item \textbf{Separación en forma cerrada $O(NM)$.} Calcular $\tilde k_i$ por cliente cuesta
+        $O(M)$; sobre $N$ clientes, $O(NM)$ por separación
+        (Sección~\ref{sec:separacion}). El Benders clásico no tiene esta complejidad lineal.
+  \item \textbf{Solo cortes de optimalidad.} Como $SP_i$ es siempre factible y acotado, no hay
+        rayos extremos ni cortes de factibilidad: la lógica de separación es más simple y robusta.
+\end{enumerate}
+Además, los cortes no se generan en un bucle externo maestro--subproblema, sino \emph{dentro} del
+árbol de branch-and-bound mediante un callback de cortes perezosos: esto es
+\textbf{branch-and-Benders-cut} (Cap.~3), que evita reoptimizar el MIP desde cero en cada
+iteración.

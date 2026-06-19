@@ -16,6 +16,16 @@ total de cable.'' Lo notable es que, \emph{una vez fijadas las antenas}, cada ca
 trivialmente (elige la más cercana). Lo difícil es decidir \emph{cuáles} $p$ antenas.
 \end{intuicion}
 
+\todo{FALTA: figura/esquema del sistema (clientes y sitios candidatos, asignación al sitio
+abierto más cercano), idealmente sobre la instancia \texttt{toy1}.}
+
+\paragraph{Naturaleza de este trabajo.} Este informe es una \textbf{replicación y validación}
+del método de Duran-Mateluna, Ales \& Elloumi (2023). El hilo conductor es la teoría del curso
+—estructura, relajación, dualidad, cotas, descomposición, algoritmo— aplicada a un problema
+concreto; la implementación en C es \emph{evidencia} de que la teoría funciona, no la
+contribución en sí. Las familias de instancias (OR-Library, TSP-Library) aparecen porque son los
+\emph{benchmarks estándar} que usa el paper, no como eje del trabajo.
+
 \subsection{Relevancia}
 El pMP es un problema fundamental de localización discreta, sin costos fijos de apertura (lo que
 lo distingue del problema de localización de instalaciones, UFL) y con el número de aperturas

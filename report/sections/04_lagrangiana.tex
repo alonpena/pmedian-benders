@@ -41,22 +41,26 @@ mejores}, sin solver.
 \end{intuicion}
 
 \subsection{Dual lagrangiano y cota inferior}
-Para todo $\lambda$, $L(\lambda)\le \OPT(pMP)$: cada $L(\lambda)$ es una cota inferior. El
-\textbf{dual lagrangiano} busca la mejor:
+\textbf{Dualidad débil.} Para todo $\lambda$, $L(\lambda)\le \OPT(pMP)$ —en la notación del curso,
+$\theta(\lambda)\le z^\star$, escribiendo $\theta(\lambda)$ para la función dual lagrangiana—: toda
+elección de multiplicadores entrega una \emph{cota inferior} válida. El \textbf{dual lagrangiano}
+busca la mejor:
 \[
   \max_{\lambda}\ L(\lambda).
 \]
-$L(\lambda)$ es \emph{cóncava y lineal por tramos} (mínimo de funciones afines en $\lambda$), por
-lo que se maximiza con el \textbf{método del subgradiente}. Dado $\lambda^t$ se resuelve el
-subproblema~\eqref{eq:lagsub} (barato), se obtiene el subgradiente
-$g^t_i = 1-\sum_j x^t_{ij}$ (la violación de la restricción de asignación del cliente $i$) y se
-actualiza
+$L(\lambda)$ es \emph{cóncava y lineal por tramos} (mínimo puntual de funciones afines en
+$\lambda$), por lo que en general es \emph{no diferenciable} y se maximiza con el \textbf{método
+del subgradiente}. Dado $\lambda^t$ se resuelve el subproblema~\eqref{eq:lagsub} (barato), se
+obtiene el subgradiente $g^t_i = 1-\sum_j x^t_{ij}$ (la violación de la restricción de asignación
+del cliente $i$) y se actualiza con \textbf{paso de Polyak}:
 \[
   \lambda^{t+1}_i=\lambda^t_i+\alpha_t\,g^t_i,
   \qquad
-  \alpha_t=\mu_t\,\frac{UB-L(\lambda^t)}{\lVert g^t\rVert^2},
+  \alpha_t=\beta_t\,\frac{UB-L(\lambda^t)}{\lVert g^t\rVert^2},
+  \quad 0<\beta_t<2,
 \]
-con $\mu_t\in(0,2]$ decreciente. La regla de paso usa la mejor cota superior $UB$ disponible.
+donde $UB$ es la mejor cota superior primal conocida. Se mantiene en todo momento
+$LB\le z^\star\le UB$ y se mide el gap $\frac{UB-LB}{|UB|}$.
 
 \subsection{Recuperación primal conceptual}
 La solución $y$ del subproblema puede no ser factible primal (algún cliente sin asignar). Se

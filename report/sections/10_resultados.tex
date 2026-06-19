@@ -49,9 +49,12 @@
 
 \subsection{Aprendizajes para el problema real y para el uso de optimización}
 \begin{itemize}[noitemsep]
-  \item \textbf{La formulación importa más que el solver.} F1--F4 tienen el mismo óptimo y la misma
-        cota LP, pero su estructura (densidad, número de variables) decide qué es resoluble. La
-        ganancia vino de \emph{explotar estructura}, no de fuerza bruta del solver.
+  \item \textbf{La formulación importa más que el solver.} F1--F4 tienen el mismo óptimo, la misma
+        relajación LP y por tanto la misma \emph{brecha de integridad}
+        $v(\text{MILP})-v(\text{LP})$; sin embargo su estructura (densidad, número de variables)
+        decide qué es resoluble. La ganancia vino de \emph{explotar estructura}, no de fuerza
+        bruta del solver. Que muchas instancias cierren ya en Fase 1 ($LB_1=UB_1=$ óptimo) es
+        reflejo de una formulación \emph{fuerte}: brecha de integridad casi nula.
   \item \textbf{Las buenas cotas tempranas son accionables.} Para un decisor de localización, un
         $LB_1/UB_1$ ajustado en segundos permite descartar configuraciones sin esperar la prueba
         de optimalidad completa.
