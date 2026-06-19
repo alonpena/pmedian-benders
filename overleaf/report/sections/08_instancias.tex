@@ -1,0 +1,47 @@
+\section{Instancias, datos y caso base}
+\label{sec:instancias}
+
+Las familias siguientes se eligen porque son los \textbf{benchmarks estándar} que usa el paper
+replicado (OR-Library y TSP-Library en particular): no son el eje del trabajo, sino el banco de
+prueba reconocido que permite comparar con la literatura y con los óptimos publicados.
+
+\subsection{Familias utilizadas}
+\begin{description}[leftmargin=1.5em]
+  \item[\texttt{toy1} (caso base mínimo).] $N=M=4$, $p=2$, coordenadas 2D. Óptimo a mano $=6$.
+        Sirve para validar toda la cadena y derivar los cortes a mano
+        (Sección~\ref{sub:verif}).
+  \item[OR-Library (Beasley, 1990).] Instancias \texttt{pmed1}--\texttt{pmed15} sobre grafos:
+        $N=M\in\{100,200,300\}$, $p\in\{5,\dots,100\}$. Se dan como listas de aristas con costo;
+        las distancias $d_{ij}$ se obtienen como \emph{caminos mínimos} (Floyd--Warshall). Hay un
+        \textbf{óptimo oficial} por instancia (\texttt{pmedopt.txt}) que sirve de referencia dura.
+  \item[TSP-Library (Reinelt, 1991).] \texttt{rl1304} ($N=M=1304$) y \texttt{kroA100} ($N=M=100$),
+        con coordenadas 2D y distancia euclidiana \emph{truncada}. Banco principal de escalamiento;
+        se resuelve para $p\in\{5,50,200,500\}$ (y $\{10,20,100,300,400\}$ en la comparación con
+        el paper).
+  \item[RW (Resende \& Werneck, 2004).] \texttt{rw12}: matriz de distancias \textbf{aleatoria y
+        posiblemente asimétrica} ($N=M=12$). Valida el caso \emph{no euclidiano / asimétrico} de
+        la implementación.
+\end{description}
+
+\subsection{Supuestos y decisiones de datos}
+\begin{itemize}[noitemsep]
+  \item \textbf{Distancia euclidiana truncada (floor).} El paper usa $\lfloor\cdot\rfloor$, no el
+        redondeo \texttt{nint} canónico de TSPLIB. Se validó: \texttt{rl1304} con $p=5$ y floor da
+        $3\,099\,073$, exactamente el óptimo del paper. Se adopta floor en todas las instancias
+        con coordenadas por consistencia.
+  \item \textbf{Aristas duplicadas en OR-Library.} \texttt{pmed1} trae aristas paralelas con costo
+        distinto. La convención correcta —documentada en el formato de Beasley— es que
+        \emph{la última ocurrencia sobrescribe} (no el mínimo). Tomar el mínimo da $5718$; la
+        regla correcta da el óptimo oficial $5819$. Justificado de forma independiente del valor
+        objetivo en \texttt{docs/ADR/0002-orlib-duplicate-edges.md}, con verificación
+        Dijkstra~$\equiv$~Floyd--Warshall.
+  \item \textbf{Formato propio \texttt{.pmp}.} Variante A (coordenadas) y Variante B (\texttt{MATRIX}),
+        descritas en \texttt{docs/INSTANCE\_FORMAT.md}.
+\end{itemize}
+
+\subsection{Alcance honesto}
+Se ejecutaron las 15 instancias OR-Library, \texttt{rl1304} hasta $p=500$, \texttt{kroA100} y la
+validación asimétrica \texttt{rw12}. \textbf{No} se ejecutaron las familias BIRCH, ODM, RW de gran
+tamaño ni las TSP medianas/grandes/enormes del paper; tampoco se reejecutó Zebra. Estas
+ausencias están declaradas como \texttt{UNVERIFIED} en \texttt{docs/AUDIT.md} y no se reportan
+números para ellas.

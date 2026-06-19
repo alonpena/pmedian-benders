@@ -1,0 +1,44 @@
+\section{Anexo: extractos de código}
+\label{anexo:codigo}
+
+Se incluyen, como \emph{evidencia} de que cada objeto matemático corresponde a código real,
+dos extractos del núcleo en C. El código completo está en el repositorio
+(\texttt{src/}); el mapeo completa la Tabla de la Sección~\ref{sec:implementacion}.
+
+\subsection{Algoritmo 2 — cálculo de \texorpdfstring{$\tilde k_i$}{k tilde} en \texorpdfstring{$O(M)$}{O(M)}}
+Recorre los sitios del cliente del más cercano al más lejano (matriz $S$) acumulando $\bar y$
+hasta cubrir $1$ y contando los saltos de radio. Archivo \texttt{src/separation.c}.
+\begin{lstlisting}[language=C]
+int separation_k_tilde(const SortSites *ss, int i, const double *ybar) {
+    int M = ss->M;
+    const int  *S = &ss->S[(size_t)i * M];
+    const long *D = &ss->Dord[(size_t)i * M];
+    int k_tilde = 0, r = 0;
+    double val = 1.0 - ybar[S[0]];
+    while (val > SEP_EPS && r < M - 1) {
+        if (D[r + 1] > D[r]) k_tilde++;   /* salto de radio */
+        r++;
+        val -= ybar[S[r]];
+    }
+    return k_tilde;
+}
+\end{lstlisting}
+
+\subsection{Fase 2 — warm-start: herencia de los cortes de Fase 1}
+El maestro MIP precarga el \emph{pool} de cortes de Fase 1 como restricciones antes de ramificar.
+Esto es transferencia de información entre fases (warm-start), \emph{no} preprocesamiento de la
+matriz $S$. Archivo \texttt{src/phase2.c}.
+\begin{lstlisting}[language=C]
+/* warm-start: precargar el pool de cortes de Fase 1 como restricciones normales */
+if (warm && warm->n > 0) {
+    for (int c = 0; c < warm->n; c++) {
+        const Cut *cu = &warm->cuts[c];
+        wi[0] = M + cu->client; wv[0] = 1.0;            /* theta_i */
+        for (int t = 0; t < cu->len; t++) {
+            wi[t+1] = cu->ind[t]; wv[t+1] = cu->val[t];
+        }
+        solver_add_constr(s, cu->len + 1, wi, wv, '>', cu->rhs);
+        nwarm++;
+    }
+}
+\end{lstlisting}

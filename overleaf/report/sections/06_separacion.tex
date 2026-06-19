@@ -1,0 +1,102 @@
+\section{Algoritmo de separación \texorpdfstring{$O(NM)$}{O(NM)}}
+\label{sec:separacion}
+
+El corazón del paper es que el corte~\eqref{eq:cut16} se construye \emph{en forma cerrada}, sin
+resolver el dual. Dado $(\bar y,\bar\theta)$ del maestro, hay que decidir para cada cliente si su
+corte está violado y, de serlo, construirlo.
+
+\subsection{Solución óptima del subproblema}
+Como $SP_i$ minimiza con coeficientes $\ge0$, los $z^k_i$ se hacen lo más chicos posibles:
+\begin{equation}
+  \bar z^k_i = \max\Big(0,\ 1-\!\!\sum_{j:\,d_{ij}\le D^k_i}\!\!\bar y_j\Big).
+  \label{eq:zbar}
+\end{equation}
+Es decir, $\bar z^k_i=1$ (no cubierto) mientras no haya sitio abierto dentro de $D^k_i$, y pasa a
+$0$ apenas aparece uno: la secuencia $\bar z^1_i,\bar z^2_i,\dots$ es \emph{decreciente} en $k$.
+
+\subsection{El índice \texorpdfstring{$\kt_i$}{k tilde}}
+\begin{definicion}
+$\kt_i$ es el último radio donde el cliente $i$ aún no está cubierto:
+\[
+  \kt_i=\begin{cases}
+    0 & \text{si } \sum_{j:\,d_{ij}=D^1_i}\bar y_j \ge 1,\\[4pt]
+    \max\{k\in[K_i]:\ \sum_{j:\,d_{ij}\le D^k_i}\bar y_j < 1\} & \text{en otro caso.}
+  \end{cases}
+\]
+\end{definicion}
+Si $\bar y$ es \textbf{binaria}, la distancia de asignación real del cliente $i$ es exactamente
+$D^{\kt_i+1}_i$ (el primer radio donde aparece un sitio abierto).
+
+\subsection{Valor óptimo y corte en forma cerrada}
+El valor óptimo del subproblema es
+\begin{equation}
+  \OPT(SP_i(\bar y))=\begin{cases}
+    D^1_i & \text{si } \kt_i=0,\\[4pt]
+    D^{\kt_i+1}_i - \displaystyle\sum_{j:\,d_{ij}\le D^{\kt_i}_i}\big(D^{\kt_i+1}_i-d_{ij}\big)\bar y_j & \text{en otro caso.}
+  \end{cases}
+  \label{eq:opt18}
+\end{equation}
+Por complementariedad de holguras, el dual óptimo es
+$\bar v^k_i = D^{\kt_i+1}_i-D^k_i$ si $k\le\kt_i$, y $0$ en otro caso. Sustituyendo en
+\eqref{eq:cut16} se obtiene el \textbf{corte final}:
+\begin{equation}
+  \theta_i\ge D^1_i\ \ (\kt_i=0);\qquad
+  \theta_i\ge D^{\kt_i+1}_i-\!\!\sum_{j:\,d_{ij}\le D^{\kt_i}_i}\!\!\big(D^{\kt_i+1}_i-d_{ij}\big)y_j\ \ (\kt_i\ge1).
+  \label{eq:cut20}
+\end{equation}
+El corte se agrega solo si está \emph{violado}: $\bar\theta_i < \OPT(SP_i(\bar y))-\varepsilon$.
+
+\subsection{Algoritmos 1 y 2}
+\textbf{Algoritmo 2} calcula $\kt_i$ en $O(M)$ recorriendo los sitios del cliente del más cercano
+al más lejano mediante la \textbf{matriz $S$} ($S_{ir}=$ el $r$-ésimo sitio más cercano a $i$),
+acumulando $\bar y$ hasta cubrir $1$ y contando los \emph{saltos de radio}:
+\begin{lstlisting}[language=C,numbers=none]
+k_tilde = 0;  r = 0;  val = 1 - ybar[S[0]];
+while (val > EPS && r < M-1) {
+    if (D[r+1] > D[r]) k_tilde++;   // salto de radio
+    r++;
+    val -= ybar[S[r]];
+}
+return k_tilde;
+\end{lstlisting}
+\textbf{Algoritmo 1} (separación) recorre los $N$ clientes: calcula $\kt_i$, evalúa
+\eqref{eq:opt18}, acumula $UB=\sum_i\OPT(SP_i)$ y agrega el corte~\eqref{eq:cut20} si está
+violado.
+
+\subsection{Complejidad y el rol de la matriz \texorpdfstring{$S$}{S}}
+$\kt_i$ se calcula en $O(M)$; con $\kt_i$, evaluar \eqref{eq:opt18} y construir el corte cuestan
+$O(M)$. Sobre $N$ clientes: \textbf{$O(NM)$ por separación, sin resolver ningún LP}. La matriz $S$
+($N\times M$) se construye una sola vez en preprocesamiento en $O(NM\log M)$ (QuickSort). En
+instancias muy grandes, construir $S$ puede tardar más que resolver el modelo, y se aprovecha que
+un cliente nunca usa sus $p$ sitios más lejanos para reducir memoria.
+
+\subsection{Verificación independiente del separador}
+\label{sub:verif}
+Por ser el componente crítico, el separador en C se validó por \textbf{tres vías independientes}
+sobre \texttt{toy1} con $\bar y=\{1,1,0,0\}$ (abrir sitios $0$ y $1$):
+\begin{enumerate}[noitemsep]
+  \item \textbf{A mano.} Para el cliente $2$: su sitio abierto más cercano es el sitio $0$ a
+        distancia $4$; dentro del radio $D^{\kt}=3$ caen el sitio $2$ ($d=0$) y el sitio $3$
+        ($d=3$), dando coeficientes $4$ y $1$. El corte esperado es
+        $\theta_2\ge 4-4y_2-1y_3$, con $\kt_2=2$ y $\OPT(SP_2)=4$.
+  \item \textbf{Test unitario en C} (\texttt{tests/test\_separation\_toy.c}, dentro de
+        \texttt{make test}): compara con enteros exactos $\kt_i$, $\OPT(SP_i)$, la constante y
+        cada coeficiente; resultado \texttt{RESULT: PASS}.
+  \item \textbf{Oráculo en Python} (\texttt{scripts/verify\_cuts.py} contra
+        \texttt{prototype/pmp\_benders.py}): C $\equiv$ Python con \textbf{0 diferencias} en
+        constante y coeficientes (\texttt{results/logs/verify\_cuts\_oracle\_diff.log}).
+\end{enumerate}
+\begin{table}[h]\centering
+\begin{tabular}{ccccl}
+\toprule
+cliente & $\kt$ & $\OPT(SP)$ & corte (forma $\theta_i\ge\cdot$) \\
+\midrule
+0 & 0 & 0 & $\theta_0\ge 0$ \\
+1 & 0 & 0 & $\theta_1\ge 0$ \\
+2 & 2 & 4 & $\theta_2\ge 4-4y_2-1y_3$ \\
+3 & 2 & 4 & $\theta_3\ge 4-4y_3-1y_2$ \\
+\bottomrule
+\end{tabular}
+\caption{Cortes derivados a mano para \texttt{toy1}, $\bar y=\{1,1,0,0\}$. Coinciden exactamente
+con la salida de C (\texttt{--dump-cuts 0 1}) y del oráculo Python.}
+\end{table}

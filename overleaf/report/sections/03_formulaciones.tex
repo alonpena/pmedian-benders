@@ -1,0 +1,115 @@
+\section{Formulaciones del modelo (F1--F4)}
+\label{sec:formulaciones}
+
+Presentamos cuatro formulaciones MILP equivalentes en óptimo entero pero con \emph{estructura}
+muy distinta. La formulación final usada como base de la descomposición es \textbf{F3}; su
+relajación, escrita de forma compacta sobre $\theta$, es \textbf{F4}.
+
+\paragraph{Marco del curso: relajación LP, brecha de integridad y fortaleza.} Para un MILP de
+minimización, reemplazar $y_j\in\{0,1\}$ por $y_j\in[0,1]$ da la \emph{relajación lineal}, cuya
+solución $v(\text{LP})$ es una \textbf{cota inferior}: $v(\text{LP})\le v(\text{MILP})$. La
+\textbf{brecha de integridad} $v(\text{MILP})-v(\text{LP})\ge0$ mide la fortaleza de la
+formulación: brecha pequeña $\Rightarrow$ formulación \emph{fuerte} $\Rightarrow$ mejores cotas y
+menos nodos en branch-and-bound. Un hecho central de esta sección es que \textbf{F1, F2, F3 y F4
+tienen exactamente la misma relajación LP} (y por tanto la misma brecha de integridad); difieren
+solo en cuántas variables y qué tan densa es su matriz, lo que el solver explota de forma muy
+distinta en la práctica.
+
+\subsection{F1 — formulación clásica (ReVelle \& Swain, 1970)}
+\textbf{Variables:} $y_j\in\{0,1\}$ (abrir el sitio $j$); $x_{ij}\in[0,1]$ (asignar el cliente
+$i$ al sitio $j$).
+\begin{align}
+  \min\ & \sum_{i=1}^{N}\sum_{j=1}^{M} d_{ij}\,x_{ij} \label{eq:f1obj}\\
+  \text{s.a.}\ & \sum_{j=1}^{M} y_j = p \label{eq:f1p}\\
+  & \sum_{j=1}^{M} x_{ij}=1 && i\in[N] \label{eq:f1asig}\\
+  & x_{ij}\le y_j && i\in[N],\,j\in[M] \label{eq:f1link}\\
+  & x_{ij}\ge 0,\quad y_j\in\{0,1\}. \nonumber
+\end{align}
+\textbf{Rol de cada bloque:} \eqref{eq:f1obj} suma distancias de las asignaciones activas;
+\eqref{eq:f1p} abre exactamente $p$ sitios (restricción \emph{global}); \eqref{eq:f1asig} asigna
+cada cliente a un sitio; \eqref{eq:f1link} \emph{acopla} $x$ con $y$ (solo se asigna a sitios
+abiertos). Las $x$ pueden relajarse a continuas: con $y$ fijo y minimizando, cada cliente
+concentra su peso en el sitio abierto más cercano, de modo que la solución es automáticamente
+$0/1$.
+
+\emph{Debilidad:} F1 tiene $N\times M$ variables $x$ y $1+N+N\times M$ restricciones; para
+$N=M=10^4$ son $\sim 10^8$ variables, inviable. Esto motiva las formulaciones ordenadas.
+
+\subsection{Distancias ordenadas y radios}
+Para cada cliente $i$ sea $K_i\le M$ el número de \emph{distancias distintas} a los sitios,
+ordenadas $D^1_i<D^2_i<\dots<D^{K_i}_i$. Se introduce $z^k_i=1$ si y solo si el cliente $i$
+\emph{aún no está cubierto} al radio $D^k_i$ (no hay sitio abierto a distancia $\le D^k_i$).
+
+\subsection{Por qué F2 mejora a F1: radios y umbral de distancia (Cornuejols, Nemhauser \& Wolsey, 1980)}
+\textbf{La idea (antes del álgebra).} F1 razona por \emph{asignación}: ``¿a qué sitio mando cada
+cliente?'', lo que cuesta una variable $x_{ij}$ por cada par. F2 razona por \emph{umbral de
+distancia}: para cada cliente, ``¿a qué \textbf{radio} llega su sitio abierto más cercano?''.
+Como muchos pares cliente--sitio comparten distancia (sobre todo si $N=M$), basta una variable
+$z^k_i$ por cada \emph{radio distinto} $D^k_i$, y los radios distintos $K_i$ suelen ser muchos
+menos que $M$. Esa es la razón estructural por la que F2 nunca es mayor que F1 y normalmente es
+mucho menor, manteniendo la misma cota LP.
+
+\begin{align}
+  \min\ & \sum_{i=1}^{N}\Big[\,D^1_i + \sum_{k=1}^{K_i-1}\big(D^{k+1}_i-D^k_i\big)z^k_i\,\Big] \label{eq:f2obj}\\
+  \text{s.a.}\ & \sum_{j=1}^{M} y_j=p \nonumber\\
+  & z^k_i + \!\!\sum_{j:\,d_{ij}\le D^k_i}\!\! y_j \ge 1 && i\in[N],\,k\in[K_i] \label{eq:f2cov}\\
+  & z^k_i\ge 0,\quad y_j\in\{0,1\}. \nonumber
+\end{align}
+
+\begin{intuicion}[Peajes crecientes]
+Un cliente con distancias posibles $2,5,9$ tiene objetivo $2+3\,z^1+4\,z^2$. Si su sitio abierto
+más cercano está a $5$: ¿hay sitio dentro de radio $2$? No $\Rightarrow z^1=1$. ¿Dentro de $5$? Sí
+$\Rightarrow z^2=0$. Costo $=2+3+0=5$. Se ``pagan peajes'' $D^{k+1}-D^k$ mientras no aparezca un
+sitio abierto; al aparecer, se deja de pagar.
+\end{intuicion}
+
+La restricción \eqref{eq:f2cov} fuerza $z^k_i=1$ cuando no hay sitio abierto dentro de $D^k_i$.
+F2 tiene $K=\sum_i K_i$ variables $z$ (con $K\le N\times M$, usualmente $K\ll N\times M$) y
+\textbf{la misma relajación lineal} que F1.
+
+\subsection{Por qué F3 mejora a F2: la misma formulación con matriz mucho más rala (Elloumi, 2010)}
+Como los $z^k_i$ son monótonos decrecientes en $k$ ($z^{k-1}_i=0\Rightarrow z^k_i=0$), la
+cobertura ``$\le D^k_i$'' puede reescribirse usando solo los sitios a distancia \emph{exactamente}
+$D^k_i$:
+\begin{align}
+  \min\ & \sum_{i=1}^{N}\Big[\,D^1_i + \sum_{k=1}^{K_i-1}\big(D^{k+1}_i-D^k_i\big)z^k_i\,\Big] \label{eq:f3obj}\\
+  \text{s.a.}\ & \sum_{j=1}^{M} y_j=p \nonumber\\
+  & z^1_i + \!\!\sum_{j:\,d_{ij}=D^1_i}\!\! y_j \ge 1 && i\in[N] \label{eq:f3base}\\
+  & z^k_i + \!\!\sum_{j:\,d_{ij}=D^k_i}\!\! y_j \ge z^{k-1}_i && i\in[N],\,k=2,\dots,K_i \label{eq:f3rec}\\
+  & z^k_i\ge 0,\quad y_j\in\{0,1\}. \nonumber
+\end{align}
+Al usar ``$=$'' en lugar de ``$\le$'', cada $y_j$ aparece en \emph{muchas menos} restricciones: la
+matriz es mucho más rala. F2 y F3 comparten variables, objetivo y relajación lineal, pero F3
+rinde \textbf{significativamente mejor} en la práctica por su \emph{esparsidad}. \textbf{Por eso
+F3 es la base de la descomposición de Benders.}
+
+\subsection{F4 — formulación compacta de cortes}
+Escribir de una vez todos los cortes de Benders (Sección~\ref{sec:benders}) sobre una variable
+$\theta_i$ por cliente da la forma compacta:
+\begin{align}
+  \min\ & \sum_{i=1}^N \theta_i \qquad\text{s.a.}\quad \sum_{j=1}^M y_j=p, \nonumber\\
+  & \theta_i \ge D^1_i && i\in[N] \label{eq:f4base}\\
+  & \theta_i \ge D^{k+1}_i-\!\!\sum_{j:\,d_{ij}\le D^k_i}\!\!\big(D^{k+1}_i-d_{ij}\big)y_j && i\in[N],\,k\in[K_i-1] \label{eq:f4cut}\\
+  & y_j\in\{0,1\}. \nonumber
+\end{align}
+F4 tiene solo $N+M$ variables, pero \emph{tantas restricciones como F2} y matriz igual de densa.
+Empíricamente, pasarle F4 \emph{entera} al solver es más lento que F2/F3: la densidad mata el
+rendimiento. La clave no está en la formulación compacta, sino en \textbf{generar los cortes
+\eqref{eq:f4cut} sobre la marcha} (perezosamente) dentro del branch-and-cut.
+
+\subsection{Comparación estructural}
+\begin{table}[h]\centering
+\begin{tabular}{lcccc}
+\toprule
+ & \textbf{F1} & \textbf{F2} & \textbf{F3} & \textbf{F4} \\
+\midrule
+Variables (además de $y$) & $N\!\times\!M$ ($x$) & $K$ ($z$) & $K$ ($z$) & $N$ ($\theta$) \\
+N.º restricciones & $1+N+NM$ & $1+K$ & $1+K$ & $1+K$ \\
+Densidad de la matriz & media & alta & \textbf{baja} & alta \\
+Relajación lineal & \multicolumn{4}{c}{idéntica en las cuatro} \\
+Rol en este trabajo & referencia & previa & \textbf{base de Benders} & cortes generados \\
+\bottomrule
+\end{tabular}
+\caption{$K=\sum_i K_i\le N\times M$. Las cuatro tienen el mismo óptimo entero y la misma cota LP;
+difieren en cómo el solver las maneja.}
+\end{table}

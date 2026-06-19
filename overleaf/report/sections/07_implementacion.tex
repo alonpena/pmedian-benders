@@ -1,0 +1,85 @@
+\section{Arquitectura de implementación}
+\label{sec:implementacion}
+
+\subsection{Algoritmo de dos fases}
+La implementación reproduce \textbf{exactamente} el esquema de dos fases del paper (Sección~3.5):
+\begin{description}[leftmargin=1.5em]
+  \item[Fase 1 — relajación lineal del maestro.] Se resuelve \eqref{eq:master} con $y\in[0,1]$,
+        iterando: resolver el maestro LP, separar cortes violados (Alg.~1), agregarlos y aplicar
+        una \textbf{heurística de redondeo} (abrir los $p$ sitios de mayor $\bar y_j$) para mejorar
+        el $UB_1$. Termina cuando no hay más cortes violados: se obtiene $LB_1$ (valor de la
+        relajación) y $UB_1$ (mejor solución entera redondeada).
+  \item[Fase 2 — branch-and-Benders-cut.] Se imponen $y_j\in\{0,1\}$ y se resuelve con
+        branch-and-cut. En cada \textbf{solución entera} que el solver encuentra, un
+        \textbf{callback de \textit{lazy constraints}} ejecuta el separador y agrega los cortes
+        \eqref{eq:cut20} violados. Esto es, literalmente, branch-and-Benders-cut.
+\end{description}
+Como mejora, la Fase 2 \textbf{hereda el pool de cortes de la Fase 1} (warm-start): los cortes ya
+encontrados se precargan como restricciones del MIP en lugar de partir vacíos.
+
+\begin{quote}
+\textbf{Precisión sobre el término ``warm-start''.} Aquí warm-start significa \emph{heredar los
+cortes y cotas de la Fase 1} hacia la Fase 2 —transferencia de información entre fases, el
+``warm start'' del Cap.~3—. \textbf{No} se refiere al \emph{preprocesamiento}: la construcción de
+la matriz $S$ y de los radios ordenados $D^k_i$ (\texttt{sortsites\_build}) es una etapa previa,
+común a ambas fases, independiente del warm-start. Confundir ambas cosas sería un error
+conceptual: una es estructura de datos calculada una vez; la otra es reutilización de cortes de
+Benders.
+\end{quote}
+
+\subsection{Mapa de las matemáticas a los módulos en C}
+La implementación usa un \textbf{diseño modular con encapsulación por \texttt{struct}s e
+interfaces}, inspirado en principios de orientación a objetos (C no es un lenguaje orientado a
+objetos): un núcleo en C sin dependencias del solver y una capa delgada de solver (Gurobi) detrás
+de una interfaz opaca (\texttt{src/solver.h}, \texttt{struct Solver}). El núcleo se valida contra
+un oráculo en Python. La implementación es \emph{evidencia} de que la teoría funciona, no la
+contribución del trabajo.
+
+\begin{table}[h]\centering\small
+\begin{tabular}{>{\raggedright}p{5.2cm} l l}
+\toprule
+\textbf{Objeto matemático} & \textbf{Archivo en C} & \textbf{Función / símbolo} \\
+\midrule
+Instancia, $d_{ij}$ (floor euclid./matriz) & \texttt{src/instance.c} & \texttt{instance\_load}, \texttt{instance\_dist} \\
+Óptimo por fuerza bruta (oráculo) & \texttt{src/instance.c} & \texttt{instance\_brute\_force} \\
+Matriz $S$, radios $D^k_i$ ordenados & \texttt{src/sortsites.c} & \texttt{sortsites\_build} $\to$ \texttt{SortSites} \\
+$\kt_i$ — Algoritmo 2 & \texttt{src/separation.c} & \texttt{separation\_k\_tilde} \\
+$\OPT(SP_i)$ \eqref{eq:opt18} + corte \eqref{eq:cut20} & \texttt{src/separation.c} & \texttt{separation\_client} \\
+Algoritmo 1 (separar todos) & \texttt{src/separation.c} & \texttt{separation\_all} (\texttt{cut\_sink}) \\
+Heurística de redondeo & \texttt{src/heuristic.c} & \texttt{rounding\_heuristic} \\
+Fase 1 (maestro LP + loop) & \texttt{src/phase1.c} & \texttt{phase1\_run} \\
+Fase 2 (B\&Benders-cut + callback) & \texttt{src/phase2.c} & \texttt{phase2\_run}, \texttt{p2\_lazy\_fn} \\
+Pool de cortes (warm-start) & \texttt{src/cutpool.c} & \texttt{cutpool\_add} \\
+Capa de solver (abstracción) & \texttt{src/solver\_gurobi.c} & \texttt{solver\_*}, \texttt{GRBcblazy} \\
+CLI, logging, CSV & \texttt{src/main.c}, \texttt{src/logging.c} & \texttt{main}, \texttt{csv\_append} \\
+\midrule
+Oráculo de correctitud & \texttt{prototype/pmp\_benders.py} & \texttt{separate\_client}, \texttt{phase2} \\
+Verificación del separador & \texttt{tests/test\_separation\_toy.c} & \texttt{make test} \\
+Cross-check C\,$\equiv$\,Python & \texttt{scripts/verify\_cuts.py} & — \\
+\bottomrule
+\end{tabular}
+\caption{Trazabilidad de cada objeto del modelo a su implementación.}
+\end{table}
+
+\subsection{Detalles de modelamiento}
+\begin{itemize}[noitemsep]
+  \item \textbf{Variables del maestro:} $y_j$ con índice $j=0,\dots,M-1$; $\theta_i$ con índice
+        $M+i$. Objetivo $\min\sum_i\theta_i$; única restricción estructural $\sum_j y_j=p$. Los
+        cortes \eqref{eq:cut20} se agregan como filas $\theta_i + \sum_t \text{coef}_t\,y_{j_t}\ge
+        \text{rhs}$.
+  \item \textbf{Callback:} en \texttt{GRB\_CB\_MIPSOL} se lee la solución entera candidata, se
+        corre \texttt{separation\_all} y cada corte violado se inyecta con \texttt{GRBcblazy}
+        (parámetro \texttt{LazyConstraints=1}).
+  \item \textbf{Distancia:} euclidiana \emph{truncada} (floor) para coordenadas (convención del
+        paper, validada numéricamente en \texttt{rl1304}); lectura directa para instancias con
+        matriz (incluida la asimétrica RW). Distancias como enteros largos; objetivo como
+        \texttt{double}.
+  \item \textbf{Exactitud:} \texttt{MIPGap}$=10^{-10}$ para probar optimalidad exacta.
+\end{itemize}
+
+\subsection{Capa de solver y portabilidad}
+Toda la interacción con Gurobi pasa por una interfaz delgada (\texttt{src/solver.h}) que aísla el
+backend: agregar variables/restricciones, optimizar, leer solución, contar nodos y manejar el
+callback de cortes perezosos. Esto deja el núcleo (parsing, distancias, $S$, separación, fases)
+independiente del solver y permitiría, en principio, intercambiar el backend (CPLEX/SCIP) sin
+tocar la lógica de Benders. El detalle de las firmas usadas está en \texttt{docs/SOLVER\_NOTES.md}.

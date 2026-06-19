@@ -1,0 +1,33 @@
+\section{Antecedentes y linaje de las formulaciones}
+\label{sec:literatura}
+
+Este trabajo es una \textbf{replicación y validación} del método de Duran-Mateluna, Ales \&
+Elloumi (2023). Para situarlo, conviene seguir el linaje de formulaciones que el propio paper
+cita y sobre el que se construye; cada una corrige una debilidad estructural de la anterior.
+
+\begin{description}[leftmargin=1.6em]
+  \item[ReVelle \& Swain (1970) — F1.] Primera formulación MILP del pMP con variables de
+        asignación $x_{ij}$. Intuitiva, pero con $N\times M$ variables: no escala.
+  \item[Cornuejols, Nemhauser \& Wolsey (1980) — F2.] Reformulación por \emph{radios}: variables
+        $z^k_i$ y objetivo telescópico. Misma relajación lineal que F1, muchas menos variables.
+  \item[Elloumi (2010) — F3.] Reescribe la cobertura de F2 con igualdad de radio; matriz mucho
+        más \emph{rala}, mismo óptimo y misma cota LP, pero más rápida en la práctica. Es la
+        \textbf{base} sobre la que el paper construye Benders.
+  \item[García, Labbé \& Marín (2011) — Zebra.] Método exacto estado-del-arte previo:
+        \emph{branch-cut-and-price} sobre F2, agregando variables $z$ de forma incremental.
+        Resolvía instancias grandes pero sufría problemas de memoria y no manejaba instancias
+        asimétricas.
+  \item[Benders (1962).] La técnica de descomposición general que el paper especializa: separar
+        decisiones complicantes (maestro) de un subproblema, intercambiando \emph{cortes}.
+  \item[Fischetti, Ljubić \& Sinnl (2017).] Rediseño de Benders para localización a gran escala
+        (UFL), antecedente metodológico de generar los cortes perezosamente dentro del
+        branch-and-cut.
+\end{description}
+
+\paragraph{La contribución del paper replicado.} Sobre F3, los autores observan que el
+subproblema de Benders del pMP es tan simple que su \textbf{dual tiene solución cerrada}; los
+cortes se separan en $O(NM)$ \emph{sin resolver ningún LP}. Envuelven esto en un algoritmo de
+dos fases (relajación lineal con loop de cortes; luego branch-and-Benders-cut que hereda esos
+cortes) y, con ello, superan a Zebra en tiempo, evitan sus problemas de memoria y resuelven por
+primera vez a optimalidad varias instancias de gran tamaño. Este informe reproduce ese núcleo
+—formulaciones, separación, dos fases— y lo valida con datos propios.

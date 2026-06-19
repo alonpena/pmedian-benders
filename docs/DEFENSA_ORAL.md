@@ -65,6 +65,51 @@ principio del curso: dos formulaciones del mismo conjunto pueden rendir muy dist
 
 ---
 
+## Preguntas críticas de fidelidad (para la entrega final)
+
+### 9. ¿Replicaron el paper o solo el método?
+Replicamos el **método central** y lo **validamos** parcialmente contra el paper. Implementamos
+F3, la descomposición de Benders, la separación cerrada $O(NM)$ y el esquema de dos fases, y
+confirmamos 9/9 óptimos de la Tabla 2 (\texttt{rl1304}) más las 15 instancias OR-Library. **No**
+replicamos las Tablas 3–9 (TSP grandes, BIRCH, RW, ODM) ni la comparación con Zebra: esas cifras
+son del paper, no nuestras. Es replicación del núcleo, no de todo el estudio experimental.
+
+### 10. ¿Por qué Benders sobre F3 es más fuerte que el Benders clásico?
+Por cinco razones: parte de la formulación **fuerte F3**; el subproblema tiene estructura especial
+(cadena monótona de cobertura); su dual se resuelve **en forma cerrada** sin LP; la separación es
+**$O(NM)$**; y el subproblema es siempre factible y acotado, así que solo hay cortes de
+optimalidad. El Benders clásico resolvería un LP por corte y manejaría ambos tipos de corte.
+
+### 11. ¿Por qué no hay cortes de factibilidad?
+Porque el subproblema de cada cliente siempre tiene solución (se puede hacer $z$ grande) y está
+acotado (objetivo con coeficientes positivos). Su dual nunca es no acotado, es decir, el poliedro
+dual no tiene **rayos extremos**, solo **puntos extremos**. Los cortes de factibilidad nacen de
+rayos extremos; sin ellos, solo hay cortes de optimalidad.
+
+### 12. ¿Por qué dos fases?
+Porque separa trabajo barato de trabajo caro. La Fase 1 resuelve solo la **relajación lineal** del
+maestro con un loop de cortes y entrega cotas $LB_1$/$UB_1$ excelentes (muchas instancias ya
+quedan resueltas). La Fase 2 impone integralidad y **prueba optimalidad** con
+branch-and-Benders-cut, heredando los cortes de la Fase 1. Pasarle el modelo entero directo es más
+lento por la densidad.
+
+### 13. ¿Qué significa exactamente warm-start aquí?
+Heredar el **conjunto de cortes de Benders generados en la Fase 1** hacia el MIP de la Fase 2, en
+vez de empezar con el maestro vacío. Es transferencia de información entre fases. **No** es
+preprocesamiento: la matriz $S$ y los radios $D^k_i$ se calculan una vez, antes de ambas fases, y
+no son parte del warm-start. En nuestros datos, el warm-start baja los nodos de B\&B de cientos a
+uno o siete.
+
+### 14. ¿Qué quedó sin implementar del paper?
+Tres mejoras opcionales y las corridas de gran escala: **reduced-cost fixing**, **constraint
+reduction** y la heurística **PopStar** (la reemplazamos por redondeo uniforme, lo que empeora
+$UB_1$ pero no $LB_1$). Tampoco reejecutamos **Zebra** ni las familias grandes (TSP $>10^4$,
+BIRCH, RW grande, ODM), ni usamos **CPLEX**. Todo esto está declarado en
+\texttt{docs/AUDIT.md} y \texttt{docs/PAPER\_REPLICATION\_MATRIX.md}; ninguna de esas cifras se
+presenta como propia.
+
+---
+
 ## Recordatorio de notación (por si preguntan en la pizarra)
 - Maestro genérico del curso: $\min c^\top x+\eta$, con $\eta\ge\theta(x)$ (recurso).
 - En el pMP: $x\to y$ (binarias de apertura), $\eta\to\sum_i\theta_i$.
