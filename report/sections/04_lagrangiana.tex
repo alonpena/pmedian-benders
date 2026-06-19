@@ -1,0 +1,81 @@
+\section{Relajación lagrangiana (propuesta teórica)}
+\label{sec:lagrangiana}
+
+Esta sección corresponde a la \textbf{Entrega 2} del curso. No se exige implementación
+computacional; se desarrolla la propuesta teórica completa y se la contrasta con Benders.
+
+\subsection{Restricciones complicantes y su elección}
+Partimos de \textbf{F1}. Las restricciones de \textbf{asignación}~\eqref{eq:f1asig},
+$\sum_j x_{ij}=1$, son las que impiden que el problema se separe limpiamente por sitio: acoplan,
+para cada cliente, todas sus variables $x_{ij}$. Las \emph{relajamos} llevándolas al objetivo con
+multiplicadores. Es la elección lagrangiana clásica para el pMP, porque deja un subproblema que
+se separa por sitio y se resuelve por inspección.
+
+\subsection{Función lagrangiana}
+Sea $\lambda_i\in\R$ el multiplicador de la restricción~\eqref{eq:f1asig} del cliente $i$:
+\begin{align}
+  L(\lambda)
+  &= \min_{x,y}\ \sum_{i}\sum_{j} d_{ij}x_{ij} + \sum_i \lambda_i\Big(1-\sum_j x_{ij}\Big) \nonumber\\
+  &= \sum_i \lambda_i + \min_{x,y}\ \sum_{j}\sum_{i}\big(d_{ij}-\lambda_i\big)x_{ij},
+  \label{eq:lagr}
+\end{align}
+sujeto a $\sum_j y_j=p$, $\;x_{ij}\le y_j$, $\;x_{ij}\ge 0$, $\;y_j\in\{0,1\}$.
+
+\subsection{El subproblema se separa por sitio}
+Con $y$ fijo, cada $x_{ij}$ es independiente: conviene poner $x_{ij}=1$ (hasta $y_j$) solo si
+$d_{ij}-\lambda_i<0$. Definimos la \textbf{contribución del sitio} $j$:
+\[
+  \beta_j(\lambda)=\sum_{i}\min\big(0,\ d_{ij}-\lambda_i\big).
+\]
+El subproblema se reduce a \textbf{elegir los $p$ sitios con $\beta_j(\lambda)$ más negativo}:
+\begin{equation}
+  L(\lambda)=\sum_i \lambda_i + \min_{\substack{y:\ \sum_j y_j=p\\ y_j\in\{0,1\}}}\ \sum_j \beta_j(\lambda)\,y_j .
+  \label{eq:lagsub}
+\end{equation}
+
+\begin{intuicion}
+Los $\lambda_i$ son ``precios'' que cada cliente está dispuesto a pagar por ser atendido. Un sitio
+es atractivo si, a esos precios, ahorra dinero a muchos clientes ($\beta_j$ muy negativo). Se
+abren los $p$ sitios más atractivos: el subproblema se resuelve \emph{ordenando y tomando los $p$
+mejores}, sin solver.
+\end{intuicion}
+
+\subsection{Dual lagrangiano y cota inferior}
+Para todo $\lambda$, $L(\lambda)\le \OPT(pMP)$: cada $L(\lambda)$ es una cota inferior. El
+\textbf{dual lagrangiano} busca la mejor:
+\[
+  \max_{\lambda}\ L(\lambda).
+\]
+$L(\lambda)$ es \emph{cóncava y lineal por tramos} (mínimo de funciones afines en $\lambda$), por
+lo que se maximiza con el \textbf{método del subgradiente}. Dado $\lambda^t$ se resuelve el
+subproblema~\eqref{eq:lagsub} (barato), se obtiene el subgradiente
+$g^t_i = 1-\sum_j x^t_{ij}$ (la violación de la restricción de asignación del cliente $i$) y se
+actualiza
+\[
+  \lambda^{t+1}_i=\lambda^t_i+\alpha_t\,g^t_i,
+  \qquad
+  \alpha_t=\mu_t\,\frac{UB-L(\lambda^t)}{\lVert g^t\rVert^2},
+\]
+con $\mu_t\in(0,2]$ decreciente. La regla de paso usa la mejor cota superior $UB$ disponible.
+
+\subsection{Recuperación primal conceptual}
+La solución $y$ del subproblema puede no ser factible primal (algún cliente sin asignar). Se
+recupera una solución factible con una heurística: dada la $y$ del subproblema, asignar cada
+cliente a su sitio abierto más cercano produce un \textbf{UB}. El par
+$(\,L(\lambda)\text{ del dual},\ UB\text{ heurístico})$ acota el óptimo.
+
+\subsection{Relación con Benders}
+\begin{center}
+\begin{tabular}{lll}
+\toprule
+ & \textbf{Relajación lagrangiana} & \textbf{Benders} \\
+\midrule
+Qué se manipula & relaja asignación~\eqref{eq:f1asig} & fija $y=\bar y$ \\
+El subproblema separa por & \textbf{sitio} & \textbf{cliente} \\
+Cómo se obtiene la cota & $\max_\lambda L(\lambda)$ & cortes acumulados en el maestro \\
+\bottomrule
+\end{tabular}
+\end{center}
+Ambas son técnicas duales que producen cotas inferiores explotando estructura. En este problema
+el subproblema de Benders resulta resoluble \emph{en forma cerrada}, lo que lo hace imbatible
+aquí; pero conceptualmente la lagrangiana es la alternativa natural que el curso pide analizar.

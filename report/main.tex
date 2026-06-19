@@ -1,0 +1,95 @@
+% main.tex — Informe final, Optimización Computacional (PUCV)
+% Descomposición de Benders eficiente para el problema de las p-medianas.
+% Compilar: pdflatex main.tex  (dos pasadas para referencias)
+\documentclass[11pt,a4paper]{article}
+
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage[spanish,es-noindentfirst]{babel}
+\usepackage{amsmath,amssymb,amsthm}
+\usepackage{mathtools}
+\usepackage{graphicx}
+\usepackage{booktabs}
+\usepackage{array}
+\usepackage{longtable}
+\usepackage{enumitem}
+\usepackage{geometry}
+\usepackage{xcolor}
+\usepackage{listings}
+\usepackage{hyperref}
+\usepackage{caption}
+\geometry{margin=2.5cm}
+\hypersetup{colorlinks=true,linkcolor=blue!50!black,citecolor=blue!50!black,urlcolor=blue!50!black}
+
+% --- entorno para "intuición" ---
+\newtheorem{definicion}{Definición}
+\theoremstyle{remark}
+\newtheorem*{intuicion}{Intuición}
+
+% --- estilo de código ---
+\lstset{basicstyle=\ttfamily\small,breaklines=true,frame=single,
+  keywordstyle=\color{blue!60!black},commentstyle=\color{green!40!black},
+  numbers=left,numberstyle=\tiny\color{gray},columns=fullflexible}
+
+% --- atajos de notación ---
+\newcommand{\R}{\mathbb{R}}
+\newcommand{\Set}[1]{\{#1\}}
+\DeclareMathOperator*{\argmin}{arg\,min}
+\newcommand{\OPT}{\mathrm{OPT}}
+\newcommand{\kt}{\tilde{k}}
+
+\title{\textbf{Descomposición de Benders eficiente para el problema de las \textit{p}-medianas}\\[4pt]
+\large Replicación e implementación en C — Proyecto final}
+\author{Alonso Peña Domarchi\\\small Optimización Computacional — Pontificia Universidad Católica de Valparaíso}
+\date{Junio 2026}
+
+\begin{document}
+\maketitle
+
+\begin{abstract}
+\noindent
+Se aborda el problema de las \textit{p}-medianas (pMP), un problema NP-duro de localización
+discreta. Se presenta la formulación clásica F1 y las reformulaciones ordenadas F2, F3 y la
+compacta F4, una propuesta teórica de relajación lagrangiana, y la \textbf{descomposición de
+Benders} de Duran-Mateluna, Ales \& Elloumi (2023), cuyo subproblema admite \textbf{solución
+cerrada} y permite separar los cortes en tiempo $O(NM)$ sin resolver ningún LP. El método se
+implementó en C modular sobre una capa de solver (Gurobi) con un algoritmo de dos fases
+(relajación lineal + branch-and-Benders-cut con \textit{lazy constraints}). El separador fue
+\textbf{verificado por tres vías independientes}: derivación a mano, test unitario y un oráculo
+en Python (0 diferencias). En las 15 instancias OR-Library se alcanza el óptimo oficial con
+brecha $0\%$, y en TSPLIB \texttt{rl1304} (hasta $p=500$) se reproducen exactamente los 9
+óptimos del paper. Todos los números reportados provienen de corridas reales registradas en
+\texttt{results/}.
+\end{abstract}
+
+\tableofcontents
+\bigskip
+
+\input{sections/01_motivacion}
+\input{sections/02_definicion}
+\input{sections/03_formulaciones}
+\input{sections/04_lagrangiana}
+\input{sections/05_benders}
+\input{sections/06_separacion}
+\input{sections/07_implementacion}
+\input{sections/08_instancias}
+\input{sections/09_experimentos}
+\input{sections/10_resultados}
+\input{sections/11_reproducibilidad}
+
+\section*{Referencias}
+\addcontentsline{toc}{section}{Referencias}
+\begin{itemize}\setlength\itemsep{2pt}
+\item Benders, J.F. (1962). \textit{Partitioning procedures for solving mixed-variables programming problems}. Numerische Mathematik 4, 238--252.
+\item Beasley, J.E. (1990). \textit{OR-Library: distributing test problems by electronic mail}. JORS 41(11), 1069--1072.
+\item Cornuejols, G., Nemhauser, G.L. \& Wolsey, L.A. (1980). \textit{A canonical representation of simple plant location problems and its applications}. SIAM J. Alg. Disc. Meth. 1(3), 261--272.
+\item Duran-Mateluna, C., Ales, Z. \& Elloumi, S. (2023). \textit{An efficient Benders decomposition for the p-median problem}. EJOR 308(1), 84--96.
+\item Elloumi, S. (2010). \textit{A tighter formulation of the p-median problem}. J. Comb. Optim. 19(1), 69--83.
+\item García, S., Labbé, M. \& Marín, A. (2011). \textit{Solving large p-median problems with a radius formulation}. INFORMS J. Comput. 23(4), 546--556.
+\item Kariv, O. \& Hakimi, S.L. (1979). \textit{An algorithmic approach to network location problems. II: The p-medians}. SIAM J. Appl. Math. 37(3), 539--560.
+\item ReVelle, C.S. \& Swain, R.W. (1970). \textit{Central facilities location}. Geographical Analysis 2(1), 30--42.
+\item Reinelt, G. (1991). \textit{TSPLIB — a traveling salesman problem library}. ORSA J. Comput. 3(4), 376--384.
+\item Resende, M.G.C. \& Werneck, R.F. (2004). \textit{A hybrid heuristic for the p-median problem}. J. Heuristics 10(1), 59--88.
+\end{itemize}
+
+\end{document}

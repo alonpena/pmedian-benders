@@ -1,0 +1,221 @@
+% main.tex — Presentación Beamer (8 diapositivas, ~15 min)
+% Descomposición de Benders para el problema de las p-medianas.
+% Compilar: pdflatex main.tex
+\documentclass[10pt,aspectratio=169]{beamer}
+\usetheme{Madrid}
+\usecolortheme{seabird}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage[spanish]{babel}
+\usepackage{amsmath,amssymb}
+\usepackage{booktabs}
+\usepackage{graphicx}
+\usepackage{xcolor}
+\DeclareMathOperator*{\OPT}{OPT}
+\newcommand{\kt}{\tilde{k}}
+
+\title[Benders para p-medianas]{Descomposición de Benders eficiente\\para el problema de las \textit{p}-medianas}
+\subtitle{Replicación e implementación en C}
+\author{Alonso Peña Domarchi}
+\institute[PUCV]{Optimización Computacional — PUCV}
+\date{Junio 2026}
+
+\begin{document}
+
+\begin{frame}\titlepage\end{frame}
+
+% ---------- 1 ----------
+\begin{frame}{1. Problema y motivación}
+\textbf{$p$-medianas (pMP):} elegir $p$ sitios de $M$ candidatos para servir a $N$ clientes,
+minimizando la suma de distancias de cada cliente a su sitio abierto más cercano.
+\[
+  \min_{|S|=p}\ \sum_{i=1}^{N}\ \min_{j\in S}\ d_{ij}
+\]
+\begin{columns}
+\begin{column}{0.58\textwidth}
+\textbf{¿Qué decisión apoya?} dónde instalar bodegas, refugios, o centros (\textit{k-medoids}).
+\begin{itemize}
+  \item Sin costos fijos; número de aperturas fijo en $p$.
+  \item ``Una vez fijadas las antenas, cada casa elige la más cercana.''
+\end{itemize}
+\end{column}
+\begin{column}{0.40\textwidth}
+\centering
+\fbox{\parbox{0.9\textwidth}{\centering\footnotesize
+Lo \textbf{difícil}: \emph{cuáles} $p$ sitios.\\[4pt]
+Lo \textbf{fácil}: la asignación,\\ dado $S$ (cada cliente $\to$ más cercano).}}
+\end{column}
+\end{columns}
+\vfill
+\footnotesize Referencia: Duran-Mateluna, Ales \& Elloumi (2023), \textit{EJOR}.
+\end{frame}
+
+% ---------- 2 ----------
+\begin{frame}{2. Dificultad computacional}
+\begin{itemize}
+  \item \textbf{NP-duro} (Kariv \& Hakimi, 1979): elegir $p$ de $M$ son $\binom{M}{p}$ opciones.
+  \item Formulación clásica \textbf{F1} tiene $N\times M$ variables de asignación $x_{ij}$ y
+        $\sim N\times M$ restricciones.
+  \item Para $N=M=10^4 \Rightarrow \sim 10^8$ variables: los solvers genéricos colapsan.
+\end{itemize}
+\begin{block}{Idea para escalar}
+No atacar el problema entero de frente, sino \textbf{explotar su estructura}: si fijamos qué
+sitios abrir, el problema se separa por cliente y se vuelve trivial.
+\end{block}
+$\Rightarrow$ esa observación es la semilla de la \textbf{relajación lagrangiana} y de
+\textbf{Benders}.
+\end{frame}
+
+% ---------- 3 ----------
+\begin{frame}{3. Formulaciones F1 / F2 / F3 / F4}
+\small
+\begin{tabular}{lll}
+\toprule
+ & idea & estructura \\
+\midrule
+\textbf{F1} & asignación $x_{ij}\le y_j$ & $N\!\times\!M$ variables, densa \\
+\textbf{F2} & ``radios'' $z^k_i$, objetivo telescópico & $K\le NM$ variables \\
+\textbf{F3} & misma, cobertura ``$=D^k_i$'' & \textbf{matriz rala} (la mejor) \\
+\textbf{F4} & cortes sobre $\theta_i$, compacta & $N\!+\!M$ var., pero densa \\
+\bottomrule
+\end{tabular}
+\vfill
+\textbf{Objetivo telescópico (F2/F3):} cada cliente paga $D^1_i + \sum_k (D^{k+1}_i-D^k_i)\,z^k_i$;
+se ``pagan peajes'' $D^{k+1}-D^k$ mientras no aparezca un sitio abierto.
+\vfill
+\begin{itemize}
+  \item Las cuatro: \emph{mismo óptimo, misma relajación LP}. Difieren en \textbf{densidad}.
+  \item \textbf{F3} es la base de Benders; \textbf{F4} son los cortes que generamos al vuelo.
+\end{itemize}
+\end{frame}
+
+% ---------- 4 ----------
+\begin{frame}{4. Relajación lagrangiana (propuesta teórica)}
+Relajamos la \textbf{asignación} $\sum_j x_{ij}=1$ (restricción complicante) con multiplicadores
+$\lambda_i$:
+\[
+  L(\lambda)=\sum_i\lambda_i+\min_{\sum_j y_j=p}\sum_j \beta_j(\lambda)\,y_j,
+  \quad \beta_j(\lambda)=\sum_i \min(0,\ d_{ij}-\lambda_i).
+\]
+\begin{itemize}
+  \item El subproblema se separa \textbf{por sitio}: abrir los $p$ sitios con $\beta_j$ más
+        negativo (¡por inspección, sin solver!).
+  \item Cota inferior $L(\lambda)\le \OPT$; dual lagrangiano $\max_\lambda L(\lambda)$ vía
+        \textbf{subgradiente} $g_i=1-\sum_j x_{ij}$.
+  \item Recuperación primal: asignar cada cliente a su sitio abierto más cercano $\Rightarrow UB$.
+\end{itemize}
+\begin{block}{Contraste con Benders}
+Lagrangiana separa por \textbf{sitio}; Benders fija $y$ y separa por \textbf{cliente}. Ambas dan
+cota inferior.
+\end{block}
+\end{frame}
+
+% ---------- 5 ----------
+\begin{frame}{5. Descomposición de Benders}
+\textbf{Maestro:} $\min\sum_i\theta_i$ s.a. $\sum_j y_j=p$, $y_j\in\{0,1\}$, + cortes.
+\quad\textbf{Subproblema} $SP_i(\bar y)$: distancia del cliente $i$.
+\[
+  \theta_i \ge D^{\kt_i+1}_i-\!\!\sum_{j:\,d_{ij}\le D^{\kt_i}_i}\!\!\big(D^{\kt_i+1}_i-d_{ij}\big)y_j
+  \qquad\text{(corte de optimalidad)}
+\]
+\begin{columns}
+\begin{column}{0.54\textwidth}
+\begin{itemize}
+  \item $SP_i$ \textbf{siempre factible y acotado} $\Rightarrow$ \textbf{solo cortes de
+        optimalidad}, nunca de factibilidad.
+  \item Dual con \textbf{forma cerrada}: el corte se separa en $O(NM)$ \emph{sin resolver ningún
+        LP} (índice $\kt_i$, Alg.\ 2).
+\end{itemize}
+\end{column}
+\begin{column}{0.44\textwidth}
+\footnotesize
+\textbf{Por qué se separa por cliente:} fijado $\bar y$, F3 se parte en $N$ problemas
+independientes. Las variables $z$ desaparecen del maestro; las reemplaza un $\theta_i$.
+\end{column}
+\end{columns}
+\vfill
+\footnotesize \textbf{Validez:} cada corte es cota inferior válida de $\theta_i$ (no excluye el
+óptimo); hay finitos cortes $\Rightarrow$ el branch-and-cut termina exacto.
+\end{frame}
+
+% ---------- 6 ----------
+\begin{frame}{6. Implementación}
+\textbf{Núcleo en C} (sin solver) + \textbf{capa de solver} (Gurobi) + \textbf{oráculo Python}.
+\begin{columns}
+\begin{column}{0.5\textwidth}
+\small
+\begin{tabular}{ll}
+\toprule
+matemática & módulo C \\
+\midrule
+$d_{ij}$, $S$, $D^k_i$ & \texttt{instance.c}, \texttt{sortsites.c} \\
+$\kt_i$ (Alg.\,2) & \texttt{separation.c} \\
+$\OPT(SP_i)$, corte & \texttt{separation.c} \\
+Fase 1 (LP) & \texttt{phase1.c} \\
+Fase 2 (lazy cb) & \texttt{phase2.c} \\
+\bottomrule
+\end{tabular}
+\end{column}
+\begin{column}{0.5\textwidth}
+\textbf{Dos fases:}
+\begin{enumerate}
+  \item LP del maestro + cortes + redondeo $\to LB_1,UB_1$.
+  \item Branch-and-Benders-cut: callback de \emph{lazy constraints} separa en cada solución entera.
+\end{enumerate}
+\alert{Separador verificado 3 vías:} a mano (toy1), test unitario en C, y oráculo Python
+(\textbf{0 diferencias}).
+\end{column}
+\end{columns}
+\end{frame}
+
+% ---------- 7 ----------
+\begin{frame}{7. Resultados}
+\begin{columns}
+\begin{column}{0.5\textwidth}
+\textbf{Corrección (óptimo exacto):}
+\begin{itemize}
+  \item OR-Library \texttt{pmed1–15}: \textbf{15/15} al óptimo oficial, $\Delta=0$.
+  \item \texttt{rl1304} ($N{=}1304$, $p$ hasta $500$): \textbf{9/9} óptimos $=$ paper.
+  \item Callback real: \texttt{pmed1} lazy\_cuts$=90$, nodos$=1$; \texttt{rl1304} $p5$
+        lazy\_cuts$=1850$.
+\end{itemize}
+\end{column}
+\begin{column}{0.5\textwidth}
+\textbf{Warm-start (nodos B\&B):}
+\begin{center}\small
+\begin{tabular}{lrr}
+\toprule
+inst. & cold & warm \\
+\midrule
+pmed1  & 223 & \textbf{1} \\
+pmed6  & 632 & \textbf{7} \\
+pmed11 & 352 & \textbf{1} \\
+\bottomrule
+\end{tabular}
+\end{center}
+\footnotesize Nodos $\downarrow$ fuerte; wall-time mixto en sub-segundo (precarga de cortes).
+\end{column}
+\end{columns}
+\vfill
+\footnotesize Fase 1 a menudo ya cierra: $LB_1=UB_1=$ óptimo en muchas instancias. Fuente:
+\texttt{results/*.csv}.
+\end{frame}
+
+% ---------- 8 ----------
+\begin{frame}{8. Conclusiones}
+\begin{itemize}
+  \item \textbf{La formulación importa más que el solver:} F1–F4 igual óptimo y cota LP, pero la
+        \emph{densidad} decide qué es resoluble.
+  \item \textbf{Separación $O(NM)$ en forma cerrada} + \textbf{solo cortes de optimalidad}
+        (subproblema siempre factible/acotado) = método simple y veloz.
+  \item \textbf{Buenas cotas tempranas} (Fase 1) son accionables para un decisor real.
+  \item \textbf{Verificar el componente crítico paga:} separador validado por 3 vías.
+\end{itemize}
+\begin{block}{Limitaciones (honestas)}
+Escala probada hasta $N=1304$; familias grandes (TSP $>10^4$, BIRCH, ODM, RW grande) y Zebra
+\emph{no} reejecutadas; PopStar / reduced-cost fixing no implementados.
+\end{block}
+\centering \textbf{¿Preguntas?}
+\end{frame}
+
+\end{document}

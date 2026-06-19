@@ -1,0 +1,118 @@
+\section{Experimentos computacionales}
+\label{sec:experimentos}
+
+\subsection{Diseño experimental}
+\textbf{Máquina:} Apple M1; \textbf{solver:} Gurobi 12.0.0; backend único Gurobi.
+\textbf{Configuración:} algoritmo de dos fases, warm-start activo por defecto (\texttt{--coldstart}
+para el comparativo), \texttt{MIPGap}$=10^{-10}$, sin límite de tiempo (todas las instancias
+cierran a optimalidad). \textbf{Sin} PopStar (arranque uniforme + redondeo), sin \emph{reduced-cost
+fixing} ni \emph{constraint reduction}. Todos los números provienen de
+\texttt{results/} (CSV y \texttt{logs/}); cada corrida deja un log con prueba de callback.
+
+Se reportan tres bloques: (i) corrección y desempeño en OR-Library; (ii) comparación contra el
+paper en \texttt{rl1304}; (iii) efecto del warm-start. Cuatro figuras agregan el comportamiento.
+
+\subsection{Caso base y corrección en OR-Library}
+Las 15 instancias \texttt{pmed} cierran al \textbf{óptimo oficial} con brecha $0\%$ (delta$=0$).
+Fuente: \texttt{results/orlib\_optima\_check.csv}.
+
+\begin{table}[h]\centering\small
+\begin{tabular}{lrrrrrrrr}
+\toprule
+inst. & $N$ & $p$ & $LB_1$ & $UB_1$ & óptimo & oficial & iter & nodos \\
+\midrule
+pmed1  & 100 & 5   & 5819.0 & 5819.0 & 5819 & 5819 & 6 & 1 \\
+pmed2  & 100 & 10  & 4088.5 & 4116.0 & 4093 & 4093 & 6 & 1 \\
+pmed3  & 100 & 10  & 4240.5 & 4250.0 & 4250 & 4250 & 6 & 3 \\
+pmed4  & 100 & 20  & 3034.0 & 3034.0 & 3034 & 3034 & 5 & 1 \\
+pmed5  & 100 & 33  & 1355.0 & 1355.0 & 1355 & 1355 & 5 & 1 \\
+pmed6  & 200 & 5   & 7783.5 & 7867.0 & 7824 & 7824 & 6 & 7 \\
+pmed7  & 200 & 10  & 5631.0 & 5631.0 & 5631 & 5631 & 6 & 1 \\
+pmed8  & 200 & 20  & 4445.0 & 4445.0 & 4445 & 4445 & 5 & 1 \\
+pmed9  & 200 & 40  & 2734.0 & 2734.0 & 2734 & 2734 & 6 & 1 \\
+pmed10 & 200 & 67  & 1255.0 & 1255.0 & 1255 & 1255 & 9 & 1 \\
+pmed11 & 300 & 5   & 7693.3 & 7696.0 & 7696 & 7696 & 9 & 1 \\
+pmed12 & 300 & 10  & 6625.8 & 6638.0 & 6634 & 6634 & 7 & 7 \\
+pmed13 & 300 & 30  & 4374.0 & 4374.0 & 4374 & 4374 & 5 & 1 \\
+pmed14 & 300 & 60  & 2967.2 & 2971.0 & 2968 & 2968 & 8 & 1 \\
+pmed15 & 300 & 100 & 1729.0 & 1729.0 & 1729 & 1729 & 7 & 1 \\
+\bottomrule
+\end{tabular}
+\caption{OR-Library: 15/15 al óptimo oficial, delta$=0$. ``iter''$=$separaciones de Fase 1;
+``nodos''$=$nodos de B\&B en Fase 2. Todo el conjunto se resuelve en $<0.36$\,s
+(\texttt{results/benchmark.csv}).}
+\label{tab:orlib}
+\end{table}
+
+\textbf{Lectura.} En la mayoría de las instancias $LB_1=UB_1=$ óptimo: la Fase 1 ya cierra el
+problema y la Fase 2 confirma en $1$ nodo. Solo \texttt{pmed3}, \texttt{pmed6} y \texttt{pmed12}
+requieren ramificar ($3$, $7$, $7$ nodos), justo donde $UB_1>$ óptimo.
+
+\subsection{Comparación contra el paper (\texttt{rl1304})}
+Sobre las mismas instancias TSPLIB se comparan los óptimos y cotas (los valores del paper son
+transcritos del PDF). Fuente: \texttt{results/comparison\_vs\_paper.csv}.
+
+\begin{table}[h]\centering\small
+\begin{tabular}{rrrrrrrr}
+\toprule
+$p$ & óptimo paper & óptimo nuestro & $\Delta$ & $LB_1$ paper & $LB_1$ nuestro & $UB_1$ paper & $UB_1$ nuestro \\
+\midrule
+5   & 3099073 & 3099073 & 0 & 3099073 & 3099073 & 3099073 & 3099073 \\
+10  & 2134295 & 2134295 & 0 & 2131788 & 2131788 & 2134295 & 2243679 \\
+20  & 1412108 & 1412108 & 0 & 1412108 & 1412108 & 1412108 & 1412108 \\
+50  &  795012 &  795012 & 0 &  795012 &  795012 &  795012 &  795012 \\
+100 &  491639 &  491639 & 0 &  491507 &  491506 &  491788 &  496403 \\
+200 &  268573 &  268573 & 0 &  268573 &  268573 &  268573 &  268573 \\
+300 &  177326 &  177326 & 0 &  177318 &  177318 &  177339 &  179952 \\
+400 &  128332 &  128332 & 0 &  128332 &  128332 &  128332 &  128332 \\
+500 &   97024 &   97024 & 0 &   97018 &   97018 &   97034 &   97034 \\
+\bottomrule
+\end{tabular}
+\caption{\texttt{rl1304}: \textbf{9/9 óptimos coinciden} ($\Delta=0$). El $LB_1$ de Fase 1
+coincide con el del paper (a $\pm1$). El $UB_1$ a veces es peor que el del paper porque no usamos
+PopStar (ver Sección~\ref{sec:resultados}). Tiempos no comparados directamente
+(máquinas/solvers distintos: paper XEON\,W-2145/CPLEX\,20.1; nosotros M1/Gurobi\,12).}
+\label{tab:paper}
+\end{table}
+
+\subsection{Efecto del warm-start}
+Heredar el pool de cortes de Fase 1 reduce drásticamente el árbol de B\&B. Fuente:
+\texttt{results/warmstart\_comparison.csv}.
+
+\begin{table}[h]\centering\small
+\begin{tabular}{lrr rr rr}
+\toprule
+ & \multicolumn{2}{c}{nodos B\&B} & \multicolumn{2}{c}{cortes lazy} & \multicolumn{2}{c}{$T_2$ [s]} \\
+inst. ($p=5$) & cold & warm & cold & warm & cold & warm \\
+\midrule
+pmed1  & 223 & \textbf{1} & 513  & 90  & 0.047 & 0.016 \\
+pmed6  & 632 & \textbf{7} & 1053 & 240 & 0.143 & 0.600 \\
+pmed11 & 352 & \textbf{1} & 1768 & 308 & 0.030 & 0.940 \\
+\bottomrule
+\end{tabular}
+\caption{Warm vs cold. Los nodos y los cortes lazy caen fuertemente. El wall-time es
+\emph{mixto} en estas instancias sub-segundo: la precarga de cientos de cortes (337/694/1285) a
+veces cuesta más de lo que ahorra. Beneficio en nodos $\ne$ beneficio en tiempo a esta escala.}
+\label{tab:warm}
+\end{table}
+
+\subsection{Prueba de que es branch-and-Benders-cut real}
+Cada corrida \texttt{--mode full} registra la actividad del callback. Por ejemplo
+(\texttt{results/logs/pmed1.pmp\_p5\_full.log}): \texttt{separation\_calls=3}, \texttt{lazy\_cuts=90},
+\texttt{bb\_nodes=1}, \texttt{is\_branch\_and\_benders\_cut=YES}. En \texttt{rl1304} $p=5$:
+\texttt{lazy\_cuts=1850}. Cortes lazy $>0$ confirma que la Fase 2 \emph{no} degenera a un B\&B
+ordinario.
+
+\subsection{Figuras agregadas}
+Las cuatro figuras (generadas solo de CSV reales por \texttt{scripts/plot\_results.py}) son:
+\begin{figure}[h]\centering
+\includegraphics[width=0.48\textwidth]{../results/plot_a_bounds_orlib.png}\hfill
+\includegraphics[width=0.48\textwidth]{../results/plot_b_time_vs_N.png}
+\caption{(izq.) $LB_1$, $UB_1$ y óptimo por instancia OR-Library. (der.) Tiempo total vs $N$ (log-log).}
+\end{figure}
+\begin{figure}[h]\centering
+\includegraphics[width=0.48\textwidth]{../results/plot_c_gap_vs_pM.png}\hfill
+\includegraphics[width=0.48\textwidth]{../results/plot_d_iter_nodes_vs_p.png}
+\caption{(izq.) Brecha de Fase 1 $(UB_1-LB_1)/UB_1$ vs $p/M$. (der.) Iteraciones (Fase 1) y nodos
+(Fase 2) vs $p$.}
+\end{figure}

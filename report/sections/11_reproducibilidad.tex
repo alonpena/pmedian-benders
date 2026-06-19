@@ -1,0 +1,65 @@
+\section{Reproducibilidad}
+\label{sec:reproducibilidad}
+
+\subsection{Entorno}
+\begin{itemize}[noitemsep]
+  \item \textbf{Hardware:} Apple M1. \textbf{Compilador:} Apple clang (C11).
+  \item \textbf{Solver:} Gurobi 12.0.0 (licencia académica), autodetectado por el \texttt{Makefile}
+        en \texttt{/Library/gurobi*/macos\_universal2}.
+  \item \textbf{Python:} 3.x con \texttt{gurobipy} y \texttt{matplotlib} (solo para oráculo,
+        generadores y figuras).
+\end{itemize}
+
+\subsection{Comandos}
+\begin{lstlisting}[language=bash,numbers=none]
+export GUROBI_HOME=/Library/gurobi1200/macos_universal2
+export DYLD_LIBRARY_PATH=$GUROBI_HOME/lib
+
+make test            # tests del nucleo + verificacion del separador (toy=6)
+make pmedian         # binario principal
+
+# caso base y una instancia OR-Library
+./pmedian instances/toy/toy1.pmp   --p 2 --mode full
+./pmedian instances/orlib/pmed1.pmp --mode full --opt 5819
+
+# verificacion del separador (3 vias)
+./pmedian instances/toy/toy1.pmp --p 2 --dump-cuts 0 1     # cortes a mano
+python scripts/verify_cuts.py                              # C == Python (0 diffs)
+
+# benchmark, comparacion con el paper y figuras
+python scripts/run_benchmark.py
+python scripts/compare_paper.py
+python scripts/plot_results.py
+\end{lstlisting}
+
+\subsection{Artefactos y trazabilidad}
+\begin{itemize}[noitemsep]
+  \item \texttt{results/benchmark.csv} — todas las corridas (LB1, UB1, tiempos, gap, iter, nodos).
+  \item \texttt{results/orlib\_optima\_check.csv} — OR-Library vs óptimo oficial (delta$=0$).
+  \item \texttt{results/comparison\_vs\_paper.csv} — \texttt{rl1304} vs Tabla del paper.
+  \item \texttt{results/warmstart\_comparison.csv} — warm vs cold.
+  \item \texttt{results/logs/*.log} — un log por corrida con \texttt{CALLBACK\_PROOF} (separaciones,
+        cortes lazy, nodos) e \texttt{is\_branch\_and\_benders\_cut}.
+  \item \texttt{results/plot\_\{a,b,c,d\}\_*.png} — las cuatro figuras.
+  \item \texttt{docs/AUDIT.md} — evidencia por afirmación: archivo + comando para reproducir; lo no
+        probado marcado \texttt{UNVERIFIED}.
+\end{itemize}
+Los logs (\texttt{*.log}) están en \texttt{.gitignore} por ser artefactos regenerables; se
+reconstruyen con los comandos anteriores.
+
+\subsection{Política de honestidad}
+Ningún número de este informe fue inventado: todos provienen de \texttt{results/} o de texto
+transcrito del PDF del paper (trazable en \texttt{scripts/compare\_paper.py}). Donde un dato no se
+midió (familias no corridas, Zebra, escalabilidad a gran escala), se declara explícitamente como
+no verificado en lugar de rellenarlo.
+
+\subsection*{Lista de chequeo manual antes de la entrega}
+\begin{enumerate}[noitemsep]
+  \item \texttt{make clean \&\& make pmedian} compila sin \emph{warnings}.
+  \item \texttt{make test} imprime \texttt{RESULT: PASS} en ambos tests.
+  \item \texttt{python scripts/verify\_cuts.py} imprime \texttt{PASS} (0 diffs).
+  \item \texttt{pdflatex report/main.tex} (dos pasadas) compila y las 4 figuras se incrustan.
+  \item \texttt{pdflatex slides/main.tex} compila las 8 diapositivas.
+  \item Las tablas del informe coinciden con los CSV vigentes en \texttt{results/}.
+  \item \texttt{docs/AUDIT.md} no contiene afirmaciones \texttt{UNVERIFIED} presentadas como hechos.
+\end{enumerate}

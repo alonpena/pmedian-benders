@@ -1,0 +1,67 @@
+\section{Resultados, insights y conclusiones}
+\label{sec:resultados}
+
+\subsection{Patrones observados}
+\begin{enumerate}[leftmargin=1.5em]
+  \item \textbf{La Fase 1 resuelve (o casi) muchas instancias.} En la mayoría de OR-Library
+        $LB_1=UB_1=$ óptimo (Tabla~\ref{tab:orlib}): la relajación lineal del maestro de Benders es
+        muy ajustada y el redondeo encuentra la solución óptima. La Fase 2 solo \emph{certifica}.
+        Coincide con lo reportado por el paper (su Fase 1 ya deja muchas instancias resueltas).
+  \item \textbf{El método es correcto a escala creciente.} 15/15 óptimos en OR-Library y 9/9 en
+        \texttt{rl1304} ($N=1304$, hasta $p=500$) con $\Delta=0$ respecto del paper
+        (Tabla~\ref{tab:paper}). El separador, validado por tres vías (mano, test, oráculo), es la
+        base de esta confianza.
+  \item \textbf{El warm-start reduce el árbol, no necesariamente el tiempo.} Heredar los cortes de
+        Fase 1 baja los nodos de B\&B de cientos a $1$--$7$ (Tabla~\ref{tab:warm}), pero en
+        instancias sub-segundo la precarga de cientos de cortes puede costar más que el ahorro: el
+        beneficio en wall-time se espera en instancias grandes, no medidas aquí.
+  \item \textbf{Sin PopStar, el $UB_1$ es peor pero el $LB_1$ coincide.} En \texttt{rl1304}
+        $p\in\{10,100,300\}$ nuestro $UB_1$ supera al del paper (p.\,ej. $2243679$ vs $2134295$),
+        mientras el $LB_1$ coincide a $\pm1$. La cota inferior depende del método (Benders), no de
+        la heurística de arranque; la superior sí. Esto aísla limpiamente qué parte del desempeño
+        viene de cada componente.
+\end{enumerate}
+
+\subsection{Ventajas del enfoque}
+\begin{itemize}[noitemsep]
+  \item \textbf{Separación en forma cerrada $O(NM)$:} no se resuelve ningún LP por corte; el costo
+        por iteración es lineal.
+  \item \textbf{Maestro pequeño:} solo $y$ y $\theta$; las variables $z$ (potencialmente
+        $\sim N\times M$) nunca se materializan.
+  \item \textbf{Solo cortes de optimalidad:} al ser $SP_i$ siempre factible y acotado, no hay
+        lógica de factibilidad — implementación más simple y robusta.
+  \item \textbf{Cotas tempranas útiles:} $LB_1/UB_1$ de Fase 1 ya acotan fuertemente el óptimo,
+        valioso para decidir con tiempo limitado en un contexto real.
+\end{itemize}
+
+\subsection{Limitaciones}
+\begin{itemize}[noitemsep]
+  \item \textbf{Escala probada moderada:} hasta $N=1304$. Las familias enormes del paper (TSP
+        $>10^4$, BIRCH, ODM, RW grande) \emph{no} se ejecutaron; las afirmaciones de
+        escalabilidad son conceptuales, no medidas (\texttt{docs/AUDIT.md}).
+  \item \textbf{Sin comparación directa con Zebra:} no se reejecutó; los tiempos del paper son
+        ajenos a nuestra máquina.
+  \item \textbf{Mejoras no implementadas:} PopStar, reduced-cost fixing y constraint reduction
+        quedan documentadas pero fuera del alcance.
+  \item \textbf{Construcción de $S$:} a gran escala dominaría el tiempo total ($O(NM\log M)$); no
+        se midió de forma aislada por no haber corrido instancias grandes.
+\end{itemize}
+
+\subsection{Aprendizajes para el problema real y para el uso de optimización}
+\begin{itemize}[noitemsep]
+  \item \textbf{La formulación importa más que el solver.} F1--F4 tienen el mismo óptimo y la misma
+        cota LP, pero su estructura (densidad, número de variables) decide qué es resoluble. La
+        ganancia vino de \emph{explotar estructura}, no de fuerza bruta del solver.
+  \item \textbf{Las buenas cotas tempranas son accionables.} Para un decisor de localización, un
+        $LB_1/UB_1$ ajustado en segundos permite descartar configuraciones sin esperar la prueba
+        de optimalidad completa.
+  \item \textbf{Verificar el componente crítico paga.} Validar el separador a mano, con test y con
+        oráculo dio una base de confianza que permitió escalar sin temor a errores silenciosos.
+\end{itemize}
+
+\subsection{Conclusión}
+Se replicó e implementó en C, de forma modular y reproducible, la descomposición de Benders
+eficiente para el pMP. El método alcanza el óptimo en todas las instancias probadas (OR-Library
+15/15, \texttt{rl1304} 9/9 vs paper), con un separador verificado por tres vías independientes.
+El trabajo cumple los objetivos del curso: formulación rigurosa, propuesta lagrangiana, diseño y
+justificación de Benders, e implementación con análisis honesto de alcances y límites.

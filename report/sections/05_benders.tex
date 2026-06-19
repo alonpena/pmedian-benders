@@ -1,0 +1,95 @@
+\section{Descomposición de Benders}
+\label{sec:benders}
+
+Esta sección corresponde a la \textbf{Entrega 3}: maestro, subproblema primal y dual, derivación
+de los cortes y justificación de validez.
+
+\subsection{Qué se fija, qué se elimina, qué aparece}
+Partimos de \textbf{F3}. Fijado $y=\bar y$, F3 se separa en $N$ subproblemas independientes (uno
+por cliente), cada uno calculando la distancia de asignación de ese cliente. Las variables $z$
+son la parte ``fácil''. Por lo tanto:
+\begin{itemize}[noitemsep]
+  \item Se \textbf{eliminan del maestro} todas las variables $z^k_i$.
+  \item Se \textbf{introduce una variable continua} $\theta_i\ge 0$ por cliente, que representa su
+        distancia de asignación.
+\end{itemize}
+
+\subsection{Problema maestro (MP)}
+\begin{equation}
+  \min \sum_{i=1}^N \theta_i
+  \quad\text{s.a.}\quad
+  \sum_{j=1}^M y_j=p,\quad
+  \theta_i\ \text{satisface } BD_i\ (i\in[N]),\quad
+  y_j\in\{0,1\},
+  \label{eq:master}
+\end{equation}
+donde $BD_i$ es el conjunto de cortes de Benders del cliente $i$, inicialmente vacío y que crece
+con las iteraciones.
+
+\begin{intuicion}
+El maestro es pequeño: solo decide qué sitios abrir ($y$) y ``estima'' la distancia de cada
+cliente con $\theta_i$. Los cortes van obligando a que $\theta_i$ no subestime la distancia real.
+\end{intuicion}
+
+\subsection{Subproblema primal \texorpdfstring{$SP_i(\bar y)$}{SPi}}
+Para $\bar y$ fijo, el subproblema del cliente $i$ (derivado de F3) es
+\begin{align}
+  \min\ & D^1_i + \sum_{k=1}^{K_i-1}\big(D^{k+1}_i-D^k_i\big)z^k_i \nonumber\\
+  \text{s.a.}\ & z^1_i \ge 1-\!\!\sum_{j:\,d_{ij}=D^1_i}\!\!\bar y_j \label{eq:sp1}\\
+  & z^k_i - z^{k-1}_i \ge -\!\!\sum_{j:\,d_{ij}=D^k_i}\!\!\bar y_j && k\in\{2,\dots,K_i\} \label{eq:spk}\\
+  & z^k_i\ge 0 && k\in[K_i]. \nonumber
+\end{align}
+Es \textbf{siempre factible} (basta tomar $z$ suficientemente grande) y \textbf{acotado} (objetivo
+con coeficientes $\ge 0$ y minimización). Esta propiedad es la que determina el tipo de corte.
+
+\subsection{Subproblema dual \texorpdfstring{$DSP_i(\bar y)$}{DSPi}}
+Con variables duales $v^k_i\ge0$ (una por restricción primal):
+\begin{align}
+  \max\ & D^1_i + v^1_i\Big(1-\!\!\sum_{j:\,d_{ij}=D^1_i}\!\!\bar y_j\Big) - \sum_{k=2}^{K_i} v^k_i\!\!\sum_{j:\,d_{ij}=D^k_i}\!\!\bar y_j \nonumber\\
+  \text{s.a.}\ & v^k_i - v^{k+1}_i \le D^{k+1}_i-D^k_i && k\in[K_i-1] \label{eq:dspcon}\\
+  & v^k_i\ge 0 && k\in[K_i]. \nonumber
+\end{align}
+
+\subsection{Derivación del corte de Benders}
+De un punto extremo $\bar v$ del dual se obtiene el \textbf{corte de optimalidad}, lineal en $y$:
+\begin{equation}
+  \theta_i \ge D^1_i + \bar v^1_i\Big(1-\!\!\sum_{j:\,d_{ij}=D^1_i}\!\! y_j\Big)
+  - \sum_{k=2}^{K_i}\bar v^k_i\!\!\sum_{j:\,d_{ij}=D^k_i}\!\! y_j.
+  \label{eq:cut16}
+\end{equation}
+
+\textbf{Qué significa.} \eqref{eq:cut16} es una \emph{cota inferior lineal de} $\theta_i$ \emph{en
+función de} $y$: ``tu estimación de la distancia del cliente $i$ no puede ser menor que esta
+expresión, que depende de qué sitios abras''. A medida que se agregan cortes para distintos
+$\bar y$, el maestro obliga a $\theta_i$ a igualar la distancia real.
+
+\subsection{Solo cortes de optimalidad: justificación de validez}
+\label{sub:optvsfeas}
+En la teoría general de Benders hay dos tipos de corte:
+\begin{itemize}[noitemsep]
+  \item \textbf{Cortes de factibilidad:} eliminan un $\bar y$ que vuelve \emph{infactible} el
+        subproblema (provienen de rayos extremos del dual no acotado).
+  \item \textbf{Cortes de optimalidad:} corrigen una \emph{subestimación} del costo (provienen de
+        puntos extremos del dual acotado).
+\end{itemize}
+
+\begin{quote}
+\textbf{Resultado clave.} Como $SP_i(\bar y)$ es \emph{siempre factible y acotado} para todo
+$\bar y$ (Sección anterior), su dual $DSP_i(\bar y)$ es \emph{siempre acotado}: nunca tiene rayos
+extremos. Por lo tanto \textbf{nunca se requieren cortes de factibilidad}; todos los cortes
+\eqref{eq:cut16} son de optimalidad.
+\end{quote}
+
+Esto simplifica notablemente la implementación: el separador solo debe verificar si
+$\bar\theta_i$ subestima $\OPT(SP_i(\bar y))$ y, de ser así, agregar \emph{un} corte de
+optimalidad. La \textbf{validez global} del método se sigue de que (i) cada corte es una
+desigualdad válida (cota inferior correcta de $\theta_i$), de modo que el maestro nunca excluye la
+solución óptima; y (ii) existe un número \emph{finito} de cortes distintos de la forma
+\eqref{eq:cut16} (uno por cada $\bar y$ binario relevante), por lo que el branch-and-cut con
+cortes perezosos termina con el óptimo exacto.
+
+\medskip
+La forma cerrada de $\bar v$ (Sección~\ref{sec:separacion}) convierte \eqref{eq:cut16} en una
+desigualdad que se construye sin resolver el dual explícitamente. Notablemente, las
+desigualdades resultantes coinciden con las que se obtienen sobre F1 (Cornuejols et al., 1980;
+Magnanti \& Wong, 1981), aunque aquí se derivaron desde F3.

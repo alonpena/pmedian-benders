@@ -1,0 +1,47 @@
+\section{Motivación y contexto del problema}
+\label{sec:motivacion}
+
+\subsection{El sistema estudiado}
+Una empresa de logística, un servicio de emergencias o un algoritmo de \textit{clustering}
+enfrentan la misma decisión esencial: \emph{¿dónde instalar un número fijo de centros para
+atender, lo más cerca posible, a un conjunto de puntos de demanda?} Pensemos en una ciudad con
+$N$ barrios y $M$ ubicaciones candidatas para bodegas; se dispone de presupuesto para abrir
+exactamente $p$ bodegas; cada barrio será servido por la bodega abierta más cercana. La pregunta
+es qué $p$ ubicaciones minimizan la suma de distancias barrio--bodega. Este es el
+\textbf{problema de las $p$-medianas} (pMP).
+
+\begin{intuicion}
+``Pongo $p$ antenas; cada casa se conecta a la antena más cercana; quiero minimizar el largo
+total de cable.'' Lo notable es que, \emph{una vez fijadas las antenas}, cada casa decide
+trivialmente (elige la más cercana). Lo difícil es decidir \emph{cuáles} $p$ antenas.
+\end{intuicion}
+
+\subsection{Relevancia}
+El pMP es un problema fundamental de localización discreta, sin costos fijos de apertura (lo que
+lo distingue del problema de localización de instalaciones, UFL) y con el número de aperturas
+\emph{fijado} en $p$. Aparece en:
+\begin{itemize}[noitemsep]
+  \item \textbf{Logística y cadena de suministro:} ubicación de bodegas, plantas, centros de distribución.
+  \item \textbf{Respuesta a emergencias y ayuda humanitaria:} ubicación de refugios o puntos de acopio.
+  \item \textbf{Aprendizaje no supervisado:} el \textit{k-medoids}, donde clientes y sitios son el
+        mismo conjunto de puntos y se buscan $p$ ``centros'' representativos.
+\end{itemize}
+
+\subsection{Por qué es computacionalmente difícil}
+El pMP es \textbf{NP-duro} (Kariv \& Hakimi, 1979). El número de formas de elegir $p$ sitios entre
+$M$ es $\binom{M}{p}$, que crece de manera combinatoria. Las formulaciones MILP exactas crecen
+rápido en variables y restricciones; para instancias con decenas o cientos de miles de puntos los
+solvers genéricos colapsan en memoria o tiempo. El desafío abierto que ataca el paper de
+referencia es resolver \emph{exactamente} a gran escala.
+
+\subsection{Qué aporta el método replicado}
+Duran-Mateluna, Ales \& Elloumi (2023) aplican \textbf{descomposición de Benders} a la mejor
+formulación exacta conocida. El hallazgo clave es que el subproblema de Benders del pMP es tan
+simple que su \emph{dual tiene solución cerrada}: los cortes se separan en tiempo lineal $O(NM)$
+\textbf{sin resolver ningún programa lineal}. Esto, dentro de un esquema de dos fases (relajación
++ branch-and-cut con cortes perezosos), supera al método previo estado-del-arte (Zebra) por un
+orden de magnitud y resuelve por primera vez a optimalidad instancias enormes.
+
+Este informe integra las tres entregas teóricas del curso (formulación, relajación lagrangiana,
+descomposición de Benders) y reporta una \textbf{implementación propia en C} con resultados
+reales. El detalle teórico extendido está en \texttt{docs/PMEDIAN\_BENDERS\_PROJECT\_BRIEF.md}.
