@@ -8,9 +8,9 @@ Build a defensible computational optimization project for PUCV Optimización Com
 
 Target paper: Duran-Mateluna, Ales & Elloumi (2023), “An efficient Benders decomposition for the p-median problem”.
 
-Local objective: rigorous partial replication of the central Benders decomposition method, not full reproduction of every benchmark table or competing method.
+Project objective: progressively approach a rigorous replication of the paper. Current local work is a partial but evidence-backed replication of the central Benders decomposition method; missing paper components are roadmap items, not permanent exclusions.
 
-Replicated locally:
+Replicated locally in current audited state:
 
 - p-median Benders master with `y_j` and `theta_i`.
 - Phase 1 LP relaxation with cut generation.
@@ -28,7 +28,7 @@ Required course dimensions:
 - Benders: optimality cuts, lazy constraints, and callback proof.
 - Computational results: curated benchmark CSVs, logs, and plots only from local runs.
 
-## 4. Implemented core
+## 4. Current verified state
 
 Implemented in C with Gurobi backend:
 
@@ -40,21 +40,55 @@ Implemented in C with Gurobi backend:
 - Warm-start from Phase 1 cuts.
 - CSV/log utilities.
 
-## 5. Missing paper components
+Locally verified experiments:
 
-Not implemented or not run locally:
+- `toy1`.
+- OR-Library `pmed1`–`pmed15`.
+- TSPLIB `rl1304` Table 2 subset.
+- TSPLIB `kroA100`.
+- Warm/cold comparison.
+- Separator tests.
+- Branch-local external 300-second Benders campaign when `results/benders_300s_campaign.csv` and `results/logs/benders_300s/*.log` are present.
+
+Current audited missing/not-yet-run components:
 
 - Zebra.
 - PopStar.
 - Constraint reduction.
 - Reduced-cost fixing.
 - Monolithic C benchmark.
+- Large/huge TSPLIB campaigns.
 - BIRCH campaign.
 - RW large campaign.
 - ODM campaign.
-- Huge TSPLIB campaign.
 
-## 6. Required experimental protocol
+## 5. Target replication roadmap
+
+The project goal is not merely to document limitations. The goal is to progressively approach rigorous replication of Duran-Mateluna, Ales & Elloumi (2023).
+
+Future experimental branches may implement or run:
+
+- External 300-second benchmark campaign.
+- Monolithic F1 baseline in C.
+- Potentially F3/F4 monolithic baseline if feasible.
+- Larger OR-Library and TSPLIB campaigns.
+- Synthetic stress tests.
+- Gap trace logging.
+- PopStar or alternative warm-start heuristic if time allows.
+- Zebra only if source/build is available and reproducible.
+
+## 6. Branch policy
+
+Experimental implementations should happen in separate branches:
+
+- `exp/monolithic-baselines`
+- `exp/large-instance-campaign`
+- `exp/synthetic-stress`
+- `exp/gap-logging`
+- `exp/popstar-or-warmstart`
+- `exp/zebra-comparison` only if Zebra source/build is available
+
+## 7. Required experimental protocol
 
 - Do not modify the mathematical Benders core for benchmark bookkeeping.
 - Use separate experiment branches.
@@ -63,8 +97,9 @@ Not implemented or not run locally:
 - Store numerical results in `results/*.csv`.
 - Store raw command output in `results/logs/*.log` or experiment-specific log subdirectories.
 - Treat Zebra comparisons as paper-reported only unless Zebra is implemented or run locally.
+- Missing components are not forbidden; they require implementation/run evidence before claims.
 
-## 7. Required metrics
+## 8. Required metrics
 
 For Benders campaigns, collect when available:
 
@@ -92,7 +127,7 @@ For Benders campaigns, collect when available:
 
 Unavailable fields must be recorded as `NA`, never fabricated.
 
-## 8. Required plots
+## 9. Required plots
 
 Expected figure outputs for report use:
 
@@ -106,20 +141,23 @@ Expected figure outputs for report use:
 
 Plots must be generated from CSV evidence only.
 
-## 9. Required caveats
+## 10. Required caveats
 
-Mandatory caveats:
+Mandatory caveats for current audited state:
 
-- This project is a partial local replication of the paper’s core method.
+- Current local state is a partial replication of the paper’s core Benders method.
 - Hardware, solver, and initialization differ from the paper.
 - Runtime comparisons against the paper are machine-dependent.
-- Zebra was not rerun locally.
-- PopStar and reduction techniques are not implemented.
-- Large/huge benchmark families remain out of local scope unless new CSV/log evidence is added.
+- Zebra has not yet been rerun locally.
+- PopStar and reduction techniques are not yet implemented.
+- Large/huge benchmark families remain roadmap items until CSV/log evidence is added.
+- Future branches may remove these limitations if implementation/run evidence is committed.
 
-## 10. Forbidden claims
+## 11. Claim discipline and forbidden claims
 
-Forbidden unless new evidence is committed:
+Do not claim any roadmap item as completed unless there is code plus CSV/log/test evidence.
+
+Forbidden until supported by new evidence:
 
 - “We outperform Zebra.”
 - “We replicated the full paper.”
@@ -129,3 +167,7 @@ Forbidden unless new evidence is committed:
 - “We compared against a monolithic C baseline.”
 - “We ran BIRCH, ODM, RW large, or huge TSPLIB.”
 - “The 5-minute protocol was used” for any row not produced by a 300-second timeout wrapper.
+
+## 12. Immediate priority
+
+Current task: make the current Benders results defensible under the professor’s 5-minute protocol using an external 300-second wrapper, `results/*.csv`, and raw logs. This does not replace future monolithic baseline work, large-instance campaigns, synthetic stress tests, gap trace logging, PopStar/warm-start work, or Zebra comparison if reproducible source/build becomes available.
