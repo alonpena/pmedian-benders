@@ -30,8 +30,8 @@ Rule: only local code + CSV/log/test evidence counts as local replication. Zebra
 | OR-Library pmed13 | yes | yes | same | VERIFIED_LOCAL | high | report row | official optimum matched |
 | OR-Library pmed14 | yes | yes | same | VERIFIED_LOCAL | high | report row | official optimum matched |
 | OR-Library pmed15 | yes | yes | same | VERIFIED_LOCAL | high | report row | official optimum matched |
-| OR-Library pmed16 | yes | smoke yes | `results/orlib_pmed16_smoke_300s.csv`, `docs/ORLIB_PMED16_SMOKE_HANDOFF.md` | VERIFIED_LOCAL | high | expand to pmed17–pmed20 first | official source downloaded/converted; optimum matched |
-| OR-Library pmed17–pmed40 | parser/converter exists for OR-Lib style | no | source audit: official OR-Library files available | READY_TO_RUN | high | download/convert/run bounded campaign | official source available; not yet run |
+| OR-Library pmed16 | yes | smoke yes | `report/evidence/csv/orlib_pmed16_smoke_300s.csv`, `report/evidence/docs/ORLIB_PMED16_SMOKE_HANDOFF.md` | VERIFIED_LOCAL | high | include in consolidated OR-Library table | official source downloaded/converted; optimum matched |
+| OR-Library pmed17–pmed40 | yes | yes | `report/evidence/csv/orlib_pmed17_pmed40_300s.csv` | VERIFIED_LOCAL | high | use consolidated OR-Library table | official optima matched; 24/24 OPT_MATCH |
 | TSPLIB kroA100 | yes | yes | `results/benders_real_instances_300s.csv` | PARTIAL_LOCAL | medium | keep as local solved, no known optimum supplied | `OPTIMAL_NO_KNOWN` |
 | TSPLIB rl1304 p-grid | yes | yes | `results/benders_real_instances_300s.csv`, `results/benders_300s_campaign.csv` | VERIFIED_LOCAL | high | report p-grid | paper Table 2 subset matched where optima supplied |
 | TSPLIB fl1400 | converter likely exists | no | raw local `.tsp`; source audit official `.tsp.gz` available | NEEDS_PREPROCESSING | high | define paper p-grid, convert smoke | local raw file exists |

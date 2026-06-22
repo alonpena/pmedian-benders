@@ -1,0 +1,19 @@
+COMMAND: ./pmedian /Users/apena/benders-pmedian/report/evidence/metadata/orlib_pmp/pmed29.pmp --mode full --opt 3033
+TIMEOUT_SECONDS: 300
+TIMEOUT_FLAG: 0
+RETURNCODE: 0
+WRAPPER_TTOT_SECONDS: 0.167953
+
+--- STDOUT ---
+Instancia /Users/apena/benders-pmedian/report/evidence/metadata/orlib_pmp/pmed29.pmp: N=600 M=600 p=120 (matriz)
+Matriz S construida en 0.021 s
+Set parameter Username
+Set parameter LicenseID to value 2835550
+Academic license - for non-commercial use only - expires 2027-06-15
+[Fase 1] LB1=3033.0000 UB1=3033.0 iter=8 cuts=1212 T1=0.039 s
+Set parameter Username
+Set parameter LicenseID to value 2835550
+Academic license - for non-commercial use only - expires 2027-06-15
+[Fase 2] opt=3033.0 cuts=427 nodes=1 T2=0.079 s start=warm set={2,7,17,20,23,30,32,34,38,40,42,44,52,57,60,76,87,89,90,91,96,97,102,105,106,107,111,117,122,123,128,133,134,136,146,147,152,163,166,175,181,187,189,192,194,206,208,215,216,217,221,223,225,230,236,250,257,260,265,267,281,288,289,293,294,295,296,300,304,308,315,325,329,338,350,358,359,368,375,379,386,389,393,405,408,409,411,425,434,450,453,456,458,463,472,480,489,492,494,503,512,513,515,518,522,526,530,531,532,548,562,563,564,567,573,576,579,583,584,599}
+[CALLBACK] warm_cuts=1212  separaciones(MIPSOL)=10  cortes_lazy=427  nodos_B&B=1
+[CALLBACK] log -> results/logs/pmed29.pmp_p120_full.log

@@ -4,6 +4,11 @@ Consolidated evidence copied into `report/evidence/` and `report/figures/`. Orig
 
 | artifact | source branch | source path | final consolidated path | source commit | exists in final branch | used in report |
 |---|---|---|---|---|---|---|
+| `orlib_pmed17_pmed40_300s.csv` | `final/report-evidence-consolidation` | `generated official OR-Library extension` | `report/evidence/csv/orlib_pmed17_pmed40_300s.csv` | `current` | yes | yes |
+| `orlib_pmed1_pmed40_runtime.png` | `final/report-evidence-consolidation` | `generated from consolidated OR-Library CSVs` | `report/figures/orlib_pmed1_pmed40_runtime.png` | `current` | yes | yes |
+| `ORLIB_PMED17_PMED40_EXTENSION_HANDOFF.md` | `final/report-evidence-consolidation` | `report/ORLIB_PMED17_PMED40_EXTENSION_HANDOFF.md` | `report/evidence/docs/ORLIB_PMED17_PMED40_EXTENSION_HANDOFF.md` | `current` | yes | yes |
+| `orlib_pmed17_pmed40 logs` | `final/report-evidence-consolidation` | `generated logs` | `report/evidence/logs/orlib_pmed17_pmed40/` | `current` | yes | yes |
+| `orlib pmed17-pmed40 downloaded/converted data` | `final/report-evidence-consolidation` | `official OR-Library txt + converted pmp` | `report/evidence/metadata/orlib_sources/ and orlib_pmp/` | `current` | yes | yes |
 | `toy_pmedian_explanation.png` | `final/report-evidence-consolidation` | `manual schematic generated in report mode` | `report/figures/toy_pmedian_explanation.png` | `TBD-current-commit` | yes | yes |
 | `benders_300s_campaign.csv` | `exp/requirements-and-300s-benchmark` | `results/benders_300s_campaign.csv` | `report/evidence/csv/benders_300s_campaign.csv` | `1de348e` | yes | yes |
 | `benders_real_instances_300s.csv` | `exp/large-instance-campaign` | `results/benders_real_instances_300s.csv` | `report/evidence/csv/benders_real_instances_300s.csv` | `5240bde` | yes | yes |

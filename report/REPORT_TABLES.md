@@ -28,7 +28,7 @@
 |---|---|---:|---|---|
 | pmed1–pmed15 | verified local | 15 | `report/evidence/csv/benders_300s_campaign.csv`, `report/evidence/csv/benders_real_instances_300s.csv` | official optima matched |
 | pmed16 | smoke verified local | 1 | `report/evidence/csv/orlib_pmed16_smoke_300s.csv` | obj 8162, OPT_MATCH, 0.793458 s |
-| pmed17–pmed40 | ready to run | 0 | `report/evidence/docs/WEB_SOURCE_AND_REPLICATION_FEASIBILITY_AUDIT.md` | official source available; no run yet |
+| pmed17–pmed40 | verified local | 24 | `report/evidence/csv/orlib_pmed17_pmed40_300s.csv` | all OPT_MATCH, 0 timeouts; max 10.695018 s (`pmed36`) |
 
 ## 4. Monolithic F1 summary
 
@@ -94,7 +94,7 @@ All 18 synthetic rows: `OPTIMAL_NO_KNOWN`, `timeout_flag=0`.
 | Phase 1 / Phase 2 | VERIFIED_LOCAL | Benders CSV/logs, gap traces |
 | OR-Library pmed1–pmed15 | VERIFIED_LOCAL | campaign CSVs |
 | OR-Library pmed16 | VERIFIED_LOCAL smoke | pmed16 smoke CSV/log |
-| OR-Library pmed17–pmed40 | READY_TO_RUN | official source audit, no run |
+| OR-Library pmed17–pmed40 | VERIFIED_LOCAL | extension CSV/logs |
 | TSPLIB rl1304 | VERIFIED_LOCAL | Benders CSV |
 | TSPLIB kroA100 | PARTIAL_LOCAL | local solve, no known optimum supplied |
 | Monolithic F1 | PARTIAL_LOCAL | five-row baseline |
@@ -104,3 +104,14 @@ All 18 synthetic rows: `OPTIMAL_NO_KNOWN`, `timeout_flag=0`.
 | Reduced-cost fixing | NOT_IMPLEMENTED | audits |
 | BIRCH/RW-large/ODM | NOT_RUN / NOT_IMPLEMENTED | audits |
 | Synthetic stress | VERIFIED_LOCAL | synthetic CSV/logs |
+
+## 10. OR-Library pmed17-pmed40 extension
+
+| metric | value |
+|---|---:|
+| CSV | `report/evidence/csv/orlib_pmed17_pmed40_300s.csv` |
+| Rows | 24 |
+| OPT_MATCH | 24 |
+| timeout_flag=0 | 24 |
+| Max Ttot | 10.695018 s (`pmed36`) |
+| Combined OR-Library evidence | pmed1-pmed40 verified locally across consolidated runs |

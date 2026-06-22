@@ -1,0 +1,19 @@
+COMMAND: ./pmedian /Users/apena/benders-pmedian/report/evidence/metadata/orlib_pmp/pmed27.pmp --mode full --opt 8307
+TIMEOUT_SECONDS: 300
+TIMEOUT_FLAG: 0
+RETURNCODE: 0
+WRAPPER_TTOT_SECONDS: 0.814902
+
+--- STDOUT ---
+Instancia /Users/apena/benders-pmedian/report/evidence/metadata/orlib_pmp/pmed27.pmp: N=600 M=600 p=10 (matriz)
+Matriz S construida en 0.025 s
+Set parameter Username
+Set parameter LicenseID to value 2835550
+Academic license - for non-commercial use only - expires 2027-06-15
+[Fase 1] LB1=8301.7831 UB1=8310.0 iter=8 cuts=2337 T1=0.246 s
+Set parameter Username
+Set parameter LicenseID to value 2835550
+Academic license - for non-commercial use only - expires 2027-06-15
+[Fase 2] opt=8307.0 cuts=478 nodes=10 T2=0.510 s start=warm set={3,10,87,109,250,256,301,388,543,560}
+[CALLBACK] warm_cuts=2337  separaciones(MIPSOL)=12  cortes_lazy=478  nodos_B&B=10
+[CALLBACK] log -> results/logs/pmed27.pmp_p10_full.log

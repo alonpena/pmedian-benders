@@ -7,6 +7,7 @@
 | `docs/EXPERIMENTAL_HANDOFF_FOR_REPORT.md` | PRESENT | `docs/EXPERIMENTAL_HANDOFF_FOR_REPORT.md` |
 | `report/FINAL_EVIDENCE_INDEX.md` | PRESENT | `report/FINAL_EVIDENCE_INDEX.md` |
 | `report/FINAL_EVIDENCE_VALIDATION.md` | PRESENT | `report/FINAL_EVIDENCE_VALIDATION.md` |
+| `report/ORLIB_PMED17_PMED40_EXTENSION_HANDOFF.md` | PRESENT | `report/ORLIB_PMED17_PMED40_EXTENSION_HANDOFF.md` |
 | `report/REPORT_FIGURE_MAP.md` | PRESENT | `report/REPORT_FIGURE_MAP.md` |
 | `report/evidence/csv/benders_300s_campaign.csv` | PRESENT | `report/evidence/csv/benders_300s_campaign.csv` |
 | `report/evidence/csv/benders_real_instances_300s.csv` | PRESENT | `report/evidence/csv/benders_real_instances_300s.csv` |
@@ -16,6 +17,7 @@
 | `report/evidence/csv/gap_traces/toy1_p2_phase1.csv` | PRESENT | `report/evidence/csv/gap_traces/toy1_p2_phase1.csv` |
 | `report/evidence/csv/monolithic_f1_300s.csv` | PRESENT | `report/evidence/csv/monolithic_f1_300s.csv` |
 | `report/evidence/csv/orlib_pmed16_smoke_300s.csv` | PRESENT | `report/evidence/csv/orlib_pmed16_smoke_300s.csv` |
+| `report/evidence/csv/orlib_pmed17_pmed40_300s.csv` | PRESENT | `report/evidence/csv/orlib_pmed17_pmed40_300s.csv` |
 | `report/evidence/csv/synthetic_stress_300s.csv` | PRESENT | `report/evidence/csv/synthetic_stress_300s.csv` |
 | `report/evidence/docs/BENDERS_300S_CAMPAIGN.md` | PRESENT | `report/evidence/docs/BENDERS_300S_CAMPAIGN.md` |
 | `report/evidence/docs/BENDERS_VS_MONOLITHIC_HANDOFF.md` | PRESENT | `report/evidence/docs/BENDERS_VS_MONOLITHIC_HANDOFF.md` |
@@ -26,6 +28,7 @@
 | `report/evidence/docs/PAPER_REPLICATION_MATRIX.md` | PRESENT | `report/evidence/docs/PAPER_REPLICATION_MATRIX.md` |
 | `report/evidence/docs/SYNTHETIC_STRESS_HANDOFF.md` | PRESENT | `report/evidence/docs/SYNTHETIC_STRESS_HANDOFF.md` |
 | `report/evidence/docs/WEB_SOURCE_AND_REPLICATION_FEASIBILITY_AUDIT.md` | PRESENT | `report/evidence/docs/WEB_SOURCE_AND_REPLICATION_FEASIBILITY_AUDIT.md` |
+| `report/figures/orlib_pmed1_pmed40_runtime.png` | PRESENT | `report/figures/orlib_pmed1_pmed40_runtime.png` |
 | `report/figures/toy_pmedian_explanation.png` | PRESENT | `report/figures/toy_pmedian_explanation.png` |
 | `results/benders_300s_campaign.csv` | PRESENT | `results/benders_300s_campaign.csv` |
 | `results/figures/benders_300s_lazy_cuts_by_instance.png` | PRESENT | `results/figures/benders_300s_lazy_cuts_by_instance.png` |
@@ -55,7 +58,9 @@
 | `report/evidence/csv/benders_real_instances_300s.csv` | PRESENT | `report/evidence/csv/benders_real_instances_300s.csv` |
 | `report/evidence/csv/synthetic_stress_300s.csv` | PRESENT | `report/evidence/csv/synthetic_stress_300s.csv` |
 | `report/evidence/csv/orlib_pmed16_smoke_300s.csv` | PRESENT | `report/evidence/csv/orlib_pmed16_smoke_300s.csv` |
+| `report/evidence/csv/orlib_pmed17_pmed40_300s.csv` | PRESENT | `report/evidence/csv/orlib_pmed17_pmed40_300s.csv` |
 | `report/figures/toy_pmedian_explanation.png` | PRESENT | `report/figures/toy_pmedian_explanation.png` |
+| `report/figures/orlib_pmed1_pmed40_runtime.png` | PRESENT | `report/figures/orlib_pmed1_pmed40_runtime.png` |
 
 ## PNG readability
 
@@ -71,6 +76,7 @@
 | `report/figures/benders_vs_monolithic_runtime.png` | PRESENT | 950x560 | 4495 |
 | `report/figures/bounds_vs_iteration_pmed1.png` | PRESENT | 900x560 | 4218 |
 | `report/figures/gap_vs_iteration_pmed1.png` | PRESENT | 900x560 | 4233 |
+| `report/figures/orlib_pmed1_pmed40_runtime.png` | PRESENT | 1300x650 | 6849 |
 | `report/figures/plot_a_bounds_orlib.png` | PRESENT | 946x440 | 64270 |
 | `report/figures/plot_b_time_vs_N.png` | PRESENT | 635x502 | 20378 |
 | `report/figures/plot_c_gap_vs_pM.png` | PRESENT | 639x499 | 21834 |
@@ -87,18 +93,19 @@
 |---|---|
 | 1. El proyecto implementa un núcleo Benders estilo F4 derivado de F3 con variables `y_j` y `theta_i`. Evidence: `src/pha | y_j: MISSING_BUT_REFERENCED; theta_i: MISSING_BUT_REFERENCED; src/phase1.c: PRESENT (src/phase1.c); src/phase2.c: PRESENT (src/phase2.c); report/evidence/docs/PAPER_REPLICATION_MATRIX.md: PRESENT (report/evidence/docs/PAPER_REPLICATION_MATRIX.md) |
 | 2. La campaña Benders 300s contiene 26 filas, 25 `OPT_MATCH`, 1 `OPTIMAL_NO_KNOWN` y 0 timeouts. Evidence: `report/evide | OPT_MATCH: MISSING_BUT_REFERENCED; OPTIMAL_NO_KNOWN: MISSING_BUT_REFERENCED; report/evidence/csv/benders_300s_campaign.csv: PRESENT (report/evidence/csv/benders_300s_campaign.csv); report/evidence/docs/OVERNIGHT_TIMEOUT_AUDIT.md: PRESENT (report/evidence/docs/OVERNIGHT_TIMEOUT_AUDIT.md) |
-| 3. OR-Library `pmed1`–`pmed15` fue verificada localmente contra óptimos oficiales. Evidence: `report/evidence/csv/bender | pmed1: MISSING_BUT_REFERENCED; pmed15: MISSING_BUT_REFERENCED; report/evidence/csv/benders_300s_campaign.csv: PRESENT (report/evidence/csv/benders_300s_campaign.csv); report/evidence/docs/BENDERS_300S_CAMPAIGN.md: PRESENT (report/evidence/docs/BENDERS_300S_CAMPAIGN.md) |
+| 3. OR-Library `pmed1`–`pmed40` fue verificada localmente contra óptimos oficiales en evidencia consolidada. Evidence: `r | pmed1: MISSING_BUT_REFERENCED; pmed40: MISSING_BUT_REFERENCED; report/evidence/csv/benders_300s_campaign.csv: PRESENT (report/evidence/csv/benders_300s_campaign.csv); report/evidence/csv/orlib_pmed16_smoke_300s.csv: PRESENT (report/evidence/csv/orlib_pmed16_smoke_300s.csv); report/evidence/csv/orlib_pmed17_pmed40_300s.csv: PRESENT (report/evidence/csv/orlib_pmed17_pmed40_300s.csv); report/evidence/docs/BENDERS_300S_CAMPAIGN.md: PRESENT (report/evidence/docs/BENDERS_300S_CAMPAIGN.md); report/ORLIB_PMED17_PMED40_EXTENSION_HANDOFF.md: PRESENT (report/ORLIB_PMED17_PMED40_EXTENSION_HANDOFF.md) |
 | 4. TSPLIB `rl1304` fue ejecutada localmente en 9 valores de p y coincidió con óptimos de referencia usados por el wrappe | rl1304: MISSING_BUT_REFERENCED; report/evidence/csv/benders_300s_campaign.csv: PRESENT (report/evidence/csv/benders_300s_campaign.csv); report/evidence/docs/BENDERS_300S_CAMPAIGN.md: PRESENT (report/evidence/docs/BENDERS_300S_CAMPAIGN.md) |
 | 5. `kroA100` fue resuelta localmente, pero se reporta como `OPTIMAL_NO_KNOWN`. Evidence: `report/evidence/csv/benders_30 | kroA100: MISSING_BUT_REFERENCED; OPTIMAL_NO_KNOWN: MISSING_BUT_REFERENCED; report/evidence/csv/benders_300s_campaign.csv: PRESENT (report/evidence/csv/benders_300s_campaign.csv) |
 | 6. El timeout de 300 segundos fue aplicado externamente por wrappers Python en las campañas auditadas. Evidence: `report | report/evidence/docs/OVERNIGHT_TIMEOUT_AUDIT.md: PRESENT (report/evidence/docs/OVERNIGHT_TIMEOUT_AUDIT.md) |
-| 7. La línea base monolítica F1 resolvió 5 instancias con `OPTIMAL` y 0 timeouts. Evidence: `report/evidence/csv/monolith | OPTIMAL: MISSING_BUT_REFERENCED; report/evidence/csv/monolithic_f1_300s.csv: PRESENT (report/evidence/csv/monolithic_f1_300s.csv); report/evidence/docs/MONOLITHIC_F1_BASELINE_HANDOFF.md: PRESENT (report/evidence/docs/MONOLITHIC_F1_BASELINE_HANDOFF.md) |
+| 7. La línea base monolítica F1 resolvió 5 instancias con `OPTIMAL` y 0 timeouts. Evidence: `report/evidence/csv/monolith | OPTIMAL: MISSING_BUT_REFERENCED; report/evidence/csv/monolithic_f1_300s.csv: PRESENT (report/evidence/csv/monolithic_f1_300s.csv); exp/monolithic-baselines: MISSING_BUT_REFERENCED; report/evidence/docs/MONOLITHIC_F1_BASELINE_HANDOFF.md: PRESENT (report/evidence/docs/MONOLITHIC_F1_BASELINE_HANDOFF.md) |
 | 8. En las cinco instancias de solape, Benders fue más rápido que F1 salvo `toy1`. Evidence: `report/evidence/docs/BENDER | toy1: MISSING_BUT_REFERENCED; report/evidence/docs/BENDERS_VS_MONOLITHIC_HANDOFF.md: PRESENT (report/evidence/docs/BENDERS_VS_MONOLITHIC_HANDOFF.md) |
-| 9. Las trazas de Fase 1 fueron generadas para toy1, pmed1, pmed6 y rl1304 p=5. Evidence: `report/evidence/docs/GAP_TRACE | report/evidence/docs/GAP_TRACE_HANDOFF.md: PRESENT (report/evidence/docs/GAP_TRACE_HANDOFF.md) |
-| 10. La campaña sintética ejecutó 18 instancias hasta N=5000, sin timeouts. Evidence: `report/evidence/csv/synthetic_stre | report/evidence/csv/synthetic_stress_300s.csv: PRESENT (report/evidence/csv/synthetic_stress_300s.csv); report/evidence/docs/SYNTHETIC_STRESS_HANDOFF.md: PRESENT (report/evidence/docs/SYNTHETIC_STRESS_HANDOFF.md) |
+| 9. Las trazas de Fase 1 fueron generadas para toy1, pmed1, pmed6 y rl1304 p=5. Evidence: `report/evidence/docs/GAP_TRACE | report/evidence/docs/GAP_TRACE_HANDOFF.md: PRESENT (report/evidence/docs/GAP_TRACE_HANDOFF.md); exp/gap-trace-integration: MISSING_BUT_REFERENCED |
+| 10. La campaña sintética ejecutó 18 instancias hasta N=5000, sin timeouts. Evidence: `report/evidence/csv/synthetic_stre | report/evidence/csv/synthetic_stress_300s.csv: PRESENT (report/evidence/csv/synthetic_stress_300s.csv); exp/synthetic-stress: MISSING_BUT_REFERENCED; report/evidence/docs/SYNTHETIC_STRESS_HANDOFF.md: PRESENT (report/evidence/docs/SYNTHETIC_STRESS_HANDOFF.md) |
 | 11. OR-Library pmed16 fue descargada desde fuente oficial, convertida y resuelta con `OPT_MATCH` objetivo 8162. Evidence | OPT_MATCH: MISSING_BUT_REFERENCED; report/evidence/csv/orlib_pmed16_smoke_300s.csv: PRESENT (report/evidence/csv/orlib_pmed16_smoke_300s.csv); report/evidence/docs/ORLIB_PMED16_SMOKE_HANDOFF.md: PRESENT (report/evidence/docs/ORLIB_PMED16_SMOKE_HANDOFF.md) |
 | 12. Zebra no fue ejecutado localmente. Evidence: `report/evidence/docs/WEB_SOURCE_AND_REPLICATION_FEASIBILITY_AUDIT.md`, | report/evidence/docs/WEB_SOURCE_AND_REPLICATION_FEASIBILITY_AUDIT.md: PRESENT (report/evidence/docs/WEB_SOURCE_AND_REPLICATION_FEASIBILITY_AUDIT.md); report/evidence/docs/PAPER_REPLICATION_MATRIX.md: PRESENT (report/evidence/docs/PAPER_REPLICATION_MATRIX.md) |
 | 13. PopStar no fue implementado localmente. Evidence: `report/evidence/docs/PAPER_REPLICATION_MATRIX.md`, `src/heuristic | report/evidence/docs/PAPER_REPLICATION_MATRIX.md: PRESENT (report/evidence/docs/PAPER_REPLICATION_MATRIX.md); src/heuristic.h: PRESENT (src/heuristic.h) |
 | 14. Reduced-cost fixing y constraint reduction no fueron implementados. Evidence: `report/evidence/docs/PAPER_REPLICATIO | report/evidence/docs/PAPER_REPLICATION_MATRIX.md: PRESENT (report/evidence/docs/PAPER_REPLICATION_MATRIX.md) |
+| 15. OR-Library `pmed17`–`pmed40` fue ejecutada con 24/24 `OPT_MATCH` y 0 timeouts. Evidence: `report/evidence/csv/orlib_ | pmed17: MISSING_BUT_REFERENCED; pmed40: MISSING_BUT_REFERENCED; OPT_MATCH: MISSING_BUT_REFERENCED; report/evidence/csv/orlib_pmed17_pmed40_300s.csv: PRESENT (report/evidence/csv/orlib_pmed17_pmed40_300s.csv); report/ORLIB_PMED17_PMED40_EXTENSION_HANDOFF.md: PRESENT (report/ORLIB_PMED17_PMED40_EXTENSION_HANDOFF.md) |
 
 ## Verdict
 

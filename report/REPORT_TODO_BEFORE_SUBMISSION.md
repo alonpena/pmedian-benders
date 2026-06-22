@@ -25,7 +25,7 @@
 15. Añadir una explicación corta de complejidad/tamaño F1 versus maestro Benders.
 16. Incluir explícitamente la respuesta “¿hasta qué tamaño se resolvió?” con N=1304 real/preprocesado y N=5000 sintético.
 17. Añadir una tabla corta de “lo replicado vs lo no replicado”.
-18. Verificar que `pmed16` se presente como smoke test, no campaña completa.
+18. Actualizar narrativa: OR-Library pmed1–pmed40 ahora tiene evidencia consolidada; pmed16 sigue siendo smoke individual dentro de esa consolidación.
 19. Verificar que `kroA100` se presente como `OPTIMAL_NO_KNOWN`, no como match externo.
 20. Evitar todo lenguaje de marketing: usar “evidencia local”, “replicación parcial”, “auditado”.
 

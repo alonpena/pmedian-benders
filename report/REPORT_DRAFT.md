@@ -11,7 +11,7 @@
 
 ## Resumen
 
-Este informe presenta una replicación parcial y auditada de la descomposición de Benders para el problema p-mediana propuesta por Duran-Mateluna, Ales y Elloumi (2023). El proyecto implementa en C, con backend Gurobi, un método estilo F4/branch-and-Benders-cut derivado de la formulación F3 del artículo: el maestro contiene variables de apertura `y_j` y variables de costo por cliente `theta_i`, mientras que los cortes de optimalidad se separan mediante sitios ordenados y el índice `ktilde_i`. La replicación es deliberadamente parcial: se valida el núcleo matemático y computacional, pero no se reimplementan todos los componentes del paper. Los experimentos usan un protocolo con límite externo de 300 segundos mediante wrappers Python y guardan evidencia en CSV, logs y figuras. La evidencia verificada incluye OR-Library pmed1–pmed15, un smoke test de pmed16, TSPLIB `rl1304` y `kroA100`, una línea base monolítica F1, trazas de gap de Fase 1 y una campaña sintética hasta N=5000. No se replica localmente Zebra, PopStar, reduced-cost fixing, constraint reduction, ni las campañas completas BIRCH/RW/ODM o TSPLIB enormes. Por tanto, el resultado debe leerse como una replicación progresiva del núcleo de Benders y no como una reproducción completa del artículo.
+Este informe presenta una replicación parcial y auditada de la descomposición de Benders para el problema p-mediana propuesta por Duran-Mateluna, Ales y Elloumi (2023). El proyecto implementa en C, con backend Gurobi, un método estilo F4/branch-and-Benders-cut derivado de la formulación F3 del artículo: el maestro contiene variables de apertura `y_j` y variables de costo por cliente `theta_i`, mientras que los cortes de optimalidad se separan mediante sitios ordenados y el índice `ktilde_i`. La replicación es deliberadamente parcial: se valida el núcleo matemático y computacional, pero no se reimplementan todos los componentes del paper. Los experimentos usan un protocolo con límite externo de 300 segundos mediante wrappers Python y guardan evidencia en CSV, logs y figuras. La evidencia verificada incluye OR-Library pmed1–pmed40 en evidencia consolidada, TSPLIB `rl1304` y `kroA100`, una línea base monolítica F1, trazas de gap de Fase 1 y una campaña sintética hasta N=5000. No se replica localmente Zebra, PopStar, reduced-cost fixing, constraint reduction, ni las campañas completas BIRCH/RW/ODM o TSPLIB enormes. Por tanto, el resultado debe leerse como una replicación progresiva del núcleo de Benders y no como una reproducción completa del artículo.
 
 ---
 
@@ -216,6 +216,7 @@ Familias y campañas consideradas:
 - `toy1`, para validación pequeña.
 - OR-Library `pmed1`–`pmed15` en campaña principal.
 - OR-Library `pmed16` como smoke test adicional oficial.
+- OR-Library `pmed17`–`pmed40` como extensión oficial consolidada.
 - TSPLIB `rl1304` con p-grid `5,10,20,50,100,200,300,400,500`.
 - TSPLIB `kroA100` sin óptimo externo suministrado.
 - Línea base monolítica F1 en cinco instancias.
@@ -232,13 +233,13 @@ Las 15 instancias OR-Library `pmed1`–`pmed15` coincidieron con óptimos oficia
 
 ### 9.2 OR-Library
 
-La evidencia local verificó `pmed1`–`pmed15` en la campaña principal. Posteriormente se hizo un smoke test oficial de `pmed16`: se descargó desde OR-Library, se convirtió a `.pmp`, y se resolvió bajo timeout externo de 300 segundos. El resultado fue `OPT_MATCH` con objetivo 8162, coincidente con el óptimo oficial, en `0.793458` segundos. Este smoke test muestra que la expansión a `pmed17`–`pmed40` es factible, pero no autoriza afirmar que la campaña completa pmed1–pmed40 ya esté hecha.
+La evidencia local verificó `pmed1`–`pmed15` en la campaña principal. Posteriormente se hizo un smoke test oficial de `pmed16`: se descargó desde OR-Library, se convirtió a `.pmp`, y se resolvió bajo timeout externo de 300 segundos. El resultado fue `OPT_MATCH` con objetivo 8162, coincidente con el óptimo oficial, en `0.793458` segundos. Finalmente se ejecutó una extensión oficial `pmed17`–`pmed40`: las 24 filas terminaron como `OPT_MATCH` y `timeout_flag=0`; el mayor tiempo fue `10.695018` segundos en `pmed36`. En conjunto, existe evidencia local consolidada para OR-Library `pmed1`–`pmed40`, aunque producida en campañas/ramas separadas.
 
 ### 9.3 TSPLIB
 
 La evidencia TSPLIB local cubre `rl1304` con 9 valores de `p` y `kroA100`. En `rl1304`, todos los valores del p-grid disponible coincidieron con los óptimos usados como referencia. En `kroA100`, el solver obtuvo una solución óptima local según Gurobi, pero el resultado se clasifica como `OPTIMAL_NO_KNOWN` por no contar con óptimo externo suministrado en el wrapper.
 
-No se ejecutaron localmente TSPLIB grandes o enormes como `d2103`, `pcb3038`, `fl3795`, `rl5934`, `usa13509` o instancias mayores. Existen archivos raw locales para `fl1400`, `u1432` y `vm1748`, pero requieren preprocessing y definición de p-grid antes de usarse en resultados defendibles.
+OR-Library quedó completa localmente para pmed1–pmed40. No se ejecutaron localmente TSPLIB grandes o enormes como `d2103`, `pcb3038`, `fl3795`, `rl5934`, `usa13509` o instancias mayores. Existen archivos raw locales para `fl1400`, `u1432` y `vm1748`, pero requieren preprocessing y definición de p-grid antes de usarse en resultados defendibles.
 
 ### 9.4 Línea base monolítica F1
 
@@ -258,7 +259,7 @@ La campaña sintética generó 18 instancias euclidianas determinísticas con se
 
 Con evidencia local y protocolo de 300 segundos, el método Benders resolvió:
 
-- OR-Library hasta `N=400` en `pmed16` smoke.
+- OR-Library hasta `N=900` en `pmed40`; la extensión `pmed17`–`pmed40` completó 24/24 `OPT_MATCH` bajo timeout de 300 segundos.
 - TSPLIB `rl1304` con `N=1304` en varios valores de `p`.
 - Instancias sintéticas euclidianas hasta `N=5000`, con máximo observado 44.25 s.
 
@@ -298,7 +299,7 @@ La evidencia experimental está dividida por ramas, lo que protege la limpieza d
 | Núcleo Benders F3/F4 | Verified local | `src/phase1.c`, `src/phase2.c`, `src/separation.c`, logs callback | Replicación del mecanismo central, no de todos los refinamientos. |
 | Fase 1 | Verified local | `report/evidence/csv/benders_300s_campaign.csv`, gap traces | LP con cortes y cotas LB/UB. |
 | Fase 2 branch-and-Benders-cut | Verified local | logs con `[CALLBACK]`, `lazy_cuts` | Lazy constraints de Gurobi. |
-| OR-Library | Partial/verified subset | pmed1–pmed15, pmed16 smoke | No está completa pmed1–pmed40. |
+| OR-Library | Verified local | pmed1–pmed40 consolidado | Completa localmente con evidencia repartida entre campaña principal, pmed16 smoke y extensión pmed17–pmed40. |
 | TSPLIB `rl1304` | Verified local | 9 valores de `p` | Coincide con óptimos usados como referencia. |
 | `kroA100` | Partial local | CSV Benders y F1 | Sin óptimo externo suministrado. |
 | PopStar | Not implemented | docs/audits | Se usa redondeo, no PopStar. |
@@ -325,7 +326,7 @@ La evidencia experimental está dividida por ramas, lo que protege la limpieza d
 
 ## 14. Conclusiones
 
-El proyecto implementa y valida el núcleo de una descomposición de Benders para el problema p-mediana: maestro con `y_j` y `theta_i`, separación cerrada por cliente, cortes de optimalidad, Fase 1 LP y Fase 2 branch-and-Benders-cut con callbacks lazy. La evidencia experimental muestra que el método reproduce óptimos conocidos en OR-Library pmed1–pmed15, en `rl1304` para el p-grid disponible, y en el smoke test oficial `pmed16`. Además, resuelve una grilla sintética hasta `N=5000` bajo el protocolo de 300 segundos.
+El proyecto implementa y valida el núcleo de una descomposición de Benders para el problema p-mediana: maestro con `y_j` y `theta_i`, separación cerrada por cliente, cortes de optimalidad, Fase 1 LP y Fase 2 branch-and-Benders-cut con callbacks lazy. La evidencia experimental muestra que el método reproduce óptimos conocidos en OR-Library pmed1–pmed40, en `rl1304` para el p-grid disponible, y en el smoke test/extension oficial de OR-Library. Además, resuelve una grilla sintética hasta `N=5000` bajo el protocolo de 300 segundos.
 
 La comparación con F1 cumple una función pedagógica: muestra cómo el modelo clásico crece con variables de asignación, mientras Benders mantiene un maestro más compacto y agrega información por cortes. Las trazas de gap ayudan a interpretar cotas y relajación, conectando teoría con implementación.
 
