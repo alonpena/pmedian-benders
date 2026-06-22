@@ -268,3 +268,70 @@ python3 scripts/plot_synthetic_stress.py
 - For gap comparison, explain metric definitions before interpreting.
 - Put limitations near results, not only at end.
 - Avoid Zebra language except as paper-reported background.
+
+## 12. Overnight verification update
+
+Added on branch `exp/orlib-pmed16-smoke` after forensic audit.
+
+### What is now report-ready
+
+- Benders 300s campaign evidence: row counts, statuses, timeout flags, logs, and figures verified.
+- Gap trace evidence: trace CSVs and pmed1 figures verified on `exp/gap-trace-integration`.
+- Monolithic F1 evidence: five-row baseline verified, with caution about log metadata.
+- Real READY campaign evidence: CSV/log traceability verified.
+- Synthetic stress evidence: 18 generated instances validated against intended `N` and `p`; CSV/logs/figures verified.
+- OR-Library pmed16 smoke: official source downloaded, converted, solved under 300s wrapper, objective matched official optimum 8162.
+
+### What is suspicious or requires caution
+
+- Current branch isolation means not all artifacts exist simultaneously on one branch. Reproduction must switch to the correct branch.
+- Monolithic F1 logs do not include `TIMEOUT_SECONDS` metadata, although wrapper source and CSV enforce/report timeout.
+- Gap columns are not identical metrics across Benders and monolithic F1; explain definitions before comparing.
+- Synthetic rows are `OPTIMAL_NO_KNOWN`; no independent benchmark optima.
+- pmed16 is only a smoke row, not a completed pmed16–pmed40 campaign.
+
+### What was verified overnight
+
+Audit docs created:
+
+- `docs/OVERNIGHT_TIMEOUT_AUDIT.md`
+- `docs/OVERNIGHT_TRACEABILITY_AUDIT.md`
+- `docs/OVERNIGHT_LOG_AUTHENTICITY_AUDIT.md`
+- `docs/OVERNIGHT_SYNTHETIC_INSTANCE_AUDIT.md`
+- `docs/OVERNIGHT_FIGURES_AUDIT.md`
+- `docs/WEB_SOURCE_AND_REPLICATION_FEASIBILITY_AUDIT.md`
+
+Safe addition:
+
+- `docs/ORLIB_PMED16_SMOKE_HANDOFF.md`
+- `results/orlib_pmed16_smoke_300s.csv`
+- `results/logs/orlib_pmed16_smoke/pmed16_300s.log`
+- `instances/orlib/pmed16.txt`
+- `instances/orlib/pmed16.pmp`
+
+### Internet/source audit findings
+
+- Official OR-Library pmed1–pmed40 files are available from J.E. Beasley OR-Library.
+- Official TSPLIB direct `.tsp.gz` files are available for rl1304, fl1400, u1432, vm1748, d2103, pcb3038, fl3795, rl5934, usa13509. `sw24978` was not found at checked TSPLIB mirror URLs.
+- No trustworthy official PopStar source found during light audit.
+- No trustworthy official Zebra source found during light audit. A GitHub repository named `p-median-zebra` exists, but it is not proven to be the paper Zebra code and must not support Zebra claims.
+- BIRCH/ODM exact data sources remain unresolved locally; RW has local generator/tiny smoke only.
+
+### Feasible next components
+
+1. OR-Library pmed17–pmed40 bounded campaign from official source.
+2. TSPLIB fl1400/u1432/vm1748 preprocessing and smoke runs after defining p-grid.
+3. RW generated campaign, clearly labeled RW-like/local generator, not paper-exact data.
+4. PopStar/Zebra only if trustworthy source/provenance appears.
+
+### Impossible or too risky tonight
+
+- Zebra implementation/build.
+- PopStar integration.
+- ODM parser/model support.
+- Huge TSPLIB or `usa13509` campaign without memory profiling.
+- Full BIRCH/RW-large/ODM paper campaign.
+
+### Exact next action for morning
+
+Create a dedicated OR-Library expansion branch and run pmed17–pmed20 first under the same 300s wrapper style. If clean, expand to pmed21–pmed40 and generate one consolidated OR-Library pmed1–pmed40 CSV/log handoff.
