@@ -1,0 +1,21 @@
+COMMAND: ./pmedian instances/tsplib/kroA100.pmp --mode full
+TIMEOUT_SECONDS: 300
+TIMEOUT_FLAG: 0
+RETURNCODE: 0
+WRAPPER_TTOT_SECONDS: 0.067967
+
+--- STDOUT ---
+Instancia /Users/apena/benders-pmedian/instances/tsplib/kroA100.pmp: N=100 M=100 p=10 (coords)
+Matriz S construida en 0.000 s
+Set parameter Username
+Set parameter LicenseID to value 2835550
+Academic license - for non-commercial use only - expires 2027-06-15
+[Fase 1] LB1=30530.0000 UB1=30545.0 iter=8 cuts=306 T1=0.009 s
+Set parameter Username
+Set parameter LicenseID to value 2835550
+Academic license - for non-commercial use only - expires 2027-06-15
+[Fase 2] opt=30539.0 cuts=162 nodes=1 T2=0.042 s start=warm set={9,12,13,19,27,31,55,72,87,95}
+[CALLBACK] warm_cuts=306  separaciones(MIPSOL)=12  cortes_lazy=162  nodos_B&B=1
+[CALLBACK] log -> results/logs/kroA100.pmp_p10_full.log
+
+--- STDERR ---
