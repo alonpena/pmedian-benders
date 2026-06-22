@@ -1,47 +1,61 @@
-# Matriz de replicación del paper
+# Paper replication matrix
 
 Paper: Duran-Mateluna, Ales & Elloumi (2023), *An efficient Benders decomposition for the p-median problem*.
 
-Regla de lectura: solo evidencia local cuenta como resultado local. Si Zebra no fue corrido, no se dice “nuestra implementación supera a Zebra”.
+Rule: only local code + CSV/log/test evidence counts as local replication. Zebra/PopStar/paper large campaigns remain paper-only unless local build/run evidence exists.
 
-**Wording obligatorio:** “The paper reports that this method outperforms Zebra; this project does not rerun Zebra. Therefore, the comparison with Zebra is treated as a literature claim, not as a local experimental result.”
+## Matrix
 
-## Tabla maestra
+| paper_component | implemented_local | run_local | evidence_file | status | priority | next_step | notes |
+|---|---|---|---|---|---|---|---|
+| Benders master (`y_j`, `theta_i`, `sum y=p`) | yes | yes | `src/phase1.c`, `src/phase2.c`, `results/benders_300s_campaign.csv` | VERIFIED_LOCAL | high | keep core frozen unless reproducible bug | verified core |
+| Benders optimality cuts | yes | yes | `src/separation.c`, Benders logs with `lazy_cuts` | VERIFIED_LOCAL | high | cite logs | no feasibility cuts needed |
+| Algorithm 1 separation | yes | yes | `src/separation.c`, `make test` | VERIFIED_LOCAL | high | cite tests | customer-wise separation implemented |
+| Algorithm 2 `ktilde` | yes | yes | `tests/test_separation_toy.c` | VERIFIED_LOCAL | high | cite toy derivation | validated by hand-derived toy test |
+| Benders Phase 1 | yes | yes | `results/benders_300s_campaign.csv`, `results/gap_traces/*` on `exp/gap-trace-integration` | VERIFIED_LOCAL | high | use aggregate + trace plots | PopStar not used |
+| Benders Phase 2 | yes | yes | logs with `[CALLBACK]`, `lazy_cuts`, `separation_calls` | VERIFIED_LOCAL | high | cite callback proof | Gurobi lazy callback evidence |
+| Warm-start by Phase 1 cuts | yes | yes | `src/cutpool.c`, logs with `warm_cuts` | VERIFIED_LOCAL | medium | describe as cut warm-start | not PopStar |
+| OR-Library pmed1 | yes | yes | `results/benders_real_instances_300s.csv` on `exp/large-instance-campaign` | VERIFIED_LOCAL | high | report row | official optimum matched |
+| OR-Library pmed2 | yes | yes | same | VERIFIED_LOCAL | high | report row | official optimum matched |
+| OR-Library pmed3 | yes | yes | same | VERIFIED_LOCAL | high | report row | official optimum matched |
+| OR-Library pmed4 | yes | yes | same | VERIFIED_LOCAL | high | report row | official optimum matched |
+| OR-Library pmed5 | yes | yes | same | VERIFIED_LOCAL | high | report row | official optimum matched |
+| OR-Library pmed6 | yes | yes | same | VERIFIED_LOCAL | high | report row | official optimum matched |
+| OR-Library pmed7 | yes | yes | same | VERIFIED_LOCAL | high | report row | official optimum matched |
+| OR-Library pmed8 | yes | yes | same | VERIFIED_LOCAL | high | report row | official optimum matched |
+| OR-Library pmed9 | yes | yes | same | VERIFIED_LOCAL | high | report row | official optimum matched |
+| OR-Library pmed10 | yes | yes | same | VERIFIED_LOCAL | high | report row | official optimum matched |
+| OR-Library pmed11 | yes | yes | same | VERIFIED_LOCAL | high | report row | official optimum matched |
+| OR-Library pmed12 | yes | yes | same | VERIFIED_LOCAL | high | report row | official optimum matched |
+| OR-Library pmed13 | yes | yes | same | VERIFIED_LOCAL | high | report row | official optimum matched |
+| OR-Library pmed14 | yes | yes | same | VERIFIED_LOCAL | high | report row | official optimum matched |
+| OR-Library pmed15 | yes | yes | same | VERIFIED_LOCAL | high | report row | official optimum matched |
+| OR-Library pmed16–pmed40 | parser/converter exists for OR-Lib style | no | source audit: official OR-Library files available | READY_TO_RUN | high | download/convert pmed16 smoke first | official source available; not yet local on final branch |
+| TSPLIB kroA100 | yes | yes | `results/benders_real_instances_300s.csv` | PARTIAL_LOCAL | medium | keep as local solved, no known optimum supplied | `OPTIMAL_NO_KNOWN` |
+| TSPLIB rl1304 p-grid | yes | yes | `results/benders_real_instances_300s.csv`, `results/benders_300s_campaign.csv` | VERIFIED_LOCAL | high | report p-grid | paper Table 2 subset matched where optima supplied |
+| TSPLIB fl1400 | converter likely exists | no | raw local `.tsp`; source audit official `.tsp.gz` available | NEEDS_PREPROCESSING | high | define paper p-grid, convert smoke | local raw file exists |
+| TSPLIB u1432 | converter likely exists | no | raw local `.tsp`; source audit official `.tsp.gz` available | NEEDS_PREPROCESSING | high | define paper p-grid, convert smoke | local raw file exists |
+| TSPLIB vm1748 | converter likely exists | no | raw local `.tsp`; source audit official `.tsp.gz` available | NEEDS_PREPROCESSING | high | define paper p-grid, convert smoke | local raw file exists |
+| TSPLIB d2103 | converter likely exists | no | source audit official `.tsp.gz` available | NEEDS_DOWNLOAD | medium | download only after small/medium success | not local |
+| TSPLIB pcb3038 | converter likely exists | no | source audit official `.tsp.gz` available | NEEDS_DOWNLOAD | medium | later candidate | not local |
+| TSPLIB fl3795 | converter likely exists | no | source audit official `.tsp.gz` available | NEEDS_DOWNLOAD | medium | memory-check before run | not local |
+| TSPLIB rl5934 | converter likely exists | no | source audit official `.tsp.gz` available | TOO_RISKY_TONIGHT | low | document only | likely memory/time risk |
+| TSPLIB usa13509 | converter likely exists | no | source audit official `.tsp.gz` available | TOO_RISKY_TONIGHT | low | document only | too large tonight |
+| TSPLIB sw24978 | no | no | checked common TSPLIB mirror URLs; not found | NEEDS_DOWNLOAD | low | find source/provenance | source unresolved |
+| BIRCH | local generator only | no paper campaign | `scripts/gen_birch.py`; no CSV/log campaign | NOT_RUN | medium | source exact data or run clearly-labeled generated BIRCH-like campaign | paper-scale not replicated |
+| RW | local generator + tiny rw12 | only tiny row | `instances/orlib/rw12.pmp`, real campaign row | PARTIAL_LOCAL | medium | run generated RW campaign if labeled synthetic/RW-like | not paper full RW campaign |
+| ODM | no | no | no parser/log/data | NOT_IMPLEMENTED | low | requires forbidden-assignment support | too risky |
+| Zebra comparison | no | no | web audit: no trustworthy official source found | NOT_AVAILABLE_PUBLICLY | high for claims | keep paper-only wording; seek author code if needed | GitHub repo found is not proven paper Zebra |
+| PopStar warm start | no | no | web audit: no trustworthy source found | NOT_IMPLEMENTED | medium | write feasibility only or implement independent heuristic later under new branch | do not claim PopStar |
+| F1 formulation comparison | yes | yes | `results/monolithic_f1_300s.csv`, branch `exp/monolithic-baselines` | PARTIAL_LOCAL | medium | report five-row overlap only | F1 baseline implemented, not paper C benchmark |
+| F2 formulation comparison | no | no | no code/results | NOT_IMPLEMENTED | low | not tonight | paper formulation only |
+| F3 formulation comparison | theoretical/core basis only | no monolithic F3 | docs/source; no monolithic F3 CSV | PARTIAL_LOCAL | low | optional future baseline | Benders derived from F3 |
+| F4 formulation/Benders comparison | yes core Benders | yes | core Benders evidence | VERIFIED_LOCAL | high | present as core method | naming depends report convention |
+| Constraint reduction | no | no | no implementation | NOT_IMPLEMENTED | medium | future isolated branch | do not claim |
+| Reduced-cost fixing | no | no | no implementation | NOT_IMPLEMENTED | medium | future isolated branch | do not claim |
+| Synthetic stress test | yes | yes | `results/synthetic_stress_300s.csv`, branch `exp/synthetic-stress` | VERIFIED_LOCAL | medium | use as local stress evidence only | not paper data |
+| Gap trace logging | yes | yes | `results/gap_traces/*`, branch `exp/gap-trace-integration` | VERIFIED_LOCAL | medium | use pmed1 trace figures | logging branch only |
 
-| Paper component / experiment | Paper location | What paper does | What this repo does | Local evidence | Status | Defense-safe wording |
-|---|---|---|---|---|---|---|
-| F3 formulation | §2 | Usa F3 de Elloumi como formulación fuerte/rala base. | Replica F3 en teoría; usa maestro Benders derivado de F3; mantiene prototipo F3 como oráculo. | `report/sections/03_formulaciones.tex`; `prototype/pmp_benders.py`; `docs/AUDIT.md` #10 | VERIFIED_LOCAL | “Replicamos F3 como base matemática y validamos contra oráculo F3 en instancias pequeñas.” |
-| Benders master | §3.1–3.2 | Maestro con variables `y_j`, `theta_i`, restricción `sum y=p`, cortes. | Implementa maestro LP/MIP en Fase 1/2. | `src/phase1.c`; `src/phase2.c`; `results/benchmark.csv` | VERIFIED_LOCAL | “El maestro de Benders está implementado en C.” |
-| Primal subproblem | §3.2 | Fijado `y`, separa por cliente; calcula distancia asignación vía variables de radio. | Derivado en informe; evaluado por separador, sin resolver LP explícito. | `report/sections/05_benders.tex`; `src/separation.c` | VERIFIED_LOCAL | “El subproblema se usa por su forma cerrada, no como LP llamado al solver.” |
-| Dual subproblem | §3.2 | Deriva dual y puntos extremos que producen cortes. | Derivado en informe; solución cerrada codificada. | `report/sections/05_benders.tex`; `report/sections/06_separacion.tex`; `src/separation.c` | VERIFIED_LOCAL | “Replicamos el dual y explotamos su solución cerrada.” |
-| Benders optimality cuts | §3.2, Eq. 16/20 | Genera cortes de optimalidad; no requiere cortes de factibilidad. | Implementa cortes `theta_i + sum coef*y >= rhs`. | `src/separation.c`; `src/phase1.c`; `src/phase2.c`; `results/logs/*full.log` | VERIFIED_LOCAL | “Solo hay cortes de optimalidad porque el subproblema siempre es factible y acotado.” |
-| Algorithm 1 separation | §3.3 | Recorre clientes, separa cortes violados. | `separation_all` recorre `N` clientes y agrega cortes vía callback/sink. | `src/separation.c`; `make test`; `scripts/verify_cuts.py` | VERIFIED_LOCAL | “Algoritmo 1 está implementado y probado.” |
-| Algorithm 2 `ktilde` computation | §3.3 | Calcula índice `ktilde_i` en `O(M)` por cliente. | `separation_k_tilde` recorre sitios ordenados y acumula `ybar`. | `src/separation.c`; `tests/test_separation_toy.c` | VERIFIED_LOCAL | “Algoritmo 2 está implementado y validado con cortes derivados a mano.” |
-| `O(NM)` separation | §3.3 | Separación cerrada `O(NM)` por iteración. | Estructura de código es `O(M)` por cliente; verificada hasta `N=1304`, sin timing aislado a gran escala. | `src/separation.c`; `results/benchmark.csv`; no perfil a `>10^4` | PARTIAL_LOCAL | “La complejidad algorítmica está replicada; no medimos escalabilidad masiva.” |
-| Phase 1 LP relaxation | §3.5 / Alg. 3 | Resuelve maestro LP con cortes y obtiene `LB1/UB1`. | Implementa Fase 1 con redondeo uniforme (no PopStar). | `src/phase1.c`; `results/benchmark.csv`; `results/comparison_vs_paper.csv` | VERIFIED_LOCAL | “Fase 1 está replicada; la heurística inicial difiere.” |
-| Phase 2 branch-and-Benders-cut | §3.5 | MIP con lazy constraints. | Implementa callback lazy con Gurobi. | `src/phase2.c`; `results/logs/*full.log` (`lazy_cuts>0`) | VERIFIED_LOCAL | “Fase 2 es branch-and-Benders-cut real; los logs prueban cortes lazy.” |
-| Warm-start from Phase 1 cuts/bounds | §3.5 | Fase 2 hereda cortes/cotas de Fase 1. | Hereda cortes de Fase 1 como restricciones iniciales; no prueba ventaja wall-time general. | `src/cutpool.c`; `src/phase1.c`; `src/phase2.c`; `results/warmstart_comparison.csv` | VERIFIED_LOCAL | “Warm-start por cortes está implementado; reduce nodos localmente, tiempo mixto.” |
-| OR-Library | §4 | Paper la menciona como benchmark estándar; no tabla local del paper en repo. | Corre `pmed1`–`pmed15` y compara con óptimos oficiales Beasley. | `results/orlib_optima_check.csv`; `results/logs/pmed*.log` | VERIFIED_LOCAL | “OR-Library se validó localmente contra óptimos oficiales: 15/15.” |
-| `rl1304` / TSPLIB subset | §4, Table 2 | Reporta Tabla 2 small TSP para `rl1304` con 9 valores de `p`. | Transcribe Tabla 2 y corre los 9 `p`; compara OPT/LB1/UB1. | `results/comparison_vs_paper.csv`; `scripts/compare_paper.py`; logs `rl1304_*` | VERIFIED_LOCAL | “Reproducimos la Tabla 2 para `rl1304`: 9/9 óptimos.” |
-| Zebra | §4 | Compara contra Zebra y reporta ventaja. | No implementa ni ejecuta Zebra. | `rg Zebra src scripts results` sin binario/log; docs declaran ausencia | PAPER_REPORTED_ONLY / NOT_RUN | “Zebra no fue reejecutado; comparación tratada como literatura.” |
-| PopStar | §3.5 | Usa PopStar como heurística inicial. | No implementa PopStar; usa arranque uniforme + redondeo. | `src/heuristic.h`; `src/heuristic.c`; `results/comparison_vs_paper.csv` (`UB1` peor en algunos p) | NOT_IMPLEMENTED | “PopStar quedó fuera; esto afecta `UB1`, no la validez de Benders.” |
-| Reduced-cost fixing | §3.5 | Aplica fijación por costos reducidos bajo ciertas condiciones. | No implementado. | `rg "reduced-cost|reduced cost|rc_" src` sin implementación | NOT_IMPLEMENTED | “No implementamos reduced-cost fixing.” |
-| Constraint reduction | §3.5 | Reduce restricciones/cortes tras Fase 1. | No implementado. | `rg "constraint reduction|reduction" src` sin implementación | NOT_IMPLEMENTED | “No implementamos constraint reduction.” |
-| Large TSP | §4, Tables 3–? | Corre TSPLIB medianas/grandes. | No corre esas familias; solo raw `.tsp` algunos presentes sin `.pmp`/logs. | No CSV/log local; `instances/tsplib/fl1400.tsp`, `u1432.tsp`, `vm1748.tsp` sin resultados | NOT_RUN | “No hay resultados locales para TSP medianas/grandes fuera de `rl1304` y `kroA100`.” |
-| Huge TSP | §4 | Corre TSP huge hasta cientos de miles de puntos. | No corrido. | Sin instancias/results/logs huge | NOT_RUN | “Huge TSP es paper-reported only.” |
-| BIRCH | §4 | Corre instancias BIRCH grandes. | Solo existe generador `scripts/gen_birch.py`; no resultados. | Sin `instances/*birch*`; sin CSV/log | NOT_RUN | “BIRCH no fue corrido localmente.” |
-| RW | §4 | Corre familia RW de tamaño 100–1000 y casos difíciles. | Solo valida `rw12` pequeño/asimétrico. | `instances/orlib/rw12.pmp`; DEVLOG/test cross-check; sin CSV benchmark formal grande | PARTIAL_LOCAL | “RW solo se probó como validación pequeña, no como campaña del paper.” |
-| ODM | §4 | Corre Optimal Diversity Management como pMP con asignaciones prohibidas. | No implementa asignaciones prohibidas ni corre ODM. | Sin parser/instancias/logs ODM | NOT_IMPLEMENTED / NOT_RUN | “ODM quedó fuera del alcance.” |
+## Safe wording
 
-## Clasificación final
-
-| Clase | Definición | Componentes |
-|---|---|---|
-| A. Fully replicated locally | Implementado y verificado con evidencia local. | F3, maestro, subproblema/dual, cortes, Alg. 1, Alg. 2, Fase 1, Fase 2, warm-start por cortes, OR-Library, `rl1304` Tabla 2. |
-| B. Algorithmically replicated, partially tested | Código/derivación local existe, pero escala/campaña no se revalidó completa. | Separación `O(NM)` a gran escala; RW (solo `rw12`); TSPLIB fuera de `rl1304`/`kroA100`. |
-| C. Paper-reported only | Descrito desde el paper; no medido localmente. | Superioridad frente a Zebra; resultados de gran escala reportados por paper. |
-| D. Not implemented / not run | Ausente o no ejecutado. | Zebra, PopStar, reduced-cost fixing, constraint reduction, CPLEX/SCIP, large/huge TSP, BIRCH, RW grande, ODM. |
-
-## Veredicto de defensa
-
-Defensa segura: “Replicamos completamente el mecanismo algorítmico central y verificamos un subconjunto computacional trazable. No reejecutamos Zebra ni la campaña completa de gran escala; esas comparaciones son resultados del paper, no resultados locales.”
+“The project locally verifies the central Benders mechanism and several benchmark subsets. Full paper replication remains incomplete: Zebra, PopStar, reduction techniques, BIRCH/RW-large/ODM, and huge TSPLIB are not locally replicated.”
