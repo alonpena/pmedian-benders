@@ -1,0 +1,6 @@
+Instancia instances/tsplib/rl1304_p5.pmp: N=1304 M=1304 p=5 (coords)
+Matriz S construida en 0.125 s
+Set parameter Username
+Set parameter LicenseID to value 2835550
+Academic license - for non-commercial use only - expires 2027-06-15
+[Fase 1] LB1=3099073.0000 UB1=3099073.0 iter=6 cuts=4692 T1=1.526 s

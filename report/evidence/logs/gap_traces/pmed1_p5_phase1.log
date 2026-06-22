@@ -1,0 +1,6 @@
+Instancia instances/orlib/pmed1.pmp: N=100 M=100 p=5 (matriz)
+Matriz S construida en 0.000 s
+Set parameter Username
+Set parameter LicenseID to value 2835550
+Academic license - for non-commercial use only - expires 2027-06-15
+[Fase 1] LB1=5819.0000 UB1=5819.0 iter=6 cuts=337 T1=0.011 s

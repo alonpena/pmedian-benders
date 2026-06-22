@@ -1,0 +1,22 @@
+COMMAND: ./pmedian instances/orlib/rw12.pmp --mode full
+TIMEOUT_SECONDS: 300
+TIMEOUT_FLAG: 0
+RETURNCODE: 0
+WRAPPER_TTOT_SECONDS: 0.024330
+
+--- STDOUT ---
+Instancia /Users/apena/benders-pmedian/instances/orlib/rw12.pmp: N=12 M=12 p=3 (matriz)
+Matriz S construida en 0.000 s
+Set parameter Username
+Set parameter LicenseID to value 2835550
+Academic license - for non-commercial use only - expires 2027-06-15
+[Fase 1] LB1=15.0000 UB1=16.0 iter=5 cuts=31 T1=0.003 s
+Set parameter Username
+Set parameter LicenseID to value 2835550
+Academic license - for non-commercial use only - expires 2027-06-15
+[Fase 2] opt=16.0 cuts=0 nodes=1 T2=0.002 s start=warm set={2,4,11}
+[CALLBACK] warm_cuts=31  separaciones(MIPSOL)=2  cortes_lazy=0  nodos_B&B=1
+[CALLBACK][WARN] cortes_lazy=0 => NO es branch-and-Benders-cut!
+[CALLBACK] log -> results/logs/rw12.pmp_p3_full.log
+
+--- STDERR ---

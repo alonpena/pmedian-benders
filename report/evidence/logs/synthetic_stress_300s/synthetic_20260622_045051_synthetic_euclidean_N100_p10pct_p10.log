@@ -1,0 +1,21 @@
+COMMAND: ./pmedian instances/synthetic/euclidean_N100_p10pct_seed20260622.pmp --mode full
+TIMEOUT_SECONDS: 300
+TIMEOUT_FLAG: 0
+RETURNCODE: 0
+WRAPPER_TTOT_SECONDS: 0.037117
+
+--- STDOUT ---
+Instancia /Users/apena/benders-pmedian/instances/synthetic/euclidean_N100_p10pct_seed20260622.pmp: N=100 M=100 p=10 (coords)
+Matriz S construida en 0.000 s
+Set parameter Username
+Set parameter LicenseID to value 2835550
+Academic license - for non-commercial use only - expires 2027-06-15
+[Fase 1] LB1=9926341.0000 UB1=9926341.0 iter=5 cuts=254 T1=0.008 s
+Set parameter Username
+Set parameter LicenseID to value 2835550
+Academic license - for non-commercial use only - expires 2027-06-15
+[Fase 2] opt=9926341.0 cuts=115 nodes=1 T2=0.009 s start=warm set={10,16,20,21,31,33,44,54,62,91}
+[CALLBACK] warm_cuts=254  separaciones(MIPSOL)=3  cortes_lazy=115  nodos_B&B=1
+[CALLBACK] log -> results/logs/euclidean_N100_p10pct_seed20260622.pmp_p10_full.log
+
+--- STDERR ---

@@ -1,0 +1,21 @@
+COMMAND: ./pmedian instances/tsplib/rl1304_p5.pmp --mode full --opt 3099073
+TIMEOUT_SECONDS: 300
+TIMEOUT_FLAG: 0
+RETURNCODE: 0
+WRAPPER_TTOT_SECONDS: 4.552712
+
+--- STDOUT ---
+Instancia /Users/apena/benders-pmedian/instances/tsplib/rl1304_p5.pmp: N=1304 M=1304 p=5 (coords)
+Matriz S construida en 0.089 s
+Set parameter Username
+Set parameter LicenseID to value 2835550
+Academic license - for non-commercial use only - expires 2027-06-15
+[Fase 1] LB1=3099073.0000 UB1=3099073.0 iter=6 cuts=4692 T1=1.686 s
+Set parameter Username
+Set parameter LicenseID to value 2835550
+Academic license - for non-commercial use only - expires 2027-06-15
+[Fase 2] opt=3099073.0 cuts=1850 nodes=1 T2=2.746 s start=warm set={510,623,841,894,1187}
+[CALLBACK] warm_cuts=4692  separaciones(MIPSOL)=3  cortes_lazy=1850  nodos_B&B=1
+[CALLBACK] log -> results/logs/rl1304_p5.pmp_p5_full.log
+
+--- STDERR ---

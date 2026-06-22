@@ -1,0 +1,5 @@
+Instancia instances/toy/toy1.pmp: N=4 M=4 p=2 (coords)
+Set parameter Username
+Set parameter LicenseID to value 2835550
+Academic license - for non-commercial use only - expires 2027-06-15
+[MONOLITHIC_F1] status=OPTIMAL status_code=0 obj=6.000000 gap=0.000000 runtime=0.024817 nodes=1 model_vars=20 model_cons=21 model_nnz=52

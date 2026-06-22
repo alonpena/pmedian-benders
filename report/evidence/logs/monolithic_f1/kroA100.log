@@ -1,0 +1,5 @@
+Instancia instances/tsplib/kroA100.pmp: N=100 M=100 p=10 (coords)
+Set parameter Username
+Set parameter LicenseID to value 2835550
+Academic license - for non-commercial use only - expires 2027-06-15
+[MONOLITHIC_F1] status=OPTIMAL status_code=0 obj=30539.000000 gap=0.000000 runtime=0.461514 nodes=1 model_vars=10100 model_cons=10101 model_nnz=30100
