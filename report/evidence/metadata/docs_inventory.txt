@@ -1,0 +1,39 @@
+docs/.DS_Store
+docs/ACADEMIC_ALIGNMENT_AUDIT.md
+docs/ADR/0001-solver-backend.md
+docs/ADR/0002-orlib-duplicate-edges.md
+docs/AUDIT.md
+docs/AUTONOMOUS_PIPELINE_PLAN.md
+docs/BENDERS_300S_CAMPAIGN.md
+docs/BENDERS_300S_VISUALIZATION_HANDOFF.md
+docs/Benders_decom_pMedian.pdf
+docs/CONSISTENCY_AND_REPLICATION_AUDIT.md
+docs/Course Notes/PUCV___OptComp_ApunteCurso.md
+docs/Course Notes/PUCV___OptComp_Cap1_Conceptos.md
+docs/Course Notes/PUCV___OptComp_Cap2_RelajacionLagrangeana.md
+docs/Course Notes/PUCV___OptComp_Cap3_Benders.md
+docs/DEFENSA_ORAL.md
+docs/dev_wip/gap_logging_wip.patch
+docs/EXPERIMENTAL_HANDOFF_FOR_REPORT.md
+docs/EXPERIMENTAL_PROTOCOL.md
+docs/FINAL_REPORT_FACTS_ONLY.md
+docs/FINAL_SUBMISSION_AUDIT.md
+docs/INSTANCE_FORMAT.md
+docs/NUMERICAL_CLAIMS_TRACE.md
+docs/orlib_pmed_format_spec.txt
+docs/ORLIB_PMED16_SMOKE_HANDOFF.md
+docs/OVERNIGHT_FIGURES_AUDIT.md
+docs/OVERNIGHT_LOG_AUTHENTICITY_AUDIT.md
+docs/OVERNIGHT_SYNTHETIC_INSTANCE_AUDIT.md
+docs/OVERNIGHT_TIMEOUT_AUDIT.md
+docs/OVERNIGHT_TRACEABILITY_AUDIT.md
+docs/PAPER_REPLICATION_MATRIX.md
+docs/Pauta_entregaFinal.pdf
+docs/PMEDIAN_BENDERS_PROJECT_BRIEF.md
+docs/PROJECT_REQUIREMENTS.md
+docs/PUCV___OptimizaciÃ³n_computacional (2) (2).pdf
+docs/REPORT_UPGRADE_PLAN.md
+docs/RESULTS_TRACEABILITY.md
+docs/RUBRIC_GAP_ANALYSIS.md
+docs/SOLVER_NOTES.md
+docs/WEB_SOURCE_AND_REPLICATION_FEASIBILITY_AUDIT.md

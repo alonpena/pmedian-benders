@@ -2,20 +2,20 @@
 
 ## SAFE CLAIMS
 
-1. El proyecto implementa un núcleo Benders estilo F4 derivado de F3 con variables `y_j` y `theta_i`. Evidence: `src/phase1.c`, `src/phase2.c`, `docs/PAPER_REPLICATION_MATRIX.md`.
-2. La campaña Benders 300s contiene 26 filas, 25 `OPT_MATCH`, 1 `OPTIMAL_NO_KNOWN` y 0 timeouts. Evidence: `results/benders_300s_campaign.csv`, `docs/OVERNIGHT_TIMEOUT_AUDIT.md`.
-3. OR-Library `pmed1`–`pmed15` fue verificada localmente contra óptimos oficiales. Evidence: `results/benders_300s_campaign.csv`, `docs/BENDERS_300S_CAMPAIGN.md`.
-4. TSPLIB `rl1304` fue ejecutada localmente en 9 valores de p y coincidió con óptimos de referencia usados por el wrapper. Evidence: `results/benders_300s_campaign.csv`, `docs/BENDERS_300S_CAMPAIGN.md`.
-5. `kroA100` fue resuelta localmente, pero se reporta como `OPTIMAL_NO_KNOWN`. Evidence: `results/benders_300s_campaign.csv`.
-6. El timeout de 300 segundos fue aplicado externamente por wrappers Python en las campañas auditadas. Evidence: `docs/OVERNIGHT_TIMEOUT_AUDIT.md`, wrapper scripts.
-7. La línea base monolítica F1 resolvió 5 instancias con `OPTIMAL` y 0 timeouts. Evidence: `results/monolithic_f1_300s.csv` on `exp/monolithic-baselines`, `docs/MONOLITHIC_F1_BASELINE_HANDOFF.md`.
-8. En las cinco instancias de solape, Benders fue más rápido que F1 salvo `toy1`. Evidence: `docs/BENDERS_VS_MONOLITHIC_HANDOFF.md`.
-9. Las trazas de Fase 1 fueron generadas para toy1, pmed1, pmed6 y rl1304 p=5. Evidence: `docs/GAP_TRACE_HANDOFF.md` on `exp/gap-trace-integration`.
-10. La campaña sintética ejecutó 18 instancias hasta N=5000, sin timeouts. Evidence: `results/synthetic_stress_300s.csv` on `exp/synthetic-stress`, `docs/SYNTHETIC_STRESS_HANDOFF.md`.
-11. OR-Library pmed16 fue descargada desde fuente oficial, convertida y resuelta con `OPT_MATCH` objetivo 8162. Evidence: `results/orlib_pmed16_smoke_300s.csv`, `docs/ORLIB_PMED16_SMOKE_HANDOFF.md`.
-12. Zebra no fue ejecutado localmente. Evidence: `docs/WEB_SOURCE_AND_REPLICATION_FEASIBILITY_AUDIT.md`, `docs/PAPER_REPLICATION_MATRIX.md`.
-13. PopStar no fue implementado localmente. Evidence: `docs/PAPER_REPLICATION_MATRIX.md`, `src/heuristic.h`.
-14. Reduced-cost fixing y constraint reduction no fueron implementados. Evidence: `docs/PAPER_REPLICATION_MATRIX.md`.
+1. El proyecto implementa un núcleo Benders estilo F4 derivado de F3 con variables `y_j` y `theta_i`. Evidence: `src/phase1.c`, `src/phase2.c`, `report/evidence/docs/PAPER_REPLICATION_MATRIX.md`.
+2. La campaña Benders 300s contiene 26 filas, 25 `OPT_MATCH`, 1 `OPTIMAL_NO_KNOWN` y 0 timeouts. Evidence: `report/evidence/csv/benders_300s_campaign.csv`, `report/evidence/docs/OVERNIGHT_TIMEOUT_AUDIT.md`.
+3. OR-Library `pmed1`–`pmed15` fue verificada localmente contra óptimos oficiales. Evidence: `report/evidence/csv/benders_300s_campaign.csv`, `report/evidence/docs/BENDERS_300S_CAMPAIGN.md`.
+4. TSPLIB `rl1304` fue ejecutada localmente en 9 valores de p y coincidió con óptimos de referencia usados por el wrapper. Evidence: `report/evidence/csv/benders_300s_campaign.csv`, `report/evidence/docs/BENDERS_300S_CAMPAIGN.md`.
+5. `kroA100` fue resuelta localmente, pero se reporta como `OPTIMAL_NO_KNOWN`. Evidence: `report/evidence/csv/benders_300s_campaign.csv`.
+6. El timeout de 300 segundos fue aplicado externamente por wrappers Python en las campañas auditadas. Evidence: `report/evidence/docs/OVERNIGHT_TIMEOUT_AUDIT.md`, wrapper scripts.
+7. La línea base monolítica F1 resolvió 5 instancias con `OPTIMAL` y 0 timeouts. Evidence: `report/evidence/csv/monolithic_f1_300s.csv` on `exp/monolithic-baselines`, `report/evidence/docs/MONOLITHIC_F1_BASELINE_HANDOFF.md`.
+8. En las cinco instancias de solape, Benders fue más rápido que F1 salvo `toy1`. Evidence: `report/evidence/docs/BENDERS_VS_MONOLITHIC_HANDOFF.md`.
+9. Las trazas de Fase 1 fueron generadas para toy1, pmed1, pmed6 y rl1304 p=5. Evidence: `report/evidence/docs/GAP_TRACE_HANDOFF.md` on `exp/gap-trace-integration`.
+10. La campaña sintética ejecutó 18 instancias hasta N=5000, sin timeouts. Evidence: `report/evidence/csv/synthetic_stress_300s.csv` on `exp/synthetic-stress`, `report/evidence/docs/SYNTHETIC_STRESS_HANDOFF.md`.
+11. OR-Library pmed16 fue descargada desde fuente oficial, convertida y resuelta con `OPT_MATCH` objetivo 8162. Evidence: `report/evidence/csv/orlib_pmed16_smoke_300s.csv`, `report/evidence/docs/ORLIB_PMED16_SMOKE_HANDOFF.md`.
+12. Zebra no fue ejecutado localmente. Evidence: `report/evidence/docs/WEB_SOURCE_AND_REPLICATION_FEASIBILITY_AUDIT.md`, `report/evidence/docs/PAPER_REPLICATION_MATRIX.md`.
+13. PopStar no fue implementado localmente. Evidence: `report/evidence/docs/PAPER_REPLICATION_MATRIX.md`, `src/heuristic.h`.
+14. Reduced-cost fixing y constraint reduction no fueron implementados. Evidence: `report/evidence/docs/PAPER_REPLICATION_MATRIX.md`.
 
 ## FORBIDDEN OR UNSUPPORTED CLAIMS
 

@@ -4,7 +4,7 @@
 
 | metric | value |
 |---|---:|
-| CSV | `results/benders_300s_campaign.csv` |
+| CSV | `report/evidence/csv/benders_300s_campaign.csv` |
 | Rows | 26 |
 | OPT_MATCH | 25 |
 | OPTIMAL_NO_KNOWN | 1 |
@@ -26,9 +26,9 @@
 
 | group | local status | rows/run | evidence | note |
 |---|---|---:|---|---|
-| pmed1–pmed15 | verified local | 15 | `results/benders_300s_campaign.csv`, `results/benders_real_instances_300s.csv` | official optima matched |
-| pmed16 | smoke verified local | 1 | `results/orlib_pmed16_smoke_300s.csv` | obj 8162, OPT_MATCH, 0.793458 s |
-| pmed17–pmed40 | ready to run | 0 | `docs/WEB_SOURCE_AND_REPLICATION_FEASIBILITY_AUDIT.md` | official source available; no run yet |
+| pmed1–pmed15 | verified local | 15 | `report/evidence/csv/benders_300s_campaign.csv`, `report/evidence/csv/benders_real_instances_300s.csv` | official optima matched |
+| pmed16 | smoke verified local | 1 | `report/evidence/csv/orlib_pmed16_smoke_300s.csv` | obj 8162, OPT_MATCH, 0.793458 s |
+| pmed17–pmed40 | ready to run | 0 | `report/evidence/docs/WEB_SOURCE_AND_REPLICATION_FEASIBILITY_AUDIT.md` | official source available; no run yet |
 
 ## 4. Monolithic F1 summary
 
@@ -54,16 +54,16 @@
 
 | instance | p | trace rows | final gap | evidence |
 |---|---:|---:|---:|---|
-| toy1 | 2 | 3 | 0 | `results/gap_traces/toy1_p2_phase1.csv` |
-| pmed1 | 5 | 6 | 0 | `results/gap_traces/pmed1_p5_phase1.csv` |
-| pmed6 | 5 | 6 | 0.010614 | `results/gap_traces/pmed6_p5_phase1.csv` |
-| rl1304 | 5 | 6 | 0 | `results/gap_traces/rl1304_p5_phase1.csv` |
+| toy1 | 2 | 3 | 0 | `report/evidence/csv/gap_traces/toy1_p2_phase1.csv` |
+| pmed1 | 5 | 6 | 0 | `report/evidence/csv/gap_traces/pmed1_p5_phase1.csv` |
+| pmed6 | 5 | 6 | 0.010614 | `report/evidence/csv/gap_traces/pmed6_p5_phase1.csv` |
+| rl1304 | 5 | 6 | 0 | `report/evidence/csv/gap_traces/rl1304_p5_phase1.csv` |
 
 ## 7. Real READY campaign summary
 
 | metric | value |
 |---|---:|
-| CSV | `results/benders_real_instances_300s.csv` |
+| CSV | `report/evidence/csv/benders_real_instances_300s.csv` |
 | Rows | 26 |
 | OR-Library rows | 15 |
 | TSPLIB rows | 10 |

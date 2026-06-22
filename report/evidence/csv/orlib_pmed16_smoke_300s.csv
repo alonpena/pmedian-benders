@@ -1,0 +1,2 @@
+instance,N,p,status,obj,gap,Ttot,timeout_flag,log_path
+pmed16,400,5,OPT_MATCH,8162,0.008576,0.793458,0,results/logs/orlib_pmed16_smoke/pmed16_300s.log

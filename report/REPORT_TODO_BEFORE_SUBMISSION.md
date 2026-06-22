@@ -12,7 +12,7 @@
 
 6. Elegir 5–8 figuras finales; no saturar el informe.
 7. Copiar o regenerar figuras de ramas experimentales si se necesita un único directorio final.
-8. Crear figura pedagógica de toy instance con puntos, medianas seleccionadas y arcos de asignación.
+8. Figura pedagógica toy creada en `report/figures/toy_pmedian_explanation.png`; revisar estética final.
 9. Mejorar estética de figuras si se instala matplotlib; mantener CSV como fuente.
 10. Confirmar captions finales en español.
 
@@ -31,7 +31,7 @@
 
 ## Reproducibility
 
-21. Incluir mapa de ramas/commits en apéndice o nota metodológica.
+21. Mapa de evidencia creado en `report/FINAL_EVIDENCE_INDEX.md`; decidir si incluirlo como apéndice.
 22. Explicar que no todos los artefactos están en una sola rama.
 23. Verificar comandos de reproducción por rama.
 24. Confirmar que las rutas de logs citadas existen en sus ramas.

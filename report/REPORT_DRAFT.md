@@ -122,6 +122,14 @@ Los cortes generados son cortes de optimalidad: elevan `theta_i` cuando el maest
 
 La descomposición elimina la necesidad de mantener explícitamente todas las variables `x_ij` de asignación en el maestro. También evita materializar todas las variables de radio de la formulación F3/F4. En su lugar, el maestro conserva `m+n` variables principales y agrega cortes solo cuando son necesarios. Computacionalmente, esto traslada trabajo desde el tamaño del modelo inicial hacia la separación iterativa de cortes. En las instancias verificadas, esta estrategia permite resolver casos de `N=1304` y sintéticos de `N=5000` bajo el protocolo de 300 segundos.
 
+### 5.5 Cotas, relajación y estados experimentales
+
+La Fase 1 resuelve una relajación LP del maestro Benders: `y_j` puede tomar valores fraccionales en `[0,1]`. El valor objetivo de ese maestro relajado, después de agregar cortes válidos, entrega una cota inferior `LB` sobre el problema entero, porque relaja la integralidad y porque los cortes añadidos subestiman de forma válida la función de costo por cliente. En la implementación, la columna `LB1` corresponde al valor de la relajación de Fase 1 al terminar el proceso de separación.
+
+La cota superior `UB` proviene de una solución factible entera construida por redondeo o, en Fase 2, de incumbentes enteros del MIP. Como cualquier solución factible abre exactamente `p` instalaciones y asigna todos los clientes, su costo es una cota superior válida. El gap de Fase 1 se interpreta como `(UB-LB)/UB` cuando `UB>0`.
+
+Debe distinguirse entre cinco conceptos: (i) la cota de la relajación LP; (ii) la cota inferior del maestro Benders con cortes; (iii) la cota superior incumbente; (iv) el gap MIP interno de Gurobi en un modelo entero; y (v) el estado experimental de una fila CSV, por ejemplo `OPT_MATCH` o `OPTIMAL_NO_KNOWN`. `OPT_MATCH` significa que el objetivo local coincide con un óptimo conocido suministrado; `OPTIMAL_NO_KNOWN` significa que el solver reportó optimalidad local, pero no se comparó contra un valor externo confiable.
+
 ## 6. Algoritmo computacional
 
 Pseudocódigo de alto nivel:
@@ -190,11 +198,15 @@ La evidencia se guarda en CSV y logs. Cada fila experimental tiene una ruta a un
 
 El flujo experimental se organizó por ramas. Esto protege el núcleo Benders verificado, pero implica que no todos los CSV/figuras viven simultáneamente en una sola rama. La reproducción debe considerar el mapa de ramas indicado en `docs/EXPERIMENTAL_HANDOFF_FOR_REPORT.md`.
 
+### 7.1 Mapa de evidencia y reproducibilidad
+
+Para preparar este informe se consolidó evidencia desde ramas experimentales hacia `report/evidence/` y `report/figures/`. El índice `report/FINAL_EVIDENCE_INDEX.md` lista, para cada artefacto, la rama fuente, la ruta original, el commit y la ruta consolidada. La validación `report/FINAL_EVIDENCE_VALIDATION.md` comprueba que los CSV, figuras y documentos citados existan en la rama final o en su copia consolidada. Por tanto, el texto del informe usa preferentemente rutas `report/evidence/csv/...` y `report/figures/...`, aunque conserva referencias históricas a ramas cuando son necesarias para reproducción.
+
 ## 8. Protocolo experimental
 
 - **Lenguaje:** C para solver principal; Python para wrappers y figuras.
-- **Solver:** Gurobi 12.0.0 según logs (`Academic license - for non-commercial use only`).
-- **Hardware:** [COMPLETAR HARDWARE: equipo, CPU, RAM, sistema operativo].
+- **Solver:** Gurobi Optimizer 12.0.0 (`gurobi_cl --version`) y logs con licencia académica.
+- **Hardware:** Apple M1, 8 GB RAM, macOS/Darwin 25.5.0 (según `report/evidence/metadata/hardware_software_probe.txt`).
 - **Límite de tiempo:** 300 segundos externos por instancia.
 - **Evidencia:** CSV + logs crudos + figuras PNG.
 - **Estados usados:** `OPT_MATCH`, `OPTIMAL_NO_KNOWN`, `OPTIMAL`, `TIMEOUT`, `ERROR`, `PARSE_WARNING`.
@@ -265,19 +277,7 @@ Las figuras recomendadas para el informe están mapeadas en `report/REPORT_FIGUR
 - Cotas LB/UB vs iteración en `pmed1`.
 - Runtime sintético vs `N`.
 
-Para explicación visual de la instancia toy, se recomienda incluir una figura simple de cuatro puntos y dos medianas. Si no se genera una figura final, se puede usar el siguiente esquema conceptual:
-
-```text
-Cliente/sitio 0 (0,0) ---- Cliente/sitio 1 (0,3)
-      |                         |
-      |                         |
-Cliente/sitio 2 (4,0) ---- Cliente/sitio 3 (4,3)
-
-Ejemplo p=2: abrir dos sitios y asignar cada cliente al abierto más cercano.
-Las aristas de asignación representan costo operacional de servicio.
-```
-
-**TODO antes de entrega:** reemplazar este esquema ASCII por una figura limpia si el formato final lo permite.
+Para explicación visual de la instancia toy se incluye la figura didáctica `report/figures/toy_pmedian_explanation.png`. La figura muestra cuatro puntos en rectángulo, dos medianas seleccionadas y arcos de asignación con costos. Su función es pedagógica: no es un resultado experimental, sino una ayuda visual para interpretar sitios candidatos, medianas abiertas, clientes asignados y costos de servicio.
 
 ## 11. Discusión
 
@@ -296,7 +296,7 @@ La evidencia experimental está dividida por ramas, lo que protege la limpieza d
 | Componente del paper | Estado local | Evidencia | Comentario |
 |---|---|---|---|
 | Núcleo Benders F3/F4 | Verified local | `src/phase1.c`, `src/phase2.c`, `src/separation.c`, logs callback | Replicación del mecanismo central, no de todos los refinamientos. |
-| Fase 1 | Verified local | `results/benders_300s_campaign.csv`, gap traces | LP con cortes y cotas LB/UB. |
+| Fase 1 | Verified local | `report/evidence/csv/benders_300s_campaign.csv`, gap traces | LP con cortes y cotas LB/UB. |
 | Fase 2 branch-and-Benders-cut | Verified local | logs con `[CALLBACK]`, `lazy_cuts` | Lazy constraints de Gurobi. |
 | OR-Library | Partial/verified subset | pmed1–pmed15, pmed16 smoke | No está completa pmed1–pmed40. |
 | TSPLIB `rl1304` | Verified local | 9 valores de `p` | Coincide con óptimos usados como referencia. |

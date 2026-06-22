@@ -1,0 +1,42 @@
+* db3f2cb (HEAD -> final/report-evidence-consolidation, exp/orlib-pmed16-smoke) Draft experimental report from verified evidence
+* 2c70c51 Update experimental handoff with overnight audit
+* c4a5090 Add OR-Library pmed16 smoke evidence
+* 15a150a (exp/final-experimental-handoff) Add overnight source audit and replication matrix
+* 5ebf955 Add overnight forensic evidence audits
+* 7f2033a Add final experimental handoff
+| * c5de792 (exp/synthetic-stress) Add synthetic stress campaign results
+| * d6241d8 Add synthetic stress experiment scripts
+|/  
+| * 5240bde (exp/large-instance-campaign) Add real instance Benders campaign results
+| * 1ce87ee Add real instance campaign inventory
+|/  
+| * 98b84e9 (exp/monolithic-baselines) Add Benders versus monolithic comparison plots
+| * aea894a Add monolithic F1 baseline results
+| * 92381db Add monolithic F1 baseline mode
+|/  
+| * 11db33b (exp/gap-trace-integration) Add Phase 1 gap trace logging
+|/  
+* 1de348e (exp/requirements-and-300s-benchmark) Add Benders 300s campaign visualizations
+* bf33671 Add autonomous experimental pipeline plan
+* a0eb1f6 Clarify current state versus replication roadmap
+* f2e4ea8 Add persistent requirements and 300s Benders benchmark campaign
+* aed3970 (exp/gap-logging) Add standalone gap logging utilities and save integration WIP
+* deafcc0 (origin/main, main) docs: add skeptical replication audit protocol
+* ad9b9d2 docs: align final submission with honest paper replication scope
+* 0e75f66 docs: final replication audit and submission package
+* cf021d6 docs: add course chapter notes (conceptual backbone for alignment audit)
+* dfe124b docs: academic-alignment audit + deepen report (paper replication, course vocabulary)
+* 1925ee2 docs: add course rubric and syllabus PDFs (referenced by gap analysis)
+* 4525434 docs: final academic deliverables (report, slides, rubric gap analysis)
+* c23147f test(separation): hand-verified cut harness on toy1
+* d95eb4b docs: self-audit (AUDIT.md) + STATUS handoff
+* 35eeec9 feat(plots): 4 analysis figures from real CSVs only
+* 14e0d84 test: compare vs paper Table 2 (rl1304) — 9/9 OPT match exactly
+* 375dd27 feat(phase2): warm-start from Phase 1 cut pool (paper method) + --coldstart flag
+* 1172889 feat(phase2): callback proof — log separation calls, lazy cuts, B&B nodes
+* f55704c docs(parser): ADR 0002 + unit test for OR-Library last-occurrence-wins edge rule
+* 5e3365a feat: C Stages 7-8 — instances, benchmark runner, analysis (core complete)
+* 9596f3c feat: C Stages 5-6 — solver layer, Phase 1 (LP) and Phase 2 (branch-and-Benders-cut)
+* c57dc56 feat(core): C Stages 1-4 — instance, brute oracle, S matrix, O(NM) separation
+* 6f152b7 feat(prototype): F3 + Phase1 + Phase2 Benders in Python; validate toy=6, pmed1=5819
+* ba2cdbb chore: reorganize repo, env setup, solver notes (Stage 0.5)

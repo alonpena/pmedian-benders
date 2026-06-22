@@ -1,0 +1,6 @@
+instance,N,p,status,obj,gap,runtime,nodes,model_vars,model_cons,model_nnz,timeout_flag,log_path
+toy1,4,2,OPTIMAL,6.000000,0.000000,0.024817,1,20,21,52,0,results/logs/monolithic_f1/toy1.log
+pmed1,100,5,OPTIMAL,5819.000000,0.000000,0.436110,1,10100,10101,30100,0,results/logs/monolithic_f1/pmed1.log
+pmed2,100,10,OPTIMAL,4093.000000,0.000000,0.441374,1,10100,10101,30100,0,results/logs/monolithic_f1/pmed2.log
+pmed6,200,5,OPTIMAL,7824.000000,0.000000,6.991906,1,40200,40201,120200,0,results/logs/monolithic_f1/pmed6.log
+kroA100,100,10,OPTIMAL,30539.000000,0.000000,0.461514,1,10100,10101,30100,0,results/logs/monolithic_f1/kroA100.log

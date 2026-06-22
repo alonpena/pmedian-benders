@@ -1,0 +1,11 @@
+uname:
+Darwin MacBook-Air-de-Alon.local 25.5.0 Darwin Kernel Version 25.5.0: Mon Apr 27 20:38:00 PDT 2026; root:xnu-12377.121.6~2/RELEASE_ARM64_T8103 arm64
+cpu:
+Apple M1
+mem:
+8589934592
+pmedian version:
+no se pudo abrir --version
+gurobi version:
+Gurobi Optimizer version 12.0.0 build v12.0.0rc1 (mac64[arm] - Darwin 25.5.0 25F80)
+Copyright (c) 2024, Gurobi Optimization, LLC

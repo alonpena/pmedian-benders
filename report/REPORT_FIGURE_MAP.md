@@ -2,6 +2,7 @@
 
 | figure filename | source CSV | branch | report section | caption in Spanish | interpretation | caution |
 |---|---|---|---|---|---|---|
+| `report/figures/toy_pmedian_explanation.png` | schematic/manual | `final/report-evidence-consolidation` | 2 / 10 | Esquema didáctico del problema p-mediana en una instancia toy con cuatro puntos y dos medianas. | Ayuda a visualizar sitios candidatos, medianas abiertas, arcos de asignación y costos. | Figura pedagógica; no es resultado experimental. |
 | `results/figures/benders_300s_runtime_by_instance.png` | `results/benders_300s_campaign.csv` | `exp/requirements-and-300s-benchmark` | 9.1 / 10 | Tiempo total de la campaña Benders 300s por instancia. | Muestra variación de tiempo; máximo en `rl1304_p10`. | Tiempo local, no comparable máquina-independiente. |
 | `results/figures/benders_300s_nodes_by_instance.png` | `results/benders_300s_campaign.csv` | `exp/requirements-and-300s-benchmark` | 9.1 / 10 | Nodos branch-and-bound por instancia en Benders. | La mayoría de filas tiene pocos nodos; `rl1304_p10` destaca. | Nodos dependen de Gurobi y configuración. |
 | `results/figures/benders_300s_lazy_cuts_by_instance.png` | `results/benders_300s_campaign.csv` | `exp/requirements-and-300s-benchmark` | 5 / 9.1 | Cortes lazy generados por instancia. | Evidencia funcionamiento branch-and-Benders-cut. | No mide por sí sola dificultad total. |
