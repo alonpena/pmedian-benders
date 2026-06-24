@@ -1,31 +1,43 @@
 # Curated results — pmedian-benders
 
-Snapshot of validated results at commit `d1f2e1e`.
+Frozen/validated evidence snapshots used by report and slides.
 
-**Rule:** files in this directory are frozen evidence snapshots.
-Do not mutate. Do not overwrite with runner scripts.
-`benchmark.csv` (in `results/`) is append-only scratch; curated copy is `benchmark_current.csv`.
+**Rule:** files in this directory are treated as final evidence snapshots. Do not overwrite casually. `results/benchmark.csv` in repo root is append-only scratch; `benchmark_current.csv` is the curated copy.
 
 ## Files
 
 | File | Source command | Notes |
 |---|---|---|
-| `orlib_optima_check.csv` | `scripts/run_benchmark.py` (orlib targets)  OR  manual cross-check | OR-Library pmed1–15 official optima comparison |
-| `comparison_vs_paper.csv` | `scripts/compare_paper.py` (rl1304 Table 2 subset) | Paper OPT/LB/UB comparison, 9/9 delta_OPT=0 |
-| `warmstart_comparison.csv` | Manual run warm vs cold | Warm-start nodes/cuts reduction; wall-time mixed |
-| `benchmark_current.csv` | Append-consolidated from `results/benchmark.csv` | Frozen copy of scratch benchmark at commit `d1f2e1e` |
+| `orlib_optima_check.csv` | `.venv/bin/python scripts/run_benchmark.py` (OR-Library targets) | OR-Library `pmed1`–`pmed15` official optima comparison; 15/15 delta=0 |
+| `comparison_vs_paper.csv` | `.venv/bin/python scripts/compare_paper.py` | Paper Table 2 subset for `rl1304`; 9/9 `delta_OPT=0` |
+| `warmstart_comparison.csv` | Manual warm/cold runs documented in docs | Warm-start nodes/cuts reduction; wall-time mixed |
+| `benchmark_current.csv` | Copy of `results/benchmark.csv` after validation | Combined scratch benchmark snapshot; avoid rerun appends |
+| `paperbench_smoke.csv` | `.venv/bin/python scripts/paperbench.py run --set smoke --timeout 300 --out results/curated/paperbench_smoke.csv --log-dir results/logs/paperbench_smoke` | Non-contaminating smoke run: `toy1`, `pmed1`, `kroA100` |
 
-## Commit
+## Validation
 
+Run:
+
+```bash
+.venv/bin/python scripts/validate_results.py
 ```
-d1f2e1e (HEAD -> final/report-evidence-consolidation)
+
+Expected:
+
+```text
+RESULT: PASS
 ```
 
-## Provenance
+## Regeneration policy
 
-Regenerate procedure:
-1. `git checkout d1f2e1e`
-2. `make clean && make`
-3. See `scripts/run_benchmark.py --help` and `scripts/compare_paper.py --help`
-4. Always backup `results/benchmark.csv` before regeneration (append-only risk).
-5. Re-run `scripts/validate_results.py` after any change.
+1. Backup existing CSV/logs.
+2. Regenerate with explicit command.
+3. Run `scripts/validate_results.py`.
+4. If using `paperbench.py`, prefer writing to a new file under `results/curated/` and logs under `results/logs/paperbench_*`.
+5. Update `docs/RESULTS_TRACEABILITY.md` if any numbers used in report/slides change.
+
+## Notes
+
+- `scripts/run_benchmark.py` and `scripts/compare_paper.py` can append rows to `results/benchmark.csv`; this is why curated snapshots exist.
+- `scripts/paperbench.py` runs from a temporary working directory, so it does not contaminate repo-level `results/benchmark.csv`.
+- Zebra is not run locally; no curated Zebra result exists.

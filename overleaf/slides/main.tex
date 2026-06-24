@@ -85,7 +85,7 @@ se ``pagan peajes'' $D^{k+1}-D^k$ mientras no aparezca un sitio abierto.
 \vfill
 \begin{itemize}
   \item Las cuatro: \emph{mismo óptimo, misma relajación LP}. Difieren en \textbf{densidad}.
-  \item \textbf{F3} es la base de Benders; \textbf{F4} son los cortes que generamos al vuelo.
+  \item \textbf{Implementado en C:} Benders/F4 perezosa derivada de F3; F1--F4 monolíticas solo teoría/oráculo pequeño.
 \end{itemize}
 \end{frame}
 
@@ -140,7 +140,7 @@ independientes. Las variables $z$ desaparecen del maestro; las reemplaza un $\th
 
 % ---------- 6 ----------
 \begin{frame}{6. Implementación}
-\textbf{Núcleo en C} (sin solver) + \textbf{capa de solver} (Gurobi) + \textbf{oráculo Python}.
+\textbf{Núcleo en C} (Benders/F4 lazy) + \textbf{capa de solver} (Gurobi) + \textbf{oráculo Python}.
 \begin{columns}
 \begin{column}{0.5\textwidth}
 \small
@@ -198,7 +198,7 @@ pmed11 & 352 & \textbf{1} \\
 \end{columns}
 \vfill
 \footnotesize Fase 1 a menudo ya cierra: $LB_1=UB_1=$ óptimo en muchas instancias. Fuente:
-\texttt{results/*.csv}.
+\texttt{results/curated/*.csv}; validado por \texttt{scripts/validate\_results.py}.
 \end{frame}
 
 % ---------- 8 ----------

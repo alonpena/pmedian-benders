@@ -7,14 +7,19 @@
 para el comparativo), \texttt{MIPGap}$=10^{-10}$, sin límite de tiempo (todas las instancias
 cierran a optimalidad). \textbf{Sin} PopStar (arranque uniforme + redondeo), sin \emph{reduced-cost
 fixing} ni \emph{constraint reduction}. Todos los números provienen de
-\texttt{results/} (CSV y \texttt{logs/}); cada corrida deja un log con prueba de callback.
+\texttt{results/} (CSV y \texttt{logs/}); cada corrida deja un log con prueba de callback. Para
+la versión final se conserva además un snapshot curado en \texttt{results/curated/}, validado por
+\texttt{scripts/validate\_results.py}, porque \texttt{results/benchmark.csv} es append-only y puede
+contaminarse con reruns.
 
 Se reportan tres bloques: (i) corrección y desempeño en OR-Library; (ii) comparación contra el
 paper en \texttt{rl1304}; (iii) efecto del warm-start. Cuatro figuras agregan el comportamiento.
+El pipeline de interacción para preparar/correr subconjuntos está documentado en
+\texttt{docs/INSTANCE\_SOURCES\_AND\_PIPELINE.md} y expuesto por \texttt{scripts/paperbench.py}.
 
 \subsection{Caso base y corrección en OR-Library}
 Las 15 instancias \texttt{pmed} cierran al \textbf{óptimo oficial} con brecha $0\%$ (delta$=0$).
-Fuente: \texttt{results/orlib\_optima\_check.csv}.
+Fuente: \texttt{results/curated/orlib\_optima\_check.csv}.
 
 \begin{table}[h]\centering\small
 \begin{tabular}{lrrrrrrrr}
@@ -40,7 +45,7 @@ pmed15 & 300 & 100 & 1729.0 & 1729.0 & 1729 & 1729 & 7 & 1 \\
 \end{tabular}
 \caption{OR-Library: 15/15 al óptimo oficial, delta$=0$. ``iter''$=$separaciones de Fase 1;
 ``nodos''$=$nodos de B\&B en Fase 2. Todo el conjunto se resuelve en $<0.36$\,s
-(\texttt{results/benchmark.csv}).}
+(snapshot curado: \texttt{results/curated/benchmark\_current.csv}).}
 \label{tab:orlib}
 \end{table}
 
@@ -50,7 +55,7 @@ requieren ramificar ($3$, $7$, $7$ nodos), justo donde $UB_1>$ óptimo.
 
 \subsection{Comparación contra el paper (\texttt{rl1304})}
 Sobre las mismas instancias TSPLIB se comparan los óptimos y cotas (los valores del paper son
-transcritos del PDF). Fuente: \texttt{results/comparison\_vs\_paper.csv}.
+transcritos del PDF). Fuente: \texttt{results/curated/comparison\_vs\_paper.csv}.
 
 \begin{table}[h]\centering\small
 \begin{tabular}{rrrrrrrr}
@@ -77,7 +82,7 @@ PopStar (ver Sección~\ref{sec:resultados}). Tiempos no comparados directamente
 
 \subsection{Efecto del warm-start}
 Heredar el pool de cortes de Fase 1 reduce drásticamente el árbol de B\&B. Fuente:
-\texttt{results/warmstart\_comparison.csv}.
+\texttt{results/curated/warmstart\_comparison.csv}.
 
 \begin{table}[h]\centering\small
 \begin{tabular}{lrr rr rr}
@@ -109,11 +114,11 @@ Las cuatro figuras (generadas solo de CSV reales por \texttt{scripts/plot\_resul
 \includegraphics[width=0.48\textwidth]{figures/plot_a_bounds_orlib.png}\hfill
 \includegraphics[width=0.48\textwidth]{figures/plot_b_time_vs_N.png}
 \caption{(izq.) $LB_1$, $UB_1$ y óptimo por instancia OR-Library. (der.) Tiempo total vs $N$ (log-log).
-Fuente: \texttt{results/orlib\_optima\_check.csv} y \texttt{results/benchmark.csv}.}
+Fuente: \texttt{results/curated/orlib\_optima\_check.csv} y \texttt{results/curated/benchmark\_current.csv}.}
 \end{figure}
 \begin{figure}[h]\centering
 \includegraphics[width=0.48\textwidth]{figures/plot_c_gap_vs_pM.png}\hfill
 \includegraphics[width=0.48\textwidth]{figures/plot_d_iter_nodes_vs_p.png}
 \caption{(izq.) Brecha de Fase 1 $(UB_1-LB_1)/UB_1$ vs $p/M$. (der.) Iteraciones (Fase 1) y nodos
-(Fase 2) vs $p$. Fuente: \texttt{results/benchmark.csv}.}
+(Fase 2) vs $p$. Fuente: \texttt{results/curated/benchmark\_current.csv}.}
 \end{figure}

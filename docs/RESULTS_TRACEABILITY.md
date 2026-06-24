@@ -15,11 +15,13 @@ Auditoría de trazabilidad: cada resultado numérico defendible debe apuntar a C
 | `tests/test_separation_toy.c` | cortes derivados a mano para `toy1` | VERIFIED_LOCAL |
 | `docs/ADR/0002-orlib-duplicate-edges.md` | regla OR-Library duplicate edges = last occurrence wins | VERIFIED_LOCAL |
 | `scripts/validate_results.py` | Validator: benchmark duplicates, OPT_MATCH, logs/content | IMPLEMENTED_LOCAL |
-| `results/curated/README.md` | Frozen evidence snapshot manifest at commit `d1f2e1e` | VERIFIED_LOCAL |
+| `results/curated/README.md` | Frozen evidence snapshot manifest and regeneration policy | VERIFIED_LOCAL |
+| `scripts/paperbench.py` | User-friendly non-contaminating benchmark CLI (`list`, `sources`, `prepare`, `run`, `validate`) | IMPLEMENTED_LOCAL |
+| `results/curated/paperbench_smoke.csv` | Smoke pipeline run for `toy1`, `pmed1`, `kroA100` without appending to `benchmark.csv` | VERIFIED_LOCAL |
 
 ## OR-Library table
 
-Fuente: `results/orlib_optima_check.csv`.
+Fuente: `results/curated/orlib_optima_check.csv` (curated copy of `results/orlib_optima_check.csv`).
 
 | Claim | Valor | Fuente | Status |
 |---|---:|---|---|
@@ -31,7 +33,7 @@ Fuente: `results/orlib_optima_check.csv`.
 
 ## `rl1304` / paper Table 2
 
-Fuente: `results/comparison_vs_paper.csv`.
+Fuente: `results/curated/comparison_vs_paper.csv` (curated copy of `results/comparison_vs_paper.csv`).
 
 | Claim | Valor | Fuente | Status |
 |---|---:|---|---|
@@ -109,6 +111,17 @@ Fuente: `results/warmstart_comparison.csv`.
 | “Warm-start acelera siempre” | Local wall-time mixed. |
 | “Comparamos monolítico vs Benders” | No monolithic C benchmark. |
 
+## Paperbench smoke trace
+
+Fuente: `results/curated/paperbench_smoke.csv`.
+
+| Claim | Valor | Fuente | Status |
+|---|---:|---|---|
+| Non-contaminating smoke run rows | 3 | `paperbench_smoke.csv` | VERIFIED_LOCAL |
+| `toy1` smoke optimum | 6 | `paperbench_smoke.csv`, `results/logs/paperbench_smoke/toy1.log` | VERIFIED_LOCAL |
+| `pmed1` smoke optimum | 5819 | `paperbench_smoke.csv`, `results/logs/paperbench_smoke/pmed1.log` | VERIFIED_LOCAL |
+| `kroA100` smoke optimum | 30539 | `paperbench_smoke.csv`, `results/logs/paperbench_smoke/kroA100.log` | VERIFIED_LOCAL |
+
 ## Reproduction commands
 
 ```bash
@@ -120,6 +133,11 @@ make test
 .venv/bin/python scripts/run_benchmark.py
 .venv/bin/python scripts/compare_paper.py
 .venv/bin/python scripts/plot_results.py
+.venv/bin/python scripts/paperbench.py sources
+.venv/bin/python scripts/paperbench.py list --set current
+.venv/bin/python scripts/paperbench.py run --set smoke --timeout 300 \
+  --out results/curated/paperbench_smoke.csv \
+  --log-dir results/logs/paperbench_smoke
 ```
 
-For clean regeneration, see `docs/EXPERIMENTAL_PROTOCOL.md` before deleting/appending CSVs.
+For clean regeneration, see `docs/EXPERIMENTAL_PROTOCOL.md` and `docs/INSTANCE_SOURCES_AND_PIPELINE.md` before deleting/appending CSVs.

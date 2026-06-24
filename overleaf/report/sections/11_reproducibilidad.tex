@@ -26,10 +26,17 @@ make pmedian         # binario principal
 ./pmedian instances/toy/toy1.pmp --p 2 --dump-cuts 0 1     # cortes a mano
 .venv/bin/python scripts/verify_cuts.py                    # C == Python (0 diffs)
 
-# benchmark, comparacion con el paper y figuras
+# benchmark, comparacion con el paper, validacion y figuras
 .venv/bin/python scripts/run_benchmark.py
 .venv/bin/python scripts/compare_paper.py
+.venv/bin/python scripts/validate_results.py
 .venv/bin/python scripts/plot_results.py
+
+# pipeline no contaminante (no escribe en benchmark.csv del repo)
+.venv/bin/python scripts/paperbench.py list --set current
+.venv/bin/python scripts/paperbench.py run --set smoke --timeout 300 \
+  --out results/curated/paperbench_smoke.csv \
+  --log-dir results/logs/paperbench_smoke
 \end{lstlisting}
 
 \subsection{Artefactos y trazabilidad}
@@ -41,6 +48,12 @@ make pmedian         # binario principal
   \item \texttt{results/logs/*.log} — un log por corrida con \texttt{CALLBACK\_PROOF} (separaciones,
         cortes lazy, nodos) e \texttt{is\_branch\_and\_benders\_cut}.
   \item \texttt{results/plot\_\{a,b,c,d\}\_*.png} — las cuatro figuras.
+  \item \texttt{results/curated/} — snapshot final validado de CSVs usados en tablas.
+  \item \texttt{scripts/validate\_results.py} — validador automático de duplicados, óptimos y logs.
+  \item \texttt{scripts/paperbench.py} — pipeline CLI no contaminante para listar/preparar/correr
+        subconjuntos sin depender de archivos YAML.
+  \item \texttt{docs/INSTANCE\_SOURCES\_AND\_PIPELINE.md} — procedencia de instancias, parsers,
+        generadores y límites de cada familia.
   \item \texttt{docs/AUDIT.md} — evidencia por afirmación: archivo + comando para reproducir; lo no
         probado marcado \texttt{UNVERIFIED}.
 \end{itemize}
@@ -58,8 +71,9 @@ no verificado en lugar de rellenarlo.
   \item \texttt{make clean \&\& make pmedian} compila sin \emph{warnings}.
   \item \texttt{make test} imprime \texttt{RESULT: PASS} en ambos tests.
   \item \texttt{.venv/bin/python scripts/verify\_cuts.py} imprime \texttt{PASS} (0 diffs).
+  \item \texttt{.venv/bin/python scripts/validate\_results.py} imprime \texttt{RESULT: PASS}.
   \item \texttt{pdflatex report/main.tex} (dos pasadas) compila y las 4 figuras se incrustan.
   \item \texttt{pdflatex slides/main.tex} compila las 8 diapositivas.
-  \item Las tablas del informe coinciden con los CSV vigentes en \texttt{results/}.
+  \item Las tablas del informe coinciden con los CSV curados en \texttt{results/curated/}.
   \item \texttt{docs/AUDIT.md} no contiene afirmaciones \texttt{UNVERIFIED} presentadas como hechos.
 \end{enumerate}

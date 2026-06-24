@@ -32,6 +32,7 @@ Este proyecto replica el mecanismo algorítmico central de Duran-Mateluna, Ales 
 | CPLEX backend | NOT_IMPLEMENTED |
 | SCIP/HiGHS backend | NOT_IMPLEMENTED |
 | Monolithic F1/F2/F3/F4 C benchmark | NOT_IMPLEMENTED |
+| User-friendly non-contaminating benchmark pipeline | IMPLEMENTED (`scripts/paperbench.py`) |
 | ODM forbidden assignments | NOT_IMPLEMENTED |
 
 ## What was run locally
@@ -91,6 +92,7 @@ Este proyecto replica el mecanismo algorítmico central de Duran-Mateluna, Ales 
 
 ## Sentences allowed in final report
 
+- “La implementación C principal es Benders/F4 con cortes perezosos derivada de F3; F1–F4 se presentan como formulaciones matemáticas, no como modelos monolíticos C seleccionables.”
 - “Se implementó el maestro de Benders con variables `y_j` y `theta_i`, y cortes de optimalidad generados perezosamente.”
 - “La separación implementa el cálculo de `ktilde_i` usando sitios ordenados `S_i`, sin resolver LPs de subproblema.”
 - “OR-Library `pmed1`–`pmed15` coincide con los óptimos oficiales en las 15 instancias corridas.”
@@ -107,3 +109,4 @@ Este proyecto replica el mecanismo algorítmico central de Duran-Mateluna, Ales 
 - “El warm-start mejora siempre el tiempo.”
 - “Corrimos BIRCH/RW grande/ODM/huge TSP.”
 - “Comparamos contra un monolítico C equivalente.”
+- “Las instancias BIRCH generadas localmente son las BIRCH exactas del paper.”

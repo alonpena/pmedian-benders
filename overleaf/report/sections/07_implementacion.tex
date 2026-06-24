@@ -1,8 +1,18 @@
 \section{Arquitectura de implementación}
 \label{sec:implementacion}
 
+\subsection{Qué modelo está realmente implementado}
+La formulación ejecutable del repositorio es \textbf{Benders/F4 con cortes perezosos derivada de
+F3}. En el informe se presentan F1, F2, F3 y F4 como linaje matemático, pero el solver C no expone
+modelos monolíticos seleccionables para F1/F2/F3/F4. En particular, no se materializan variables
+$x_{ij}$ de F1 ni variables $z_i^k$ de F2/F3 en el maestro C; se usan variables $y_j$ y
+$\theta_i$ y se generan cortes de Benders de tipo F4 bajo demanda. El oráculo/prototipo Python y
+la fuerza bruta se usan para validación en instancias pequeñas, no como benchmark monolítico
+principal.
+
 \subsection{Algoritmo de dos fases}
-La implementación reproduce \textbf{exactamente} el esquema de dos fases del paper (Sección~3.5):
+La implementación reproduce el \textbf{mecanismo central} del esquema de dos fases del paper
+(Sección~3.5):
 \begin{description}[leftmargin=1.5em]
   \item[Fase 1 — relajación lineal del maestro.] Se resuelve \eqref{eq:master} con $y\in[0,1]$,
         iterando: resolver el maestro LP, separar cortes violados (Alg.~1), agregarlos y aplicar

@@ -1,0 +1,4 @@
+run_id,family,instance,N,M,p,status,timeout_s,obj,opt_known,delta_opt,matches_known_opt,LB1,UB1,T1,T2,elapsed_s,iter,cuts_phase1,warm_cuts,lazy_cuts,separation_calls,nodes,log_path,provenance,caveat
+toy1,toy,instances/toy/toy1.pmp,4,4,2,OK,300,6.0,6,0.000000,YES,6.0000,6.0,0.013,0.006,0.108,3,6,6,2,3,1,results/logs/paperbench_smoke/toy1.log,hand-built toy instance in repo,
+pmed1,OR-Library,instances/orlib/pmed1.pmp,100,100,5,OK,300,5819.0,5819,0.000000,YES,5819.0000,5819.0,0.009,0.008,0.034,6,337,337,90,3,1,results/logs/paperbench_smoke/pmed1.log,OR-Library Beasley pmed data; official optima in instances/orlib/pmedopt.txt,
+kroA100,TSPLIB,instances/tsplib/kroA100.pmp,100,100,10,OK,300,30539.0,NA,NA,NA,30530.0000,30545.0,0.009,0.045,0.070,8,306,306,162,12,1,results/logs/paperbench_smoke/kroA100.log,TSPLIB kroA100 raw .tsp in repo; used as geometry sanity check,not a main paper-table result

@@ -1,0 +1,21 @@
+COMMAND: ./pmedian instances/toy/toy1.pmp --mode full --opt 6
+RETURN_CODE: 0
+ELAPSED_S: 0.108
+
+STDOUT:
+Instancia /Users/apena/benders-pmedian/instances/toy/toy1.pmp: N=4 M=4 p=2 (coords)
+Matriz S construida en 0.000 s
+Set parameter Username
+Set parameter LicenseID to value 2835550
+Academic license - for non-commercial use only - expires 2027-06-15
+[Fase 1] LB1=6.0000 UB1=6.0 iter=3 cuts=6 T1=0.013 s
+Set parameter Username
+Set parameter LicenseID to value 2835550
+Academic license - for non-commercial use only - expires 2027-06-15
+[Fase 2] opt=6.0 cuts=2 nodes=1 T2=0.006 s start=warm set={1,3}
+[CALLBACK] warm_cuts=6  separaciones(MIPSOL)=3  cortes_lazy=2  nodos_B&B=1
+[CALLBACK] log -> results/logs/toy1.pmp_p2_full.log
+
+
+STDERR:
+
