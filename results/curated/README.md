@@ -13,6 +13,7 @@ Frozen/validated evidence snapshots used by report and slides.
 | `warmstart_comparison.csv` | Manual warm/cold runs documented in docs | Warm-start nodes/cuts reduction; wall-time mixed |
 | `benchmark_current.csv` | Copy of `results/benchmark.csv` after validation | Combined scratch benchmark snapshot; avoid rerun appends |
 | `paperbench_smoke.csv` | `.venv/bin/python scripts/paperbench.py run --set smoke --timeout 300 --out results/curated/paperbench_smoke.csv --log-dir results/logs/paperbench_smoke` | Non-contaminating smoke run: `toy1`, `pmed1`, `kroA100` |
+| `paperbench_current.csv` | `.venv/bin/python scripts/paperbench.py run --set current --timeout 300 --out results/curated/paperbench_current.csv --log-dir results/logs/paperbench_current` | Non-contaminating full local current catalog: 26/26 OK, 25/25 known optima matched |
 
 ## Validation
 
@@ -40,4 +41,5 @@ RESULT: PASS
 
 - `scripts/run_benchmark.py` and `scripts/compare_paper.py` can append rows to `results/benchmark.csv`; this is why curated snapshots exist.
 - `scripts/paperbench.py` runs from a temporary working directory, so it does not contaminate repo-level `results/benchmark.csv`.
+- `paperbench_current.csv` is full local current catalog, not full paper campaign. Full paper campaign still needs missing external components/data listed in `docs/INSTANCE_SOURCES_AND_PIPELINE.md`.
 - Zebra is not run locally; no curated Zebra result exists.

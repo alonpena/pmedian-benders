@@ -1,0 +1,21 @@
+COMMAND: ./pmedian instances/orlib/pmed10.pmp --mode full --opt 1255
+RETURN_CODE: 0
+ELAPSED_S: 0.040
+
+STDOUT:
+Instancia /Users/apena/benders-pmedian/instances/orlib/pmed10.pmp: N=200 M=200 p=67 (matriz)
+Matriz S construida en 0.002 s
+Set parameter Username
+Set parameter LicenseID to value 2835550
+Academic license - for non-commercial use only - expires 2027-06-15
+[Fase 1] LB1=1255.0000 UB1=1255.0 iter=9 cuts=506 T1=0.010 s
+Set parameter Username
+Set parameter LicenseID to value 2835550
+Academic license - for non-commercial use only - expires 2027-06-15
+[Fase 2] opt=1255.0 cuts=85 nodes=1 T2=0.011 s start=warm set={2,11,16,18,30,34,38,40,41,42,46,47,48,50,54,57,58,63,65,67,68,69,71,74,79,80,83,84,92,96,103,105,107,111,113,118,121,122,123,127,128,130,132,134,136,137,140,142,143,144,145,147,150,151,155,157,165,167,171,179,182,186,190,192,195,198,199}
+[CALLBACK] warm_cuts=506  separaciones(MIPSOL)=3  cortes_lazy=85  nodos_B&B=1
+[CALLBACK] log -> results/logs/pmed10.pmp_p67_full.log
+
+
+STDERR:
+

@@ -18,6 +18,7 @@ Auditoría de trazabilidad: cada resultado numérico defendible debe apuntar a C
 | `results/curated/README.md` | Frozen evidence snapshot manifest and regeneration policy | VERIFIED_LOCAL |
 | `scripts/paperbench.py` | User-friendly non-contaminating benchmark CLI (`list`, `sources`, `prepare`, `run`, `validate`) | IMPLEMENTED_LOCAL |
 | `results/curated/paperbench_smoke.csv` | Smoke pipeline run for `toy1`, `pmed1`, `kroA100` without appending to `benchmark.csv` | VERIFIED_LOCAL |
+| `results/curated/paperbench_current.csv` | Full local current catalog run: 26/26 OK, 25/25 known optima matched | VERIFIED_LOCAL |
 
 ## OR-Library table
 
@@ -111,13 +112,16 @@ Fuente: `results/warmstart_comparison.csv`.
 | “Warm-start acelera siempre” | Local wall-time mixed. |
 | “Comparamos monolítico vs Benders” | No monolithic C benchmark. |
 
-## Paperbench smoke trace
+## Paperbench trace
 
-Fuente: `results/curated/paperbench_smoke.csv`.
+Fuentes: `results/curated/paperbench_smoke.csv`, `results/curated/paperbench_current.csv`.
 
 | Claim | Valor | Fuente | Status |
 |---|---:|---|---|
 | Non-contaminating smoke run rows | 3 | `paperbench_smoke.csv` | VERIFIED_LOCAL |
+| Full local current catalog rows | 26 | `paperbench_current.csv` | VERIFIED_LOCAL |
+| Full local current catalog OK rows | 26/26 | `paperbench_current.csv` | VERIFIED_LOCAL |
+| Known optimum matches in current catalog | 25/25 | `paperbench_current.csv` | VERIFIED_LOCAL |
 | `toy1` smoke optimum | 6 | `paperbench_smoke.csv`, `results/logs/paperbench_smoke/toy1.log` | VERIFIED_LOCAL |
 | `pmed1` smoke optimum | 5819 | `paperbench_smoke.csv`, `results/logs/paperbench_smoke/pmed1.log` | VERIFIED_LOCAL |
 | `kroA100` smoke optimum | 30539 | `paperbench_smoke.csv`, `results/logs/paperbench_smoke/kroA100.log` | VERIFIED_LOCAL |
@@ -138,6 +142,11 @@ make test
 .venv/bin/python scripts/paperbench.py run --set smoke --timeout 300 \
   --out results/curated/paperbench_smoke.csv \
   --log-dir results/logs/paperbench_smoke
+.venv/bin/python scripts/paperbench.py run --set current --timeout 300 \
+  --out results/curated/paperbench_current.csv \
+  --log-dir results/logs/paperbench_current
+.venv/bin/python scripts/paperbench.py summarize --csv results/curated/paperbench_current.csv
+.venv/bin/python scripts/paperbench.py validate --csv results/curated/paperbench_current.csv
 ```
 
 For clean regeneration, see `docs/EXPERIMENTAL_PROTOCOL.md` and `docs/INSTANCE_SOURCES_AND_PIPELINE.md` before deleting/appending CSVs.

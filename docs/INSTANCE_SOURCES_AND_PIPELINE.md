@@ -31,7 +31,7 @@ Examples:
 
 ## User-friendly benchmark pipeline
 
-Use `scripts/paperbench.py`. It avoids YAML and provides built-in case sets.
+Use `scripts/paperbench.py`. It avoids YAML and provides built-in case sets. The `current` set is the full local runnable catalog, not the full paper campaign; full paper reproduction still needs external Zebra/PopStar/data/provenance.
 
 ```bash
 .venv/bin/python scripts/paperbench.py sources
@@ -40,7 +40,8 @@ Use `scripts/paperbench.py`. It avoids YAML and provides built-in case sets.
 .venv/bin/python scripts/paperbench.py run --set smoke --timeout 300 \
   --out results/curated/paperbench_smoke.csv \
   --log-dir results/logs/paperbench_smoke
-.venv/bin/python scripts/paperbench.py validate
+.venv/bin/python scripts/paperbench.py summarize --csv results/curated/paperbench_smoke.csv
+.venv/bin/python scripts/paperbench.py validate --csv results/curated/paperbench_smoke.csv
 ```
 
 Built-in sets:
@@ -48,7 +49,7 @@ Built-in sets:
 | Set | Contents | Use |
 |---|---|---|
 | `smoke` | `toy1`, `pmed1`, `kroA100` | fast pipeline test |
-| `current` | `toy1`, OR-Library `pmed1`–`pmed15`, `kroA100`, `rl1304` p-grid | current defensible subset |
+| `current` | `toy1`, OR-Library `pmed1`–`pmed15`, `kroA100`, `rl1304` p-grid | full local current catalog |
 | `orlib` | OR-Library `pmed1`–`pmed15` | official optima check |
 | `rl1304` | paper Table 2 `rl1304` p-grid | paper subset check |
 | `kro` | `kroA100` | geometric sanity check |
@@ -252,12 +253,14 @@ Do not claim local comparator performance without executable + command + CSV + l
   --log-dir results/logs/paperbench_smoke
 ```
 
-### Run current defensible subset non-mutating
+### Run full local current catalog non-mutating
 
 ```bash
 .venv/bin/python scripts/paperbench.py run --set current --timeout 300 \
   --out results/curated/paperbench_current.csv \
   --log-dir results/logs/paperbench_current
+.venv/bin/python scripts/paperbench.py summarize --csv results/curated/paperbench_current.csv
+.venv/bin/python scripts/paperbench.py validate --csv results/curated/paperbench_current.csv
 ```
 
 ## What to say in report

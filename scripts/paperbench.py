@@ -14,7 +14,8 @@ Commands:
   sources   show where official/raw instances come from
   prepare   create .pmp files from raw inputs when possible
   run       run ./pmedian with external timeout, logs, clean CSV (no benchmark.csv append)
-  validate  run scripts/validate_results.py for curated/current evidence
+  validate  run scripts/validate_results.py and validate a paperbench CSV
+  summarize summarize a paperbench CSV
 
 This script runs ./pmedian from a temporary working directory so src/main.c writes
 its append-only results/benchmark.csv into temp, not into repo results/benchmark.csv.
@@ -30,6 +31,7 @@ import subprocess
 import sys
 import tempfile
 import time
+from collections import Counter, defaultdict
 from dataclasses import dataclass
 from pathlib import Path
 from typing import Optional
@@ -247,6 +249,71 @@ def write_csv(rows: list[dict[str, str]], out: Path) -> None:
             w.writerow({c: r.get(c, NA) for c in cols})
 
 
+def read_rows(path: Path) -> list[dict[str, str]]:
+    with path.open(newline="") as f:
+        return list(csv.DictReader(f))
+
+
+def summarize_csv(path: Path) -> int:
+    if not path.exists():
+        print(f"Missing CSV: {path}")
+        return 1
+    rows = read_rows(path)
+    status = Counter(r.get("status", NA) for r in rows)
+    family = Counter(r.get("family", NA) for r in rows)
+    known = [r for r in rows if r.get("opt_known") not in (None, "", NA)]
+    matched = [r for r in known if r.get("matches_known_opt") == "YES"]
+    elapsed = 0.0
+    for r in rows:
+        try:
+            elapsed += float(r.get("elapsed_s", "0") or 0)
+        except ValueError:
+            pass
+    print(f"CSV: {path}")
+    print(f"rows={len(rows)} elapsed_s_sum={elapsed:.3f}")
+    print("status:")
+    for k, v in sorted(status.items()):
+        print(f"  {k}: {v}")
+    print("family:")
+    for k, v in sorted(family.items()):
+        print(f"  {k}: {v}")
+    print(f"known_opt_matches={len(matched)}/{len(known)}")
+    slow = sorted(rows, key=lambda r: float(r.get("elapsed_s") or 0), reverse=True)[:5]
+    if slow:
+        print("slowest:")
+        for r in slow:
+            print(f"  {r.get('run_id')} elapsed={r.get('elapsed_s')} status={r.get('status')} obj={r.get('obj')} match={r.get('matches_known_opt')}")
+    return 0
+
+
+def validate_csv(path: Path) -> int:
+    if not path.exists():
+        print(f"SKIP paperbench CSV validation: missing {path}")
+        return 0
+    rows = read_rows(path)
+    errors: list[str] = []
+    ids = [r.get("run_id", "") for r in rows]
+    dup = [k for k, v in Counter(ids).items() if v > 1]
+    if dup:
+        errors.append(f"duplicate run_id(s): {', '.join(dup)}")
+    for r in rows:
+        rid = r.get("run_id", NA)
+        if r.get("status") != "OK":
+            errors.append(f"{rid}: status={r.get('status')}")
+        if r.get("matches_known_opt") == "NO":
+            errors.append(f"{rid}: known optimum mismatch delta={r.get('delta_opt')}")
+        log = r.get("log_path", NA)
+        if log not in ("", NA) and not (ROOT / log).exists():
+            errors.append(f"{rid}: missing log {log}")
+    if errors:
+        print("paperbench CSV validation: FAIL")
+        for e in errors:
+            print(f"  {e}")
+        return 1
+    print(f"paperbench CSV validation: PASS ({len(rows)} rows) {path}")
+    return 0
+
+
 def main() -> int:
     ap = argparse.ArgumentParser(description="User-friendly pmedian-benders benchmark pipeline")
     sub = ap.add_subparsers(dest="cmd", required=True)
@@ -255,7 +322,11 @@ def main() -> int:
         sp.add_argument("--set", default="current", choices=["smoke", "current", "orlib", "rl1304", "kro"])
         sp.add_argument("--only", nargs="*", default=[])
     sub.add_parser("sources")
-    sub.add_parser("validate")
+    valp = sub.add_parser("validate")
+    valp.add_argument("--csv", default=str(DEFAULT_OUT))
+    valp.add_argument("--skip-global", action="store_true", help="skip scripts/validate_results.py")
+    sump = sub.add_parser("summarize")
+    sump.add_argument("--csv", default=str(DEFAULT_OUT))
     runp = sub.choices["run"]
     runp.add_argument("--timeout", type=int, default=300)
     runp.add_argument("--out", default=str(DEFAULT_OUT))
@@ -273,7 +344,13 @@ def main() -> int:
         return 0
 
     if args.cmd == "validate":
-        return subprocess.call([sys.executable, str(ROOT / "scripts" / "validate_results.py")])
+        rc = 0
+        if not args.skip_global:
+            rc = subprocess.call([sys.executable, str(ROOT / "scripts" / "validate_results.py")])
+        return rc or validate_csv(Path(args.csv))
+
+    if args.cmd == "summarize":
+        return summarize_csv(Path(args.csv))
 
     cases = select_cases(args.set, args.only)
     if args.cmd == "list":
