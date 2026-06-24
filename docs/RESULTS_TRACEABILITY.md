@@ -14,6 +14,8 @@ Auditoría de trazabilidad: cada resultado numérico defendible debe apuntar a C
 | `results/logs/verify_cuts_oracle_diff.log` | C separator vs Python oracle, 0 diffs | VERIFIED_LOCAL |
 | `tests/test_separation_toy.c` | cortes derivados a mano para `toy1` | VERIFIED_LOCAL |
 | `docs/ADR/0002-orlib-duplicate-edges.md` | regla OR-Library duplicate edges = last occurrence wins | VERIFIED_LOCAL |
+| `scripts/validate_results.py` | Validator: benchmark duplicates, OPT_MATCH, logs/content | IMPLEMENTED_LOCAL |
+| `results/curated/README.md` | Frozen evidence snapshot manifest at commit `d1f2e1e` | VERIFIED_LOCAL |
 
 ## OR-Library table
 
@@ -114,6 +116,7 @@ make clean && make
 make test
 .venv/bin/python scripts/verify_cuts.py
 .venv/bin/python tests/test_parse_orlib.py
+.venv/bin/python scripts/validate_results.py
 .venv/bin/python scripts/run_benchmark.py
 .venv/bin/python scripts/compare_paper.py
 .venv/bin/python scripts/plot_results.py
