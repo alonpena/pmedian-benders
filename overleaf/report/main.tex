@@ -54,7 +54,7 @@ compacta F4, una propuesta teórica de relajación lagrangiana, y la \textbf{des
 Benders} de Duran-Mateluna, Ales \& Elloumi (2023), cuyo subproblema admite \textbf{solución
 cerrada} y permite separar los cortes en tiempo $O(NM)$ sin resolver ningún LP. El método se
 implementó en C modular sobre una capa de solver (Gurobi) con un algoritmo de dos fases
-(relajación lineal + branch-and-Benders-cut con \textit{lazy constraints}). El alcance del
+(relajación lineal + branch-and-Benders-cut con \textit{lazy cuts}). El alcance del
 proyecto es una \textbf{replicación algorítmica completa} del mecanismo central y una
 \textbf{replicación computacional parcial documentada}. El separador fue \textbf{verificado por
 tres vías independientes}: derivación a mano, test unitario y un oráculo en Python (0
@@ -62,7 +62,9 @@ diferencias). En las 15 instancias OR-Library se alcanza el óptimo oficial con 
 en TSPLIB \texttt{rl1304} (hasta $p=500$) se reproducen exactamente los 9 óptimos del paper.
 Zebra y la campaña completa de gran escala no se reejecutaron; esas comparaciones se tratan como
 resultados reportados por el paper, no como resultados locales. Todos los números reportados
-provienen de corridas reales registradas en \texttt{results/}.
+provienen de corridas reales registradas en \texttt{results/}. El informe es autocontenido: las
+decisiones de datos críticas, la trazabilidad de artefactos y los comandos de reproducción se
+incluyen explícitamente en el texto.
 \end{abstract}
 
 \tableofcontents

@@ -2,8 +2,19 @@
 \label{sec:literatura}
 
 Este trabajo es una \textbf{replicación y validación} del método de Duran-Mateluna, Ales \&
-Elloumi (2023). Para situarlo, conviene seguir el linaje de formulaciones que el propio paper
-cita y sobre el que se construye; cada una corrige una debilidad estructural de la anterior.
+Elloumi (2023). Para situarlo, se resumen primero referencias canónicas del problema de las
+\textit{p}-medianas y luego el linaje de formulaciones que el paper usa como base; cada etapa
+corrige una debilidad estructural de la anterior.
+
+\paragraph{Contexto canónico del pMP.} ReVelle \& Swain (1970) introducen el modelo de
+localización de instalaciones centrales que se conoce como \textit{p}-median problem en
+programación entera. Kariv \& Hakimi (1979) prueban la dificultad algorítmica del problema en
+redes y consolidan su rol como problema NP-duro de localización discreta. Beasley (1990) publica
+OR-Library, con instancias \texttt{pmed} y óptimos de referencia que siguen siendo benchmark
+estándar. Reinelt (1991) publica TSPLIB; aunque nace para TSP, sus coordenadas se usan también
+como benchmark geométrico para pMP. Resende \& Werneck (2004) desarrollan heurísticas de alta
+calidad para pMP y sirven de antecedente para usar heurísticas primales como generadores de
+buenas cotas superiores.
 
 \begin{description}[leftmargin=1.6em]
   \item[ReVelle \& Swain (1970) — F1.] Primera formulación MILP del pMP con variables de
@@ -15,8 +26,10 @@ cita y sobre el que se construye; cada una corrige una debilidad estructural de 
         \textbf{base} sobre la que el paper construye Benders.
   \item[García, Labbé \& Marín (2011) — Zebra.] Método exacto estado-del-arte previo:
         \emph{branch-cut-and-price} sobre F2, agregando variables $z$ de forma incremental.
-        Resolvía instancias grandes pero sufría problemas de memoria y no manejaba instancias
-        asimétricas.
+        Resolvía instancias grandes pero el paper replicado reporta problemas de memoria y falta
+        de soporte para instancias asimétricas. En este proyecto Zebra no está disponible como
+        ejecutable; por eso sus números solo pueden citarse como \emph{resultados reportados por
+        el paper}, no como corridas locales.
   \item[Benders (1962).] La técnica de descomposición general que el paper especializa: separar
         decisiones complicantes (maestro) de un subproblema, intercambiando \emph{cortes}.
   \item[Fischetti, Ljubić \& Sinnl (2017).] Rediseño de Benders para localización a gran escala
@@ -29,6 +42,9 @@ subproblema de Benders del pMP es tan simple que su \textbf{dual tiene solución
 cortes se separan en $O(NM)$ \emph{sin resolver ningún LP}. Envuelven esto en un algoritmo de
 dos fases (relajación lineal con loop de cortes; luego branch-and-Benders-cut que hereda esos
 cortes). El paper reporta que, con ese mecanismo, supera a Zebra en tiempo, evita sus problemas
-de memoria y resuelve por primera vez a optimalidad varias instancias de gran tamaño. Este
-informe reproduce ese núcleo —formulaciones, separación, dos fases— y lo valida con datos
-propios; no reejecuta Zebra, por lo que esa comparación queda como afirmación de literatura.
+de memoria y resuelve por primera vez a optimalidad varias instancias de gran tamaño. También usa
+PopStar como heurística primal externa para producir buenas cotas superiores en Fase 1. Este
+informe reproduce el núcleo exacto —formulaciones, separación, dos fases y warm-start— y lo
+valida con datos propios. No reejecuta Zebra ni implementa PopStar; por lo tanto, cualquier
+comparación con Zebra o con los $UB_1$ de PopStar se presenta como contraste contra resultados
+reportados en el paper, no como benchmark local completo contra esos códigos.

@@ -102,13 +102,21 @@ extremos. Por lo tanto \textbf{nunca se requieren cortes de factibilidad}; todos
 \eqref{eq:cut16} son de optimalidad.
 \end{quote}
 
+La razón es estructural. En pMP siempre se abren exactamente $p\ge1$ sitios y todo cliente puede
+asignarse a alguno de ellos; no existen restricciones de capacidad ni asignaciones prohibidas en
+el modelo implementado. Incluso si el maestro propone un vector $\bar y$ fraccional durante la
+relajación, el subproblema F3 del cliente conserva variables $z\ge0$ que pueden tomar valores
+suficientes para satisfacer la cadena de restricciones. Por eso el subproblema nunca ``falla''; a
+lo sumo revela que $\bar\theta_i$ estaba subestimando la distancia, y eso se corrige con un corte
+de optimalidad.
+
 Esto simplifica notablemente la implementación: el separador solo debe verificar si
 $\bar\theta_i$ subestima $\OPT(SP_i(\bar y))$ y, de ser así, agregar \emph{un} corte de
 optimalidad. La \textbf{validez global} del método se sigue de que (i) cada corte es una
 desigualdad válida (cota inferior correcta de $\theta_i$), de modo que el maestro nunca excluye la
 solución óptima; y (ii) existe un número \emph{finito} de cortes distintos de la forma
 \eqref{eq:cut16} (uno por cada $\bar y$ binario relevante), por lo que el branch-and-cut con
-cortes perezosos termina con el óptimo exacto.
+lazy cuts termina con el óptimo exacto.
 
 \medskip
 La forma cerrada de $\bar v$ (Sección~\ref{sec:separacion}) convierte \eqref{eq:cut16} en una
@@ -135,6 +143,6 @@ $\pi^\star$ y el corte. La propuesta del paper mejora esto en cinco aspectos con
         rayos extremos ni cortes de factibilidad: la lógica de separación es más simple y robusta.
 \end{enumerate}
 Además, los cortes no se generan en un bucle externo maestro--subproblema, sino \emph{dentro} del
-árbol de branch-and-bound mediante un callback de cortes perezosos: esto es
+árbol de branch-and-bound mediante un callback de lazy cuts: esto es
 \textbf{branch-and-Benders-cut} (Cap.~3), que evita reoptimizar el MIP desde cero en cada
 iteración.

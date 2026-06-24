@@ -1,11 +1,12 @@
 \section{Instancias, datos y caso base}
 \label{sec:instancias}
 
-Las familias siguientes se eligen porque son los \textbf{benchmarks estándar} que usa el paper
-replicado (OR-Library y TSP-Library en particular): no son el eje del trabajo, sino el banco de
-prueba reconocido que permite comparar con la literatura y con los óptimos publicados.
+Los siguientes \textbf{conjuntos de benchmark} se eligen porque aparecen en el paper replicado o
+son pruebas mínimas necesarias para validar la implementación. No son el eje teórico del trabajo:
+son datos reconocidos que permiten comparar con óptimos publicados y con valores reportados por
+la literatura.
 
-\subsection{Familias utilizadas}
+\subsection{Benchmarks utilizados}
 \begin{description}[leftmargin=1.5em]
   \item[\texttt{toy1} (caso base mínimo).] $N=M=4$, $p=2$, coordenadas 2D. Óptimo a mano $=6$.
         Sirve para validar toda la cadena y derivar los cortes a mano
@@ -18,9 +19,9 @@ prueba reconocido que permite comparar con la literatura y con los óptimos publ
         con coordenadas 2D y distancia euclidiana \emph{truncada}. Banco principal de escalamiento;
         se resuelve para $p\in\{5,50,200,500\}$ (y $\{10,20,100,300,400\}$ en la comparación con
         el paper).
-  \item[RW (Resende \& Werneck, 2004).] \texttt{rw12}: matriz de distancias \textbf{aleatoria y
-        posiblemente asimétrica} ($N=M=12$). Valida el caso \emph{no euclidiano / asimétrico} de
-        la implementación.
+  \item[RW local mínimo.] \texttt{rw12}: matriz de distancias \textbf{aleatoria y posiblemente
+        asimétrica} ($N=M=12$). Valida el caso \emph{no euclidiano / asimétrico} de la
+        implementación. No corresponde a la campaña RW grande del paper.
 \end{description}
 
 \subsection{Supuestos y decisiones de datos}
@@ -30,18 +31,24 @@ prueba reconocido que permite comparar con la literatura y con los óptimos publ
         $3\,099\,073$, exactamente el óptimo del paper. Se adopta floor en todas las instancias
         con coordenadas por consistencia.
   \item \textbf{Aristas duplicadas en OR-Library.} \texttt{pmed1} trae aristas paralelas con costo
-        distinto. La convención correcta —documentada en el formato de Beasley— es que
-        \emph{la última ocurrencia sobrescribe} (no el mínimo). Tomar el mínimo da $5718$; la
-        regla correcta da el óptimo oficial $5819$. Justificado de forma independiente del valor
-        objetivo en \texttt{docs/ADR/0002-orlib-duplicate-edges.md}, con verificación
-        Dijkstra~$\equiv$~Floyd--Warshall.
-  \item \textbf{Formato propio \texttt{.pmp}.} Variante A (coordenadas) y Variante B (\texttt{MATRIX}),
-        descritas en \texttt{docs/INSTANCE\_FORMAT.md}.
+        distinto. La decisión de datos, incorporada aquí para que el informe sea autocontenido, es:
+        \emph{la última ocurrencia sobrescribe a las anteriores}. Esta convención coincide con el
+        formato de Beasley y con la lectura secuencial del archivo; no se debe reemplazar por
+        ``tomar el mínimo''. Si se toma el mínimo, \texttt{pmed1} entrega $5718$ y deja de coincidir
+        con el óptimo oficial; con sobrescritura por última ocurrencia entrega $5819$, que sí
+        coincide. La implementación verifica además Dijkstra~$\equiv$~Floyd--Warshall en el
+        parser. Esta es la decisión que antes estaba documentada como ADR; queda resumida en el
+        informe para no depender de anexos externos.
+  \item \textbf{Formato propio \texttt{.pmp}.} El solver recibe una primera línea \texttt{N M p}.
+        Luego acepta dos variantes: coordenadas \texttt{id x y}, o una matriz explícita precedida
+        por la línea \texttt{MATRIX}. Esto cubre instancias geométricas TSPLIB y matrices de
+        distancias OR-Library/RW.
 \end{itemize}
 
 \subsection{Alcance honesto}
 Se ejecutaron las 15 instancias OR-Library, \texttt{rl1304} hasta $p=500$, \texttt{kroA100} y la
-validación asimétrica \texttt{rw12}. \textbf{No} se ejecutaron las familias BIRCH, ODM, RW de gran
-tamaño ni las TSP medianas/grandes/enormes del paper; tampoco se reejecutó Zebra. Estas
-ausencias están declaradas como \texttt{UNVERIFIED} en \texttt{docs/AUDIT.md} y no se reportan
-números para ellas.
+validación asimétrica \texttt{rw12}. El catálogo local completo corrido por
+\texttt{scripts/paperbench.py} contiene 26 casos: 15 OR-Library, 10 TSPLIB y 1 toy. \textbf{No} se
+ejecutaron BIRCH, ODM, RW grande ni TSP enormes del paper; tampoco se reejecutó Zebra. Por lo
+tanto no se reportan números locales para esos benchmarks. Cuando se mencionan, se marcan como
+resultados del paper o como trabajo futuro.

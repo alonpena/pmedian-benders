@@ -34,9 +34,11 @@ make pmedian         # binario principal
 
 # pipeline no contaminante (no escribe en benchmark.csv del repo)
 .venv/bin/python scripts/paperbench.py list --set current
-.venv/bin/python scripts/paperbench.py run --set smoke --timeout 300 \
-  --out results/curated/paperbench_smoke.csv \
-  --log-dir results/logs/paperbench_smoke
+.venv/bin/python scripts/paperbench.py run --set current --timeout 300 \
+  --out results/curated/paperbench_current.csv \
+  --log-dir results/logs/paperbench_current
+.venv/bin/python scripts/paperbench.py summarize --csv results/curated/paperbench_current.csv
+.venv/bin/python scripts/paperbench.py validate --csv results/curated/paperbench_current.csv
 \end{lstlisting}
 
 \subsection{Artefactos y trazabilidad}
@@ -46,24 +48,50 @@ make pmedian         # binario principal
   \item \texttt{results/comparison\_vs\_paper.csv} — \texttt{rl1304} vs Tabla del paper.
   \item \texttt{results/warmstart\_comparison.csv} — warm vs cold.
   \item \texttt{results/logs/*.log} — un log por corrida con \texttt{CALLBACK\_PROOF} (separaciones,
-        cortes lazy, nodos) e \texttt{is\_branch\_and\_benders\_cut}.
+        lazy cuts, nodos) e \texttt{is\_branch\_and\_benders\_cut}.
   \item \texttt{results/plot\_\{a,b,c,d\}\_*.png} — las cuatro figuras.
   \item \texttt{results/curated/} — snapshot final validado de CSVs usados en tablas.
   \item \texttt{scripts/validate\_results.py} — validador automático de duplicados, óptimos y logs.
   \item \texttt{scripts/paperbench.py} — pipeline CLI no contaminante para listar/preparar/correr,
         resumir y validar el catálogo local sin depender de archivos YAML.
-  \item \texttt{docs/INSTANCE\_SOURCES\_AND\_PIPELINE.md} — procedencia de instancias, parsers,
-        generadores y límites de cada familia.
-  \item \texttt{docs/AUDIT.md} — evidencia por afirmación: archivo + comando para reproducir; lo no
-        probado marcado \texttt{UNVERIFIED}.
+  \item \texttt{results/curated/paperbench\_current.csv} — catálogo local completo: 26/26 corridas
+        OK y 25/25 óptimos conocidos coincidentes.
 \end{itemize}
-Los logs (\texttt{*.log}) están en \texttt{.gitignore} por ser artefactos regenerables; se
-reconstruyen con los comandos anteriores.
+Los logs principales se versionan cuando respaldan claims del informe; logs auxiliares pueden
+regenerarse con los comandos anteriores.
+
+\subsection{Matriz de claims y artefactos}
+\begin{center}\small
+\begin{tabular}{p{0.34\textwidth}p{0.42\textwidth}p{0.15\textwidth}}
+\toprule
+Claim & Artefacto verificable & Estado \\
+\midrule
+Separador correcto & \texttt{make test}; \texttt{scripts/verify\_cuts.py}; logs
+\texttt{verify\_cuts\_*} & PASS, 0 diffs \\
+OR-Library resuelta & \texttt{results/curated/orlib\_optima\_check.csv} & 15/15, $\Delta=0$ \\
+\texttt{rl1304} coincide con paper & \texttt{results/curated/comparison\_vs\_paper.csv} & 9/9, $\Delta=0$ \\
+Branch-and-Benders-cut real & logs con \texttt{lazy\_cuts}>0 e
+\texttt{is\_branch\_and\_benders\_cut=YES} & verificado \\
+Warm-start reduce árbol & \texttt{results/curated/warmstart\_comparison.csv} & nodos bajan \\
+Catálogo local completo & \texttt{results/curated/paperbench\_current.csv} & 26/26 OK \\
+Zebra/PopStar no locales & ausencia de ejecutable/comandos/CSV locales & no reportado local \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\subsection{Salidas esperadas de los comandos críticos}
+\begin{itemize}[noitemsep]
+  \item \texttt{make test}: ambos ejecutables terminan con \texttt{RESULT: PASS}.
+  \item \texttt{scripts/verify\_cuts.py}: \texttt{PASS: C == Python ... (0 diffs)}.
+  \item \texttt{scripts/validate\_results.py}: \texttt{RESULT: PASS}.
+  \item \texttt{paperbench.py summarize --csv results/curated/paperbench\_current.csv}: 26 filas,
+        \texttt{OK: 26}, \texttt{known\_opt\_matches=25/25}.
+\end{itemize}
 
 \subsection{Política de honestidad}
 Ningún número de este informe fue inventado: todos provienen de \texttt{results/} o de texto
 transcrito del PDF del paper (trazable en \texttt{scripts/compare\_paper.py}). Donde un dato no se
-midió (familias no corridas, Zebra, escalabilidad a gran escala), se declara explícitamente como
+midió (benchmarks no corridos, Zebra, escalabilidad a gran escala), se declara explícitamente como
 no verificado en lugar de rellenarlo.
 
 \subsection*{Lista de chequeo manual antes de la entrega}
@@ -75,5 +103,6 @@ no verificado en lugar de rellenarlo.
   \item \texttt{pdflatex report/main.tex} (dos pasadas) compila y las 4 figuras se incrustan.
   \item \texttt{pdflatex slides/main.tex} compila las 8 diapositivas.
   \item Las tablas del informe coinciden con los CSV curados en \texttt{results/curated/}.
-  \item \texttt{docs/AUDIT.md} no contiene afirmaciones \texttt{UNVERIFIED} presentadas como hechos.
+  \item No quedan afirmaciones sobre Zebra, PopStar, BIRCH, ODM, RW grande o TSP enorme presentadas
+        como resultados locales.
 \end{enumerate}

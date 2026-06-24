@@ -16,11 +16,13 @@
         Fase 1 baja los nodos de B\&B de cientos a $1$--$7$ (Tabla~\ref{tab:warm}), pero en
         instancias sub-segundo la precarga de cientos de cortes puede costar más que el ahorro: el
         beneficio en wall-time se espera en instancias grandes, no medidas aquí.
-  \item \textbf{Sin PopStar, el $UB_1$ es peor pero el $LB_1$ coincide.} En \texttt{rl1304}
-        $p\in\{10,100,300\}$ nuestro $UB_1$ supera al del paper (p.\,ej. $2243679$ vs $2134295$),
-        mientras el $LB_1$ coincide a $\pm1$. La cota inferior depende del método (Benders), no de
-        la heurística de arranque; la superior sí. Esto aísla limpiamente qué parte del desempeño
-        viene de cada componente.
+  \item \textbf{Sin PopStar, el $UB_1$ es peor pero el $LB_1$ coincide.} PopStar es la
+        heurística primal externa usada por el paper para construir buenas soluciones iniciales y,
+        por tanto, mejores cotas superiores. En \texttt{rl1304} $p\in\{10,100,300\}$ nuestro
+        $UB_1$ supera al del paper (p.\,ej. $2243679$ vs $2134295$), mientras el $LB_1$ coincide a
+        $\pm1$. La cota inferior depende del Benders implementado; la cota superior depende de la
+        heurística primal. Para un benchmark computacional completo contra el paper, PopStar (o
+        una heurística equivalente y documentada) debería implementarse o integrarse.
 \end{enumerate}
 
 \subsection{Ventajas del enfoque}
@@ -37,11 +39,13 @@
 
 \subsection{Limitaciones}
 \begin{itemize}[noitemsep]
-  \item \textbf{Escala probada moderada:} hasta $N=1304$. Las familias enormes del paper (TSP
+  \item \textbf{Escala probada moderada:} hasta $N=1304$. Los benchmarks enormes del paper (TSP
         $>10^4$, BIRCH, ODM, RW grande) \emph{no} se ejecutaron; las afirmaciones de
-        escalabilidad son conceptuales, no medidas (\texttt{docs/AUDIT.md}).
-  \item \textbf{Sin comparación directa con Zebra:} no se reejecutó; los tiempos y conclusiones
-        frente a Zebra pertenecen al paper y se citan como literatura, no como resultado local.
+        escalabilidad son conceptuales, no medidas localmente.
+  \item \textbf{Sin comparación directa con Zebra:} no se reejecutó. Sí es válido mostrar que el
+        método local reproduce óptimos del paper y contrastar, como literatura, contra los tiempos
+        Zebra reportados por Duran-Mateluna, Ales \& Elloumi (2023). Lo que no es válido es decir
+        ``nuestro código supera localmente a Zebra'' sin ejecutar Zebra bajo un protocolo propio.
   \item \textbf{Mejoras no implementadas:} PopStar, reduced-cost fixing y constraint reduction
         quedan documentadas pero fuera del alcance.
   \item \textbf{Construcción de $S$:} a gran escala dominaría el tiempo total ($O(NM\log M)$); no
@@ -68,7 +72,8 @@ Se replicó e implementó en C, de forma modular y reproducible, la descomposici
 eficiente para el pMP. La contribución local es una \textbf{replicación algorítmica completa} del
 mecanismo central del paper —F3, Benders, separación cerrada, dos fases y warm-start— más una
 \textbf{replicación computacional parcial documentada}. El método alcanza el óptimo en todas las
-instancias probadas (OR-Library 15/15, \texttt{rl1304} 9/9 vs paper), con un separador verificado
-por tres vías independientes. No se reejecutó Zebra ni la campaña completa de gran escala. El
-trabajo cumple los objetivos del curso: formulación rigurosa, propuesta lagrangiana, diseño y
-justificación de Benders, e implementación con análisis honesto de alcances y límites.
+instancias probadas (OR-Library 15/15, \texttt{rl1304} 9/9 vs paper; catálogo local
+\texttt{paperbench} 26/26 OK), con un separador verificado por tres vías independientes. No se
+reejecutó Zebra ni la campaña completa de gran escala. El trabajo cumple los objetivos del curso:
+formulación rigurosa, propuesta lagrangiana, diseño y justificación de Benders, e implementación
+con análisis honesto de alcances y límites.

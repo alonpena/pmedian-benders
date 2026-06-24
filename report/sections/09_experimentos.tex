@@ -4,9 +4,11 @@
 \subsection{Diseño experimental}
 \textbf{Máquina:} Apple M1; \textbf{solver:} Gurobi 12.0.0; backend único Gurobi.
 \textbf{Configuración:} algoritmo de dos fases, warm-start activo por defecto (\texttt{--coldstart}
-para el comparativo), \texttt{MIPGap}$=10^{-10}$, sin límite de tiempo (todas las instancias
-cierran a optimalidad). \textbf{Sin} PopStar (arranque uniforme + redondeo), sin \emph{reduced-cost
-fixing} ni \emph{constraint reduction}. Todos los números provienen de
+para el comparativo), \texttt{MIPGap}$=10^{-10}$, sin límite de tiempo interno del solver (todas
+las instancias reportadas cierran a optimalidad). \textbf{Sin} PopStar: el paper usa esa
+heurística primal externa para obtener buenas cotas superiores de Fase 1; este repositorio usa un
+redondeo propio más simple. \textbf{Sin} \emph{reduced-cost fixing} ni \emph{constraint reduction}.
+Todos los números provienen de
 \texttt{results/} (CSV y \texttt{logs/}); cada corrida deja un log con prueba de callback. Para
 la versión final se conserva además un snapshot curado en \texttt{results/curated/}, validado por
 \texttt{scripts/validate\_results.py}, porque \texttt{results/benchmark.csv} es append-only y puede
@@ -14,8 +16,17 @@ contaminarse con reruns.
 
 Se reportan tres bloques: (i) corrección y desempeño en OR-Library; (ii) comparación contra el
 paper en \texttt{rl1304}; (iii) efecto del warm-start. Cuatro figuras agregan el comportamiento.
-El pipeline de interacción para preparar/correr subconjuntos está documentado en
-\texttt{docs/INSTANCE\_SOURCES\_AND\_PIPELINE.md} y expuesto por \texttt{scripts/paperbench.py}.
+El pipeline de interacción para preparar/correr el catálogo local está expuesto por
+\texttt{scripts/paperbench.py}. El comando completo usado para el snapshot final fue:
+\begin{lstlisting}[language=bash,numbers=none]
+.venv/bin/python scripts/paperbench.py run --set current --timeout 300 \
+  --out results/curated/paperbench_current.csv \
+  --log-dir results/logs/paperbench_current
+.venv/bin/python scripts/paperbench.py summarize --csv results/curated/paperbench_current.csv
+.venv/bin/python scripts/paperbench.py validate --csv results/curated/paperbench_current.csv
+\end{lstlisting}
+La salida esperada del resumen es: 26 filas OK, 25/25 óptimos conocidos coincidentes; el caso
+restante es \texttt{kroA100}, sin óptimo oficial/paper cargado en el catálogo.
 
 \subsection{Caso base y corrección en OR-Library}
 Las 15 instancias \texttt{pmed} cierran al \textbf{óptimo oficial} con brecha $0\%$ (delta$=0$).
@@ -54,8 +65,10 @@ problema y la Fase 2 confirma en $1$ nodo. Solo \texttt{pmed3}, \texttt{pmed6} y
 requieren ramificar ($3$, $7$, $7$ nodos), justo donde $UB_1>$ óptimo.
 
 \subsection{Comparación contra el paper (\texttt{rl1304})}
-Sobre las mismas instancias TSPLIB se comparan los óptimos y cotas (los valores del paper son
-transcritos del PDF). Fuente: \texttt{results/curated/comparison\_vs\_paper.csv}.
+Sobre las mismas instancias TSPLIB \texttt{rl1304} de la Tabla 2 de Duran-Mateluna, Ales \&
+Elloumi (2023) se comparan los óptimos y cotas. Los valores del paper fueron transcritos en
+\texttt{scripts/compare\_paper.py}; el CSV resultante es
+\texttt{results/curated/comparison\_vs\_paper.csv}.
 
 \begin{table}[h]\centering\small
 \begin{tabular}{rrrrrrrr}
@@ -87,7 +100,7 @@ Heredar el pool de cortes de Fase 1 reduce drásticamente el árbol de B\&B. Fue
 \begin{table}[h]\centering\small
 \begin{tabular}{lrr rr rr}
 \toprule
- & \multicolumn{2}{c}{nodos B\&B} & \multicolumn{2}{c}{cortes lazy} & \multicolumn{2}{c}{$T_2$ [s]} \\
+ & \multicolumn{2}{c}{nodos B\&B} & \multicolumn{2}{c}{lazy cuts} & \multicolumn{2}{c}{$T_2$ [s]} \\
 inst. ($p=5$) & cold & warm & cold & warm & cold & warm \\
 \midrule
 pmed1  & 223 & \textbf{1} & 513  & 90  & 0.047 & 0.016 \\
@@ -95,7 +108,7 @@ pmed6  & 632 & \textbf{7} & 1053 & 240 & 0.143 & 0.600 \\
 pmed11 & 352 & \textbf{1} & 1768 & 308 & 0.030 & 0.940 \\
 \bottomrule
 \end{tabular}
-\caption{Warm vs cold. Los nodos y los cortes lazy caen fuertemente. El wall-time es
+\caption{Warm-start vs cold-start. Los nodos y los lazy cuts caen fuertemente. El wall-time es
 \emph{mixto} en estas instancias sub-segundo: la precarga de cientos de cortes (337/694/1285) a
 veces cuesta más de lo que ahorra. Beneficio en nodos $\ne$ beneficio en tiempo a esta escala.}
 \label{tab:warm}
@@ -105,8 +118,8 @@ veces cuesta más de lo que ahorra. Beneficio en nodos $\ne$ beneficio en tiempo
 Cada corrida \texttt{--mode full} registra la actividad del callback. Por ejemplo
 (\texttt{results/logs/pmed1.pmp\_p5\_full.log}): \texttt{separation\_calls=3}, \texttt{lazy\_cuts=90},
 \texttt{bb\_nodes=1}, \texttt{is\_branch\_and\_benders\_cut=YES}. En \texttt{rl1304} $p=5$:
-\texttt{lazy\_cuts=1850}. Cortes lazy $>0$ confirma que la Fase 2 \emph{no} degenera a un B\&B
-ordinario.
+\texttt{lazy\_cuts=1850}. Tener \texttt{lazy\_cuts}>0 confirma que la Fase 2 \emph{no} degenera a
+un B\&B ordinario: el callback está agregando cortes de Benders durante el árbol.
 
 \subsection{Figuras agregadas}
 Las cuatro figuras (generadas solo de CSV reales por \texttt{scripts/plot\_results.py}) son:

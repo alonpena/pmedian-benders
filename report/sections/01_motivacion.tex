@@ -31,7 +31,7 @@ y se limita a las instancias efectivamente ejecutadas y registradas en \texttt{r
 
 OR-Library y \texttt{rl1304}/TSPLIB se usan porque aparecen en el estudio experimental del paper.
 Zebra no fue reejecutado localmente, por lo que no se afirma una superioridad local frente a
-Zebra. Las familias grandes del paper no se reejecutaron salvo evidencia explícita. La limitación
+Zebra. Los benchmarks grandes del paper no se reejecutaron salvo evidencia explícita. La limitación
 principal del proyecto es el alcance experimental, no la formulación matemática ni el separador.
 
 La comparación correcta es, por tanto: \textbf{replicación algorítmica completa + replicación
@@ -62,11 +62,11 @@ Duran-Mateluna, Ales \& Elloumi (2023) aplican \textbf{descomposición de Bender
 formulación exacta conocida. El hallazgo clave es que el subproblema de Benders del pMP es tan
 simple que su \emph{dual tiene solución cerrada}: los cortes se separan en tiempo lineal $O(NM)$
 \textbf{sin resolver ningún programa lineal}. Esto, dentro de un esquema de dos fases (relajación
-+ branch-and-cut con cortes perezosos), permite —\emph{según reportan los autores}— superar al
++ branch-and-cut con lazy cuts), permite —\emph{según reportan los autores}— superar al
 método previo estado-del-arte (Zebra) por un orden de magnitud y resolver por primera vez a
 optimalidad instancias muy grandes. Estas cifras de escala son del paper; en este informe no las
 reejecutamos (validamos el método en instancias hasta $N=1304$, ver Secciones~\ref{sec:experimentos}–\ref{sec:resultados}).
 
 Este informe integra las tres entregas teóricas del curso (formulación, relajación lagrangiana,
 descomposición de Benders) y reporta una \textbf{implementación propia en C} con resultados
-reales. El detalle teórico extendido está en \texttt{docs/PMEDIAN\_BENDERS\_PROJECT\_BRIEF.md}.
+reales, comandos reproducibles y trazabilidad de cada claim experimental.

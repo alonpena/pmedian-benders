@@ -2,7 +2,7 @@
 \label{sec:implementacion}
 
 \subsection{Qué modelo está realmente implementado}
-La formulación ejecutable del repositorio es \textbf{Benders/F4 con cortes perezosos derivada de
+La formulación ejecutable del repositorio es \textbf{Benders/F4 con lazy cuts derivada de
 F3}. En el informe se presentan F1, F2, F3 y F4 como linaje matemático, pero el solver C no expone
 modelos monolíticos seleccionables para F1/F2/F3/F4. En particular, no se materializan variables
 $x_{ij}$ de F1 ni variables $z_i^k$ de F2/F3 en el maestro C; se usan variables $y_j$ y
@@ -21,7 +21,7 @@ La implementación reproduce el \textbf{mecanismo central} del esquema de dos fa
         relajación) y $UB_1$ (mejor solución entera redondeada).
   \item[Fase 2 — branch-and-Benders-cut.] Se imponen $y_j\in\{0,1\}$ y se resuelve con
         branch-and-cut. En cada \textbf{solución entera} que el solver encuentra, un
-        \textbf{callback de \textit{lazy constraints}} ejecuta el separador y agrega los cortes
+        \textbf{callback de lazy cuts} ejecuta el separador y agrega los cortes
         \eqref{eq:cut20} violados. Esto es, literalmente, branch-and-Benders-cut.
 \end{description}
 Como mejora, la Fase 2 \textbf{hereda el pool de cortes de la Fase 1} (warm-start): los cortes ya
@@ -32,9 +32,9 @@ encontrados se precargan como restricciones del MIP en lugar de partir vacíos.
 cortes y cotas de la Fase 1} hacia la Fase 2 —transferencia de información entre fases, el
 ``warm start'' del Cap.~3—. \textbf{No} se refiere al \emph{preprocesamiento}: la construcción de
 la matriz $S$ y de los radios ordenados $D^k_i$ (\texttt{sortsites\_build}) es una etapa previa,
-común a ambas fases, independiente del warm-start. Confundir ambas cosas sería un error
-conceptual: una es estructura de datos calculada una vez; la otra es reutilización de cortes de
-Benders.
+común a ambas fases, independiente del warm-start. Tampoco es una heurística primal: solo
+transfiere información dual/cortes al maestro MIP para que el árbol de branch-and-bound empiece
+con una relajación más fuerte. Confundir estas piezas sería un error conceptual.
 \end{quote}
 
 \subsection{Mapa de las matemáticas a los módulos en C}
@@ -90,6 +90,7 @@ Cross-check C\,$\equiv$\,Python & \texttt{scripts/verify\_cuts.py} & — \\
 \subsection{Capa de solver y portabilidad}
 Toda la interacción con Gurobi pasa por una interfaz delgada (\texttt{src/solver.h}) que aísla el
 backend: agregar variables/restricciones, optimizar, leer solución, contar nodos y manejar el
-callback de cortes perezosos. Esto deja el núcleo (parsing, distancias, $S$, separación, fases)
+callback de lazy cuts. Esto deja el núcleo (parsing, distancias, $S$, separación, fases)
 independiente del solver y permitiría, en principio, intercambiar el backend (CPLEX/SCIP) sin
-tocar la lógica de Benders. El detalle de las firmas usadas está en \texttt{docs/SOLVER\_NOTES.md}.
+tocar la lógica de Benders. En esta entrega solo se implementó y probó el backend Gurobi; CPLEX y
+SCIP quedan como extensiones futuras.
