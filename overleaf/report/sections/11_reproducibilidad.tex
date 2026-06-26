@@ -6,7 +6,7 @@
   \item \textbf{Hardware:} Apple M1. \textbf{Compilador:} Apple clang (C11).
   \item \textbf{Solver:} Gurobi 12.0.0 (licencia académica), autodetectado por el \texttt{Makefile}
         si \texttt{GUROBI\_HOME} no está definido.
-  \item \textbf{Python:} 3.x con \texttt{gurobipy} y \texttt{matplotlib} (solo para oráculo,
+  \item \textbf{Python:} 3.x con \texttt{gurobipy} y \texttt{matplotlib} (solo para implementación de referencia,
         generadores y figuras).
 \end{itemize}
 
@@ -48,7 +48,7 @@ make pmedian         # binario principal
   \item \texttt{results/comparison\_vs\_paper.csv} — \texttt{rl1304} vs Tabla del paper.
   \item \texttt{results/warmstart\_comparison.csv} — warm vs cold.
   \item \texttt{results/logs/*.log} — un log por corrida con \texttt{CALLBACK\_PROOF} (separaciones,
-        lazy cuts, nodos) e \texttt{is\_branch\_and\_benders\_cut}.
+        lazy constraints, nodos) e \texttt{is\_branch\_and\_benders\_cut}.
   \item \texttt{results/plot\_\{a,b,c,d\}\_*.png} — las cuatro figuras.
   \item \texttt{results/curated/} — snapshot final validado de CSVs usados en tablas.
   \item \texttt{scripts/validate\_results.py} — validador automático de duplicados, óptimos y logs.

@@ -82,7 +82,7 @@ sobre \texttt{toy1} con $\bar y=\{1,1,0,0\}$ (abrir sitios $0$ y $1$):
   \item \textbf{Test unitario en C} (\texttt{tests/test\_separation\_toy.c}, dentro de
         \texttt{make test}): compara con enteros exactos $\kt_i$, $\OPT(SP_i)$, la constante y
         cada coeficiente; resultado \texttt{RESULT: PASS}.
-  \item \textbf{Oráculo en Python} (\texttt{scripts/verify\_cuts.py} contra
+  \item \textbf{Implementación de referencia en Python} (\texttt{scripts/verify\_cuts.py} contra
         \texttt{prototype/pmp\_benders.py}): C $\equiv$ Python con \textbf{0 diferencias} en
         constante y coeficientes (\texttt{results/logs/verify\_cuts\_oracle\_diff.log}).
 \end{enumerate}
@@ -98,5 +98,5 @@ cliente & $\kt$ & $\OPT(SP)$ & corte (forma $\theta_i\ge\cdot$) \\
 \bottomrule
 \end{tabular}
 \caption{Cortes derivados a mano para \texttt{toy1}, $\bar y=\{1,1,0,0\}$. Coinciden exactamente
-con la salida de C (\texttt{--dump-cuts 0 1}) y del oráculo Python.}
+con la salida de C (\texttt{--dump-cuts 0 1}) y de la implementación Python de referencia.}
 \end{table}

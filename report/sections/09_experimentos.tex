@@ -15,7 +15,7 @@ la versión final se conserva además un snapshot curado en \texttt{results/cura
 contaminarse con reruns.
 
 Se reportan cinco bloques: (i) corrección y desempeño en OR-Library; (ii) comparación contra el
-paper en \texttt{rl1304}; (iii) baseline monolítico F1 parcial; (iv) grilla sintética de estrés;
+paper en \texttt{rl1304}; (iii) baseline F1 (monolithic model) parcial; (iv) grilla sintética de estrés;
 (v) efecto del warm-start. Cuatro figuras agregan el comportamiento.
 El pipeline de interacción para preparar/correr el catálogo local está expuesto por
 \texttt{scripts/paperbench.py}. El comando completo usado para el snapshot final fue:
@@ -68,7 +68,7 @@ requieren ramificar ($3$, $7$, $7$ nodos), justo donde $UB_1>$ óptimo.
 \subsection{Extensión OR-Library \texttt{pmed1}--\texttt{pmed40}}
 Además del bloque principal \texttt{pmed1}--\texttt{pmed15}, la evidencia consolidada contiene
 \texttt{pmed16} como smoke verificado y \texttt{pmed17}--\texttt{pmed40} como extensión local. No
-fue una única campaña monolítica: son corridas controladas y trazadas en CSV/logs distintos, todas
+fue una única campaña global: son corridas controladas y trazadas en CSV/logs distintos, todas
 bajo timeout externo de 300 segundos.
 
 \begin{table}[h]\centering\small
@@ -117,10 +117,12 @@ PopStar (ver Sección~\ref{sec:resultados}). Tiempos no comparados directamente
 \label{tab:paper}
 \end{table}
 
-\subsection{Baseline monolítico F1 parcial}
-La pauta del curso pide una implementación base. Se implementó y ejecutó un baseline monolítico
-F1 solo en cinco instancias pequeñas/medianas; esto \textbf{no} es un benchmark completo de
-F1--F4. Evidencia: \texttt{report/evidence/csv/monolithic\_f1\_300s.csv}.
+\subsection{Baseline F1 (monolithic model) parcial}
+La pauta del curso pide una implementación base. Aquí \emph{monolithic} significa cargar la
+formulación estándar completa directamente al solver, sin Benders ni lazy constraints. Se
+implementó y ejecutó F1 de esa forma solo en cinco instancias pequeñas/medianas; esto
+\textbf{no} es un benchmark completo de F1--F4. Evidencia:
+\texttt{report/evidence/csv/monolithic\_f1\_300s.csv}.
 
 \begin{table}[h]\centering\small
 \begin{tabular}{lrrrrrr}
@@ -135,7 +137,7 @@ instancia & $N$ & $p$ & F1 obj. & F1 runtime & Benders $T_{tot}$ & nota \\
 \bottomrule
 \end{tabular}
 \caption{Baseline F1 parcial: cinco filas, 0 timeouts. La comparación solo vale en este solape;
-no se implementaron F2/F3/F4 monolíticas como campaña completa.}
+no se implementaron F2/F3/F4 como monolithic models en una campaña completa.}
 \label{tab:f1baseline}
 \end{table}
 
@@ -169,7 +171,7 @@ Heredar el pool de cortes de Fase 1 reduce drásticamente el árbol de B\&B. Fue
 \begin{table}[h]\centering\small
 \begin{tabular}{lrr rr rr}
 \toprule
- & \multicolumn{2}{c}{nodos B\&B} & \multicolumn{2}{c}{lazy cuts} & \multicolumn{2}{c}{$T_2$ [s]} \\
+ & \multicolumn{2}{c}{nodos B\&B} & \multicolumn{2}{c}{lazy constraints} & \multicolumn{2}{c}{$T_2$ [s]} \\
 inst. ($p=5$) & cold & warm & cold & warm & cold & warm \\
 \midrule
 pmed1  & 223 & \textbf{1} & 513  & 90  & 0.047 & 0.016 \\
@@ -177,7 +179,7 @@ pmed6  & 632 & \textbf{7} & 1053 & 240 & 0.143 & 0.600 \\
 pmed11 & 352 & \textbf{1} & 1768 & 308 & 0.030 & 0.940 \\
 \bottomrule
 \end{tabular}
-\caption{Warm-start vs cold-start. Los nodos y los lazy cuts caen fuertemente. El wall-time es
+\caption{Warm-start vs cold-start. Los nodos y las lazy constraints caen fuertemente. El wall-time es
 \emph{mixto} en estas instancias sub-segundo: la precarga de cientos de cortes (337/694/1285) a
 veces cuesta más de lo que ahorra. Beneficio en nodos $\ne$ beneficio en tiempo a esta escala.}
 \label{tab:warm}

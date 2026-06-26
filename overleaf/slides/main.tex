@@ -48,7 +48,7 @@ Lo difícil es elegir los $p$ sitios.
 \end{column}
 \end{columns}
 \vfill
-\footnotesize Problema NP-duro (Kariv \& Hakimi, 1979). Paper base: Duran-Mateluna, Ales \& Elloumi (2023).
+\footnotesize Problema NP-hard (Kariv \& Hakimi, 1979). Paper base: Duran-Mateluna, Ales \& Elloumi (2023).
 \end{frame}
 
 % ---------- 2 ----------
@@ -64,7 +64,7 @@ Lo difícil es elegir los $p$ sitios.
   \item El objetivo correcto no basta: el \textbf{modelo} debe entregar buenas cotas y matriz manejable.
 \end{itemize}
 \begin{block}{Idea de performance}
-No resolver F1 “a fuerza bruta”. Reescribir el problema para explotar: radios ordenados, matriz rala, separación por cliente y lazy cuts.
+No resolver F1 “a fuerza bruta”. Reescribir el problema para explotar: radios ordenados, matriz rala, separación por cliente y lazy constraints.
 \end{block}
 \end{frame}
 
@@ -75,10 +75,10 @@ No resolver F1 “a fuerza bruta”. Reescribir el problema para explotar: radio
 \toprule
  & idea & rol en este proyecto \\
 \midrule
-\textbf{F1} & asignación $x_{ij}\le y_j$ & baseline monolítico parcial \\
+\textbf{F1} & asignación $x_{ij}\le y_j$ & baseline F1 (monolithic) parcial \\
 \textbf{F2} & radios $z_i^k$, objetivo telescópico & antecedente teórico \\
 \textbf{F3} & radios con cobertura exacta $d_{ij}=D_i^k$ & base de Benders \\
-\textbf{F4} & cortes sobre $\theta_i$ & implementada como lazy cuts \\
+\textbf{F4} & cortes sobre $\theta_i$ & no se carga completa; se usa vía lazy constraints \\
 \bottomrule
 \end{tabular}
 \vfill
@@ -86,8 +86,8 @@ No resolver F1 “a fuerza bruta”. Reescribir el problema para explotar: radio
 \vfill
 \begin{itemize}
   \item F3 preserva fortaleza LP, pero con matriz más rala.
-  \item F4 completa sería densa; por eso no se carga entera: se generan cortes bajo demanda.
-  \item Solver C principal: \textbf{Benders/F4 con lazy cuts derivada de F3}. No hay F2/F3/F4 monolíticas completas.
+  \item F4 completa sería un \emph{monolithic model} denso; por eso no se carga entera.
+  \item Solver C principal: \textbf{maestro Benders + cortes F4 como lazy constraints}. No hay F2/F3/F4 completas cargadas como monolithic models.
 \end{itemize}
 \end{frame}
 
@@ -181,7 +181,7 @@ instancia / $d_{ij}$ & \texttt{instance.c} \\
 matriz $S$ & \texttt{sortsites.c} \\
 $\kt_i$, corte, $\OPT(SP_i)$ & \texttt{separation.c} \\
 Phase 1 LP & \texttt{phase1.c} \\
-Phase 2 lazy cuts & \texttt{phase2.c} \\
+Phase 2 lazy constraints & \texttt{phase2.c} \\
 warm-start de cortes & \texttt{cutpool.c} \\
 \bottomrule
 \end{tabular}
@@ -191,7 +191,7 @@ warm-start de cortes & \texttt{cutpool.c} \\
 \begin{itemize}
   \item derivación manual en \texttt{toy1};
   \item test unitario C: \texttt{RESULT: PASS};
-  \item oráculo Python \texttt{prototype/pmp\_benders.py}: \textbf{0 diferencias} en constantes y coeficientes.
+  \item implementación Python de referencia \texttt{prototype/pmp\_benders.py}: \textbf{0 diferencias} en constantes y coeficientes.
 \end{itemize}
 \end{column}
 \end{columns}
@@ -211,7 +211,7 @@ bloque & evidencia & resultado \\
 Benders 300s & \texttt{benders\_300s\_campaign.csv} & 26 filas, 25 match, 0 timeout \\
 OR-Library & \texttt{pmed1--pmed40} consolidado & 40/40 óptimos oficiales \\
 \texttt{rl1304} & Tabla 2 paper & 9/9 óptimos coinciden \\
-F1 baseline & \texttt{monolithic\_f1\_300s.csv} & 5 filas, parcial \\
+F1 baseline (monolithic) & \texttt{monolithic\_f1\_300s.csv} & 5 filas, parcial \\
 Sintético & \texttt{synthetic\_stress\_300s.csv} & 18 filas hasta $N=5000$, 0 timeout \\
 \bottomrule
 \end{tabular}
@@ -219,7 +219,7 @@ Sintético & \texttt{synthetic\_stress\_300s.csv} & 18 filas hasta $N=5000$, 0 t
 \begin{itemize}
   \item Timeout externo: 300 s por wrapper Python.
   \item Objetivo/óptimo: sirve para validar correctitud.
-  \item Tiempo/nodos/lazy cuts: sirven para discutir performance.
+  \item Tiempo/nodos/lazy constraints: sirven para discutir performance.
   \item Zebra/PopStar no ejecutados localmente: solo literatura del paper.
 \end{itemize}
 \end{frame}
@@ -246,7 +246,7 @@ Sintético & \texttt{synthetic\_stress\_300s.csv} & 18 filas hasta $N=5000$, 0 t
 \end{columns}
 \vfill
 \begin{block}{Interpretación}
-Los óptimos verifican que el modelo y los cuts son correctos. La discusión de rendimiento debe mirar tiempos, nodos y cantidad de lazy cuts.
+Los óptimos verifican que el modelo y los cuts son correctos. La discusión de rendimiento debe mirar tiempos, nodos y cantidad de lazy constraints.
 \end{block}
 \end{frame}
 
@@ -254,7 +254,7 @@ Los óptimos verifican que el modelo y los cuts son correctos. La discusión de 
 \begin{frame}{10. Performance: comparación local y estado del arte}
 \begin{columns}
 \begin{column}{0.48\textwidth}
-\textbf{Benders vs F1 monolítico (solape parcial):}
+\textbf{Benders vs F1 (monolithic model, solape parcial):}
 \begin{center}\scriptsize
 \begin{tabular}{lrr}
 \toprule
@@ -268,7 +268,7 @@ instancia & Benders & F1 \\
 \bottomrule
 \end{tabular}
 \end{center}
-\footnotesize Segundos, 300s externo. F1 baseline parcial, no F1--F4 completo.
+\footnotesize Segundos, 300s externo. F1 se cargó completa al solver; no hay campaña F1--F4 completa con monolithic models.
 \end{column}
 \begin{column}{0.48\textwidth}
 \textbf{Warm-start por cortes:}
@@ -296,10 +296,10 @@ El paper reporta mejora frente a Zebra. Yo no ejecuté Zebra localmente; por tan
 \begin{frame}{11. Cierre: qué se logró y qué queda fuera}
 \textbf{Logro principal:} implementación verificable del mecanismo Benders central del paper:
 \begin{itemize}
-  \item F3 como base, F4 como lazy cuts;
+  \item F3 como base; cortes F4 agregados como lazy constraints;
   \item separación cerrada $O(NM)$ sin LPs de subproblema;
   \item Phase 1 + Phase 2 + warm-start por cortes;
-  \item separador validado contra derivación manual, test C y oráculo Python.
+  \item separador validado contra derivación manual, test C y implementación Python de referencia.
 \end{itemize}
 \begin{block}{Limitaciones explícitas}
 No implementé PopStar, reduced-cost fixing, constraint reduction, ODM ni Zebra. BIRCH/RW grande y TSP huge del paper quedan como trabajo futuro. Las comparaciones con Zebra/PopStar son literatura reportada por el paper, no resultados locales.

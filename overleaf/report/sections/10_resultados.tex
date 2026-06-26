@@ -11,7 +11,7 @@
         verifica OR-Library \texttt{pmed1}--\texttt{pmed40} contra óptimos oficiales
         (Tabla~\ref{tab:orlib40}) y 9/9 óptimos en \texttt{rl1304} ($N=1304$, hasta $p=500$) con
         $\Delta=0$ respecto del paper (Tabla~\ref{tab:paper}). El separador, validado por tres
-        vías (mano, test, oráculo), es la base de esta confianza. Esta es evidencia de replicación
+        vías (mano, test, implementación Python de referencia), es la base de esta confianza. Esta es evidencia de replicación
         computacional parcial, no de la campaña completa del paper.
   \item \textbf{El warm-start reduce el árbol, no necesariamente el tiempo.} Heredar los cortes de
         Fase 1 baja los nodos de B\&B de cientos a $1$--$7$ (Tabla~\ref{tab:warm}), pero en
@@ -66,7 +66,7 @@
         $LB_1/UB_1$ ajustado en segundos permite descartar configuraciones sin esperar la prueba
         de optimalidad completa.
   \item \textbf{Verificar el componente crítico paga.} Validar el separador a mano, con test y con
-        oráculo dio una base de confianza que permitió escalar sin temor a errores silenciosos.
+        implementación Python de referencia dio una base de confianza que permitió escalar sin temor a errores silenciosos.
 \end{itemize}
 
 \subsection{Conclusión}

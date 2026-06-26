@@ -117,7 +117,7 @@ optimalidad. La \textbf{validez global} del método se sigue de que (i) cada cor
 desigualdad válida (cota inferior correcta de $\theta_i$), de modo que el maestro nunca excluye la
 solución óptima; y (ii) existe un número \emph{finito} de cortes distintos de la forma
 \eqref{eq:cut16} (uno por cada $\bar y$ binario relevante), por lo que el branch-and-cut con
-lazy cuts termina con el óptimo exacto.
+lazy constraints termina con el óptimo exacto.
 
 \medskip
 La forma cerrada de $\bar v$ (Sección~\ref{sec:separacion}) convierte \eqref{eq:cut16} en una
@@ -144,6 +144,6 @@ $\pi^\star$ y el corte. La propuesta del paper mejora esto en cinco aspectos con
         rayos extremos ni cortes de factibilidad: la lógica de separación es más simple y robusta.
 \end{enumerate}
 Además, los cortes no se generan en un bucle externo maestro--subproblema, sino \emph{dentro} del
-árbol de branch-and-bound mediante un callback de lazy cuts: esto es
+árbol de branch-and-bound mediante un callback de lazy constraints: esto es
 \textbf{branch-and-Benders-cut} (Cap.~3), que evita reoptimizar el MIP desde cero en cada
 iteración.

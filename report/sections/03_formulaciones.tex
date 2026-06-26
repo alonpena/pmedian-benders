@@ -99,7 +99,7 @@ $\theta_i$ por cliente da la forma compacta:
 F4 tiene solo $N+M$ variables, pero \emph{tantas restricciones como F2} y matriz igual de densa.
 Empíricamente, pasarle F4 \emph{entera} al solver es más lento que F2/F3: la densidad mata el
 rendimiento. La clave no está en la formulación compacta, sino en \textbf{generar los cortes
-\eqref{eq:f4cut} sobre la marcha} (perezosamente) dentro del branch-and-cut.
+\eqref{eq:f4cut} bajo demanda como \textit{lazy constraints}} dentro del branch-and-cut.
 
 \subsection{Comparación estructural}
 \begin{table}[h]\centering

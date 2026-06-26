@@ -2,13 +2,15 @@
 \label{sec:implementacion}
 
 \subsection{Qué modelo está realmente implementado}
-La formulación ejecutable del repositorio es \textbf{Benders/F4 con lazy cuts derivada de
-F3}. En el informe se presentan F1, F2, F3 y F4 como linaje matemático, pero el solver C no expone
-modelos monolíticos seleccionables para F1/F2/F3/F4. En particular, no se materializan variables
-$x_{ij}$ de F1 ni variables $z_i^k$ de F2/F3 en el maestro C; se usan variables $y_j$ y
-$\theta_i$ y se generan cortes de Benders de tipo F4 bajo demanda. El oráculo/prototipo Python y
-la fuerza bruta se usan para validación en instancias pequeñas, no como benchmark monolítico
-principal.
+La formulación ejecutable del repositorio es \textbf{Benders/F4 con lazy constraints derivada de
+F3}. Esto no significa que se cargue F4 completa al solver: F4 completa sería una formulación
+estándar cargada de una vez (\emph{monolithic model}) y sería densa. Aquí se usa el maestro de
+Benders con variables $y_j$ y $\theta_i$, y los cortes de tipo F4 se agregan bajo demanda como
+\emph{lazy constraints}. En el informe se presentan F1, F2, F3 y F4 como linaje matemático, pero
+el solver C no expone formulaciones estándar completas seleccionables para F1/F2/F3/F4. En
+particular, no se materializan variables $x_{ij}$ de F1 ni variables $z_i^k$ de F2/F3 en el
+maestro C. La implementación Python de referencia y la fuerza bruta se usan para validación en
+instancias pequeñas, no como benchmark principal.
 
 \subsection{Algoritmo de dos fases}
 La implementación reproduce el \textbf{mecanismo central} del esquema de dos fases del paper
@@ -21,7 +23,7 @@ La implementación reproduce el \textbf{mecanismo central} del esquema de dos fa
         relajación) y $UB_1$ (mejor solución entera redondeada).
   \item[Fase 2 — branch-and-Benders-cut.] Se imponen $y_j\in\{0,1\}$ y se resuelve con
         branch-and-cut. En cada \textbf{solución entera} que el solver encuentra, un
-        \textbf{callback de lazy cuts} ejecuta el separador y agrega los cortes
+        \textbf{callback de lazy constraints} ejecuta el separador y agrega los cortes
         \eqref{eq:cut20} violados. Esto es, literalmente, branch-and-Benders-cut.
 \end{description}
 Como mejora, la Fase 2 \textbf{hereda el pool de cortes de la Fase 1} (warm-start): los cortes ya
@@ -42,7 +44,7 @@ La implementación usa un \textbf{diseño modular con encapsulación por \texttt
 interfaces}, inspirado en principios de orientación a objetos (C no es un lenguaje orientado a
 objetos): un núcleo en C sin dependencias del solver y una capa delgada de solver (Gurobi) detrás
 de una interfaz opaca (\texttt{src/solver.h}, \texttt{struct Solver}). El núcleo se valida contra
-un oráculo en Python. La implementación es \emph{evidencia} de que la teoría funciona, no la
+una implementación Python de referencia. La implementación es \emph{evidencia} de que la teoría funciona, no la
 contribución del trabajo.
 
 \begin{table}[h]\centering\small
@@ -51,7 +53,7 @@ contribución del trabajo.
 \textbf{Objeto matemático} & \textbf{Archivo en C} & \textbf{Función / símbolo} \\
 \midrule
 Instancia, $d_{ij}$ (floor euclid./matriz) & \texttt{src/instance.c} & \texttt{instance\_load}, \texttt{instance\_dist} \\
-Óptimo por fuerza bruta (oráculo) & \texttt{src/instance.c} & \texttt{instance\_brute\_force} \\
+Verificación por fuerza bruta (instancias pequeñas) & \texttt{src/instance.c} & \texttt{instance\_brute\_force} \\
 Matriz $S$, radios $D^k_i$ ordenados & \texttt{src/sortsites.c} & \texttt{sortsites\_build} $\to$ \texttt{SortSites} \\
 $\kt_i$ — Algoritmo 2 & \texttt{src/separation.c} & \texttt{separation\_k\_tilde} \\
 $\OPT(SP_i)$ \eqref{eq:opt18} + corte \eqref{eq:cut20} & \texttt{src/separation.c} & \texttt{separation\_client} \\
@@ -63,7 +65,7 @@ Pool de cortes (warm-start) & \texttt{src/cutpool.c} & \texttt{cutpool\_add} \\
 Capa de solver (abstracción) & \texttt{src/solver\_gurobi.c} & \texttt{solver\_*}, \texttt{GRBcblazy} \\
 CLI, logging, CSV & \texttt{src/main.c}, \texttt{src/logging.c} & \texttt{main}, \texttt{csv\_append} \\
 \midrule
-Oráculo de correctitud & \texttt{prototype/pmp\_benders.py} & \texttt{separate\_client}, \texttt{phase2} \\
+Implementación de referencia de correctitud & \texttt{prototype/pmp\_benders.py} & \texttt{separate\_client}, \texttt{phase2} \\
 Verificación del separador & \texttt{tests/test\_separation\_toy.c} & \texttt{make test} \\
 Cross-check C\,$\equiv$\,Python & \texttt{scripts/verify\_cuts.py} & — \\
 \bottomrule
@@ -90,7 +92,7 @@ Cross-check C\,$\equiv$\,Python & \texttt{scripts/verify\_cuts.py} & — \\
 \subsection{Capa de solver y portabilidad}
 Toda la interacción con Gurobi pasa por una interfaz delgada (\texttt{src/solver.h}) que aísla el
 backend: agregar variables/restricciones, optimizar, leer solución, contar nodos y manejar el
-callback de lazy cuts. Esto deja el núcleo (parsing, distancias, $S$, separación, fases)
+callback de lazy constraints. Esto deja el núcleo (parsing, distancias, $S$, separación, fases)
 independiente del solver y permitiría, en principio, intercambiar el backend (CPLEX/SCIP) sin
 tocar la lógica de Benders. En esta entrega solo se implementó y probó el backend Gurobi; CPLEX y
 SCIP quedan como extensiones futuras.

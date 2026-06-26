@@ -2,7 +2,7 @@
 
 Mensaje central:
 
-> Implementé y verifiqué el mecanismo Benders central del paper: F3 como base, F4 vía lazy cuts, separación cerrada O(NM), Phase 1, Phase 2 y warm-start por cortes. La evidencia local valida correctitud y rendimiento en campañas acotadas; no ejecuté Zebra ni PopStar.
+> Implementé y verifiqué el mecanismo Benders central del paper: F3 como base, F4 vía lazy constraints, separación cerrada O(NM), Phase 1, Phase 2 y warm-start por cortes. La evidencia local valida correctitud y rendimiento en campañas acotadas; no ejecuté Zebra ni PopStar.
 
 No decir:
 
@@ -14,7 +14,7 @@ Sí decir:
 
 - “el paper reporta mejora frente a Zebra”
 - “yo comparo localmente contra F1 parcial y contra óptimos/valores del paper para validar correctitud”
-- “objetivo igual sirve para correctitud; tiempo/nodos/lazy cuts sirven para performance”
+- “objetivo igual sirve para correctitud; tiempo/nodos/lazy constraints sirven para performance”
 
 ---
 
@@ -45,7 +45,7 @@ No leer tabla completa. Decir:
 - F1 directa pero grande.
 - F2 cambia asignaciones por radios.
 - F3 mantiene fortaleza, pero matriz más rala.
-- F4 usa `theta_i`, pero cargada completa es densa; se usa como lazy cuts.
+- F4 usa `theta_i`, pero F4 completa sería densa. Nuestra versión no carga F4 completa: usa maestro Benders y agrega sus cortes como lazy constraints.
 
 Frase para defender:
 
@@ -102,13 +102,13 @@ Defender código:
 - `sortsites.c`: matriz `S`
 - `separation.c`: `ktilde`, `OPT(SP_i)`, corte
 - `phase1.c`: LP + cuts + rounding
-- `phase2.c`: branch-and-Benders-cut con lazy cuts
+- `phase2.c`: branch-and-Benders-cut con lazy constraints
 
 Verificación:
 
 - mano en toy
 - test C
-- oráculo Python
+- implementación Python de referencia
 - 0 diferencias
 
 Frase:
@@ -158,7 +158,7 @@ Local:
 
 Estado del arte:
 
-> El paper compara contra Zebra y reporta mejora en tiempo. Yo no ejecuté Zebra; por eso no reclamo mejora local frente a Zebra. Mi comparación local de rendimiento es contra F1 parcial y métricas propias: tiempo, nodos, lazy cuts.
+> El paper compara contra Zebra y reporta mejora en tiempo. Yo no ejecuté Zebra; por eso no reclamo mejora local frente a Zebra. Mi comparación local de rendimiento es contra F1 parcial y métricas propias: tiempo, nodos, lazy constraints.
 
 Frase importante:
 
@@ -195,7 +195,7 @@ Eso suma credibilidad.
 Por cliente recorro a lo más `M` sitios. Hay `N` clientes. No se resuelven LPs de subproblema.
 
 ## 4. ¿Qué hizo la idea de performance?
-Tres cosas: usar F3 rala como base, no cargar F4 completa sino lazy cuts, y usar separación cerrada del dual. Además warm-start hereda cuts de Phase 1.
+Tres cosas: usar F3 rala como base, no cargar F4 completa, agregar cortes F4 como lazy constraints, y usar separación cerrada del dual. Además warm-start hereda cuts de Phase 1.
 
 ## 5. ¿Qué significa PopStar aquí?
 Heurística primal usada por el paper para buenas cotas superiores `UB1`. No la implementé; por eso algunos `UB1` locales son peores aunque `LB1` y óptimos coincidan.
@@ -204,10 +204,10 @@ Heurística primal usada por el paper para buenas cotas superiores `UB1`. No la 
 No puedo afirmar eso localmente. El paper reporta mejora frente a Zebra. Yo no ejecuté Zebra; mi evidencia local valida el mecanismo y compara parcialmente contra F1.
 
 ## 7. ¿Qué implementaste realmente?
-Solver principal C: Benders/F4 con lazy cuts derivada de F3. F1 monolítica solo baseline parcial. F2/F3/F4 monolíticas completas no están implementadas como campaña.
+Solver principal C: maestro Benders con cortes F4 agregados como lazy constraints, derivado de F3. F1 se implementó solo como baseline parcial cargado completo al solver (monolithic model). F2/F3/F4 completas no están implementadas como monolithic models en campaña.
 
 ## 8. ¿Objetivo igual al paper qué demuestra?
-Correctitud/modelado: mismo óptimo en las instancias comparadas. Performance se evalúa con tiempo, nodos, lazy cuts, timeouts.
+Correctitud/modelado: mismo óptimo en las instancias comparadas. Performance se evalúa con tiempo, nodos, lazy constraints, timeouts.
 
 ## 9. ¿Qué queda como trabajo futuro?
 PopStar, Zebra local, reduced-cost fixing, constraint reduction, ODM, BIRCH/RW grande y huge TSPLIB.

@@ -9,7 +9,7 @@ corrige una debilidad estructural de la anterior.
 \paragraph{Contexto canónico del pMP.} ReVelle \& Swain (1970) introducen el modelo de
 localización de instalaciones centrales que se conoce como \textit{p}-median problem en
 programación entera. Kariv \& Hakimi (1979) prueban la dificultad algorítmica del problema en
-redes y consolidan su rol como problema NP-duro de localización discreta. Beasley (1990) publica
+redes y consolidan su rol como problema NP-hard de localización discreta. Beasley (1990) publica
 OR-Library, con instancias \texttt{pmed} y óptimos de referencia que siguen siendo benchmark
 estándar. Reinelt (1991) publica TSPLIB; aunque nace para TSP, sus coordenadas se usan también
 como benchmark geométrico para pMP. Resende \& Werneck (2004) desarrollan heurísticas de alta
@@ -33,8 +33,8 @@ buenas cotas superiores.
   \item[Benders (1962).] La técnica de descomposición general que el paper especializa: separar
         decisiones complicantes (maestro) de un subproblema, intercambiando \emph{cortes}.
   \item[Fischetti, Ljubić \& Sinnl (2017).] Rediseño de Benders para localización a gran escala
-        (UFL), antecedente metodológico de generar los cortes perezosamente dentro del
-        branch-and-cut.
+        (UFL), antecedente metodológico para agregar Benders cuts como \textit{lazy constraints}
+        dentro del branch-and-cut.
 \end{description}
 
 \paragraph{La contribución del paper replicado.} Sobre F3, los autores observan que el

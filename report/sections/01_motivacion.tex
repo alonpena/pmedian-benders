@@ -51,7 +51,7 @@ lo distingue del problema de localización de instalaciones, UFL) y con el núme
 \end{itemize}
 
 \subsection{Por qué es computacionalmente difícil}
-El pMP es \textbf{NP-duro} (Kariv \& Hakimi, 1979). El número de formas de elegir $p$ sitios entre
+El pMP es \textbf{NP-hard} (Kariv \& Hakimi, 1979). El número de formas de elegir $p$ sitios entre
 $M$ es $\binom{M}{p}$, que crece de manera combinatoria. Las formulaciones MILP exactas crecen
 rápido en variables y restricciones; para instancias con decenas o cientos de miles de puntos los
 solvers genéricos colapsan en memoria o tiempo. El desafío abierto que ataca el paper de
@@ -62,7 +62,7 @@ Duran-Mateluna, Ales \& Elloumi (2023) aplican \textbf{descomposición de Bender
 formulación exacta conocida. El hallazgo clave es que el subproblema de Benders del pMP es tan
 simple que su \emph{dual tiene solución cerrada}: los cortes se separan en tiempo lineal $O(NM)$
 \textbf{sin resolver ningún programa lineal}. Esto, dentro de un esquema de dos fases (relajación
-+ branch-and-cut con lazy cuts), permite —\emph{según reportan los autores}— superar al
++ branch-and-cut con lazy constraints), permite —\emph{según reportan los autores}— superar al
 método previo estado-del-arte (Zebra) por un orden de magnitud y resolver por primera vez a
 optimalidad instancias muy grandes. Estas cifras de escala son del paper; en este informe no las
 reejecutamos (validamos el método en instancias hasta $N=1304$, ver Secciones~\ref{sec:experimentos}–\ref{sec:resultados}).
