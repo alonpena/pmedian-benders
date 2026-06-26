@@ -55,8 +55,8 @@ Benders} de Duran-Mateluna, Ales \& Elloumi (2023), cuyo subproblema admite \tex
 cerrada} y permite separar los cortes en tiempo $O(NM)$ sin resolver ningún LP. El método se
 implementó en C modular sobre una capa de solver (Gurobi) con un algoritmo de dos fases
 (relajación lineal + branch-and-Benders-cut con \textit{lazy cuts}). El alcance del
-proyecto es una \textbf{replicación algorítmica completa} del mecanismo central y una
-\textbf{replicación computacional parcial documentada}. El separador fue \textbf{verificado por
+proyecto es una \textbf{implementación y verificación completa del mecanismo Benders central} y
+una \textbf{replicación computacional parcial documentada}. El separador fue \textbf{verificado por
 tres vías independientes}: derivación a mano, test unitario y un oráculo en Python (0
 diferencias). En las 15 instancias OR-Library se alcanza el óptimo oficial con brecha $0\%$, y
 en TSPLIB \texttt{rl1304} (hasta $p=500$) se reproducen exactamente los 9 óptimos del paper.

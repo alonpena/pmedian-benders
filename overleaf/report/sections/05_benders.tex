@@ -58,25 +58,26 @@ Para $\bar y$ fijo, el subproblema del cliente $i$ (derivado de F3) es
 \begin{align}
   \min\ & D^1_i + \sum_{k=1}^{K_i-1}\big(D^{k+1}_i-D^k_i\big)z^k_i \nonumber\\
   \text{s.a.}\ & z^1_i \ge 1-\!\!\sum_{j:\,d_{ij}=D^1_i}\!\!\bar y_j \label{eq:sp1}\\
-  & z^k_i - z^{k-1}_i \ge -\!\!\sum_{j:\,d_{ij}=D^k_i}\!\!\bar y_j && k\in\{2,\dots,K_i\} \label{eq:spk}\\
-  & z^k_i\ge 0 && k\in[K_i]. \nonumber
+  & z^k_i - z^{k-1}_i \ge -\!\!\sum_{j:\,d_{ij}=D^k_i}\!\!\bar y_j && k=2,\dots,K_i-1 \label{eq:spk}\\
+  & z^k_i\ge 0 && k=1,\dots,K_i-1. \nonumber
 \end{align}
 Es \textbf{siempre factible} (basta tomar $z$ suficientemente grande) y \textbf{acotado} (objetivo
 con coeficientes $\ge 0$ y minimización). Esta propiedad es la que determina el tipo de corte.
 
 \subsection{Subproblema dual \texorpdfstring{$DSP_i(\bar y)$}{DSPi}}
-Con variables duales $v^k_i\ge0$ (una por restricción primal):
+Con variables duales $v^k_i\ge0$ para $k=1,\dots,K_i-1$ (una por restricción primal) y la
+convención $v_i^{K_i}=0$:
 \begin{align}
-  \max\ & D^1_i + v^1_i\Big(1-\!\!\sum_{j:\,d_{ij}=D^1_i}\!\!\bar y_j\Big) - \sum_{k=2}^{K_i} v^k_i\!\!\sum_{j:\,d_{ij}=D^k_i}\!\!\bar y_j \nonumber\\
-  \text{s.a.}\ & v^k_i - v^{k+1}_i \le D^{k+1}_i-D^k_i && k\in[K_i-1] \label{eq:dspcon}\\
-  & v^k_i\ge 0 && k\in[K_i]. \nonumber
+  \max\ & D^1_i + v^1_i\Big(1-\!\!\sum_{j:\,d_{ij}=D^1_i}\!\!\bar y_j\Big) - \sum_{k=2}^{K_i-1} v^k_i\!\!\sum_{j:\,d_{ij}=D^k_i}\!\!\bar y_j \nonumber\\
+  \text{s.a.}\ & v^k_i - v^{k+1}_i \le D^{k+1}_i-D^k_i && k=1,\dots,K_i-1 \label{eq:dspcon}\\
+  & v^k_i\ge 0 && k=1,\dots,K_i-1. \nonumber
 \end{align}
 
 \subsection{Derivación del corte de Benders}
 De un punto extremo $\bar v$ del dual se obtiene el \textbf{corte de optimalidad}, lineal en $y$:
 \begin{equation}
   \theta_i \ge D^1_i + \bar v^1_i\Big(1-\!\!\sum_{j:\,d_{ij}=D^1_i}\!\! y_j\Big)
-  - \sum_{k=2}^{K_i}\bar v^k_i\!\!\sum_{j:\,d_{ij}=D^k_i}\!\! y_j.
+  - \sum_{k=2}^{K_i-1}\bar v^k_i\!\!\sum_{j:\,d_{ij}=D^k_i}\!\! y_j.
   \label{eq:cut16}
 \end{equation}
 

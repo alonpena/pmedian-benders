@@ -6,7 +6,7 @@ resolver el dual. Dado $(\bar y,\bar\theta)$ del maestro, hay que decidir para c
 corte está violado y, de serlo, construirlo.
 
 \subsection{Solución óptima del subproblema}
-Como $SP_i$ minimiza con coeficientes $\ge0$, los $z^k_i$ se hacen lo más chicos posibles:
+Como $SP_i$ minimiza con coeficientes $\ge0$, los $z^k_i$ ($k=1,\dots,K_i-1$) se hacen lo más chicos posibles:
 \begin{equation}
   \bar z^k_i = \max\Big(0,\ 1-\!\!\sum_{j:\,d_{ij}\le D^k_i}\!\!\bar y_j\Big).
   \label{eq:zbar}
@@ -20,7 +20,7 @@ $\kt_i$ es el último radio donde el cliente $i$ aún no está cubierto:
 \[
   \kt_i=\begin{cases}
     0 & \text{si } \sum_{j:\,d_{ij}=D^1_i}\bar y_j \ge 1,\\[4pt]
-    \max\{k\in[K_i]:\ \sum_{j:\,d_{ij}\le D^k_i}\bar y_j < 1\} & \text{en otro caso.}
+    \max\{k\in\{1,\dots,K_i-1\}:\ \sum_{j:\,d_{ij}\le D^k_i}\bar y_j < 1\} & \text{en otro caso.}
   \end{cases}
 \]
 \end{definicion}

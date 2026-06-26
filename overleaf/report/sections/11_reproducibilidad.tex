@@ -54,8 +54,12 @@ make pmedian         # binario principal
   \item \texttt{scripts/validate\_results.py} — validador automático de duplicados, óptimos y logs.
   \item \texttt{scripts/paperbench.py} — pipeline CLI no contaminante para listar/preparar/correr,
         resumir y validar el catálogo local sin depender de archivos YAML.
-  \item \texttt{results/curated/paperbench\_current.csv} — catálogo local completo: 26/26 corridas
+  \item \texttt{results/curated/paperbench\_current.csv} — catálogo local actual: 26/26 corridas
         OK y 25/25 óptimos conocidos coincidentes.
+  \item \texttt{report/REPORT\_TABLES.md} — resumen auditable de tablas finales: Benders 300s,
+        OR-Library \texttt{pmed1}--\texttt{pmed40}, baseline F1, estrés sintético.
+  \item \texttt{report/FINAL\_EVIDENCE\_VALIDATION.md} — validación de presencia de CSVs, figuras,
+        logs y artefactos citados.
 \end{itemize}
 Los logs principales se versionan cuando respaldan claims del informe; logs auxiliares pueden
 regenerarse con los comandos anteriores.
@@ -73,7 +77,11 @@ OR-Library resuelta & \texttt{results/curated/orlib\_optima\_check.csv} & 15/15,
 Branch-and-Benders-cut real & logs con \texttt{lazy\_cuts}>0 e
 \texttt{is\_branch\_and\_benders\_cut=YES} & verificado \\
 Warm-start reduce árbol & \texttt{results/curated/warmstart\_comparison.csv} & nodos bajan \\
-Catálogo local completo & \texttt{results/curated/paperbench\_current.csv} & 26/26 OK \\
+Catálogo local actual & \texttt{results/curated/paperbench\_current.csv} & 26/26 OK \\
+OR-Library extendido & \texttt{report/evidence/csv/orlib\_pmed16\_smoke\_300s.csv},
+\texttt{orlib\_pmed17\_pmed40\_300s.csv} & \texttt{pmed1}--\texttt{pmed40} verificado \\
+Baseline F1 parcial & \texttt{report/evidence/csv/monolithic\_f1\_300s.csv} & 5/5 óptimas \\
+Estrés sintético & \texttt{report/evidence/csv/synthetic\_stress\_300s.csv} & 18/18 sin timeout \\
 Zebra/PopStar no locales & ausencia de ejecutable/comandos/CSV locales & no reportado local \\
 \bottomrule
 \end{tabular}
@@ -86,6 +94,8 @@ Zebra/PopStar no locales & ausencia de ejecutable/comandos/CSV locales & no repo
   \item \texttt{scripts/validate\_results.py}: \texttt{RESULT: PASS}.
   \item \texttt{paperbench.py summarize --csv results/curated/paperbench\_current.csv}: 26 filas,
         \texttt{OK: 26}, \texttt{known\_opt\_matches=25/25}.
+  \item Auditoría 300s: todos los CSVs auditados tienen \texttt{timeout\_flag=0}; máximo Benders
+        300s $14.191127$s, máximo sintético $44.247668$s.
 \end{itemize}
 
 \subsection{Política de honestidad}

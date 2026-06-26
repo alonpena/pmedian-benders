@@ -14,8 +14,9 @@ la versión final se conserva además un snapshot curado en \texttt{results/cura
 \texttt{scripts/validate\_results.py}, porque \texttt{results/benchmark.csv} es append-only y puede
 contaminarse con reruns.
 
-Se reportan tres bloques: (i) corrección y desempeño en OR-Library; (ii) comparación contra el
-paper en \texttt{rl1304}; (iii) efecto del warm-start. Cuatro figuras agregan el comportamiento.
+Se reportan cinco bloques: (i) corrección y desempeño en OR-Library; (ii) comparación contra el
+paper en \texttt{rl1304}; (iii) baseline monolítico F1 parcial; (iv) grilla sintética de estrés;
+(v) efecto del warm-start. Cuatro figuras agregan el comportamiento.
 El pipeline de interacción para preparar/correr el catálogo local está expuesto por
 \texttt{scripts/paperbench.py}. El comando completo usado para el snapshot final fue:
 \begin{lstlisting}[language=bash,numbers=none]
@@ -64,6 +65,29 @@ pmed15 & 300 & 100 & 1729.0 & 1729.0 & 1729 & 1729 & 7 & 1 \\
 problema y la Fase 2 confirma en $1$ nodo. Solo \texttt{pmed3}, \texttt{pmed6} y \texttt{pmed12}
 requieren ramificar ($3$, $7$, $7$ nodos), justo donde $UB_1>$ óptimo.
 
+\subsection{Extensión OR-Library \texttt{pmed1}--\texttt{pmed40}}
+Además del bloque principal \texttt{pmed1}--\texttt{pmed15}, la evidencia consolidada contiene
+\texttt{pmed16} como smoke verificado y \texttt{pmed17}--\texttt{pmed40} como extensión local. No
+fue una única campaña monolítica: son corridas controladas y trazadas en CSV/logs distintos, todas
+bajo timeout externo de 300 segundos.
+
+\begin{table}[h]\centering\small
+\begin{tabular}{lrrl}
+\toprule
+grupo & filas & resultado & evidencia \\
+\midrule
+\texttt{pmed1}--\texttt{pmed15} & 15 & 15/15 \texttt{OPT\_MATCH} & \texttt{benders\_300s\_campaign.csv} \\
+\texttt{pmed16} & 1 & \texttt{OPT\_MATCH}, obj. 8162 & \texttt{orlib\_pmed16\_smoke\_300s.csv} \\
+\texttt{pmed17}--\texttt{pmed40} & 24 & 24/24 \texttt{OPT\_MATCH} & \texttt{orlib\_pmed17\_pmed40\_300s.csv} \\
+\midrule
+total consolidado & 40 & 40/40 óptimos oficiales & \texttt{report/REPORT\_TABLES.md} \\
+\bottomrule
+\end{tabular}
+\caption{OR-Library consolidado. \texttt{pmed17}--\texttt{pmed40} tiene 0 timeouts y máximo
+$T_{tot}=10.695018$s en \texttt{pmed36}.}
+\label{tab:orlib40}
+\end{table}
+
 \subsection{Comparación contra el paper (\texttt{rl1304})}
 Sobre las mismas instancias TSPLIB \texttt{rl1304} de la Tabla 2 de Duran-Mateluna, Ales \&
 Elloumi (2023) se comparan los óptimos y cotas. Los valores del paper fueron transcritos en
@@ -91,6 +115,51 @@ coincide con el del paper (a $\pm1$). El $UB_1$ a veces es peor que el del paper
 PopStar (ver Sección~\ref{sec:resultados}). Tiempos no comparados directamente
 (máquinas/solvers distintos: paper XEON\,W-2145/CPLEX\,20.1; nosotros M1/Gurobi\,12).}
 \label{tab:paper}
+\end{table}
+
+\subsection{Baseline monolítico F1 parcial}
+La pauta del curso pide una implementación base. Se implementó y ejecutó un baseline monolítico
+F1 solo en cinco instancias pequeñas/medianas; esto \textbf{no} es un benchmark completo de
+F1--F4. Evidencia: \texttt{report/evidence/csv/monolithic\_f1\_300s.csv}.
+
+\begin{table}[h]\centering\small
+\begin{tabular}{lrrrrrr}
+\toprule
+instancia & $N$ & $p$ & F1 obj. & F1 runtime & Benders $T_{tot}$ & nota \\
+\midrule
+\texttt{toy1} & 4 & 2 & 6 & 0.024817 & 0.040586 & F1 más rápido \\
+\texttt{pmed1} & 100 & 5 & 5819 & 0.436110 & 0.035466 & Benders más rápido \\
+\texttt{pmed2} & 100 & 10 & 4093 & 0.441374 & 0.083832 & Benders más rápido \\
+\texttt{pmed6} & 200 & 5 & 7824 & 6.991906 & 0.310273 & Benders más rápido \\
+\texttt{kroA100} & 100 & 10 & 30539 & 0.461514 & 0.067967 & Benders más rápido \\
+\bottomrule
+\end{tabular}
+\caption{Baseline F1 parcial: cinco filas, 0 timeouts. La comparación solo vale en este solape;
+no se implementaron F2/F3/F4 monolíticas como campaña completa.}
+\label{tab:f1baseline}
+\end{table}
+
+\subsection{Grilla sintética de estrés local}
+Se generaron 18 instancias euclidianas determinísticas con seed \texttt{20260622},
+$N\in\{100,250,500,1000,2000,5000\}$ y $p$ igual a 5\%, 10\% y 20\% de $N$. Todas terminaron bajo
+timeout externo de 300 segundos. Todas tienen estado \texttt{OPTIMAL\_NO\_KNOWN}: el solver
+certifica optimalidad interna, pero no hay óptimo externo/paper contra el cual comparar.
+
+\begin{table}[h]\centering\small
+\begin{tabular}{rrrr}
+\toprule
+$N$ & $p=5\%$ $T_{tot}$/nodos/cuts & $p=10\%$ $T_{tot}$/nodos/cuts & $p=20\%$ $T_{tot}$/nodos/cuts \\
+\midrule
+100 & 0.484661 / 1 / 93 & 0.037117 / 1 / 115 & 0.030035 / 1 / 88 \\
+500 & 0.710534 / 59 / 721 & 0.141580 / 1 / 649 & 0.330849 / 1 / 516 \\
+1000 & 3.151895 / 7 / 1385 & 0.591020 / 1 / 1226 & 0.695118 / 3 / 1008 \\
+2000 & 3.043141 / 1 / 2725 & 2.442365 / 15 / 2494 & 1.649372 / 1 / 2023 \\
+5000 & 44.247668 / 292 / 6874 & 7.709930 / 8 / 6049 & 7.055344 / 6 / 4870 \\
+\bottomrule
+\end{tabular}
+\caption{Estrés sintético local hasta $N=5000$: 18/18 filas sin timeout. No es campaña del paper y
+no tiene óptimos externos conocidos. Fuente: \texttt{synthetic\_stress\_300s.csv}.}
+\label{tab:synthetic}
 \end{table}
 
 \subsection{Efecto del warm-start}

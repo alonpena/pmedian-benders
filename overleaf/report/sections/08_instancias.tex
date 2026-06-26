@@ -11,10 +11,13 @@ la literatura.
   \item[\texttt{toy1} (caso base mínimo).] $N=M=4$, $p=2$, coordenadas 2D. Óptimo a mano $=6$.
         Sirve para validar toda la cadena y derivar los cortes a mano
         (Sección~\ref{sub:verif}).
-  \item[OR-Library (Beasley, 1990).] Instancias \texttt{pmed1}--\texttt{pmed15} sobre grafos:
-        $N=M\in\{100,200,300\}$, $p\in\{5,\dots,100\}$. Se dan como listas de aristas con costo;
-        las distancias $d_{ij}$ se obtienen como \emph{caminos mínimos} (Floyd--Warshall). Hay un
-        \textbf{óptimo oficial} por instancia (\texttt{pmedopt.txt}) que sirve de referencia dura.
+  \item[OR-Library (Beasley, 1990).] Instancias \texttt{pmed1}--\texttt{pmed40} sobre grafos:
+        $N=M\in\{100,200,300,400,500,600,700,800,900\}$, con distintos valores de $p$. Se dan
+        como listas de aristas con costo; las distancias $d_{ij}$ se obtienen como \emph{caminos
+        mínimos} (Floyd--Warshall). Hay un \textbf{óptimo oficial} por instancia
+        (\texttt{pmedopt.txt}) que sirve de referencia dura. En este informe se reporta evidencia
+        consolidada: \texttt{pmed1}--\texttt{pmed15}, \texttt{pmed16} como smoke verificado, y
+        \texttt{pmed17}--\texttt{pmed40} como extensión local con 24/24 óptimos oficiales.
   \item[TSP-Library (Reinelt, 1991).] \texttt{rl1304} ($N=M=1304$) y \texttt{kroA100} ($N=M=100$),
         con coordenadas 2D y distancia euclidiana \emph{truncada}. Banco principal de escalamiento;
         se resuelve para $p\in\{5,50,200,500\}$ (y $\{10,20,100,300,400\}$ en la comparación con
@@ -22,6 +25,10 @@ la literatura.
   \item[RW local mínimo.] \texttt{rw12}: matriz de distancias \textbf{aleatoria y posiblemente
         asimétrica} ($N=M=12$). Valida el caso \emph{no euclidiano / asimétrico} de la
         implementación. No corresponde a la campaña RW grande del paper.
+  \item[Grilla sintética euclidiana.] Instancias generadas localmente con seed fijo
+        \texttt{20260622}, $N\in\{100,250,500,1000,2000,5000\}$ y
+        $p\in\{5\%,10\%,20\%\}$ de $N$. Sirven como prueba de estrés local bajo timeout externo
+        de 300 segundos. No son instancias del paper ni tienen óptimos externos conocidos.
 \end{description}
 
 \subsection{Supuestos y decisiones de datos}
@@ -46,9 +53,9 @@ la literatura.
 \end{itemize}
 
 \subsection{Alcance honesto}
-Se ejecutaron las 15 instancias OR-Library, \texttt{rl1304} hasta $p=500$, \texttt{kroA100} y la
-validación asimétrica \texttt{rw12}. El catálogo local completo corrido por
-\texttt{scripts/paperbench.py} contiene 26 casos: 15 OR-Library, 10 TSPLIB y 1 toy. \textbf{No} se
-ejecutaron BIRCH, ODM, RW grande ni TSP enormes del paper; tampoco se reejecutó Zebra. Por lo
-tanto no se reportan números locales para esos benchmarks. Cuando se mencionan, se marcan como
-resultados del paper o como trabajo futuro.
+Se ejecutaron: (i) una campaña Benders de 26 casos locales; (ii) evidencia consolidada
+OR-Library \texttt{pmed1}--\texttt{pmed40}; (iii) \texttt{rl1304} hasta $p=500$; (iv)
+\texttt{kroA100}; (v) una validación asimétrica \texttt{rw12}; y (vi) una grilla sintética local
+hasta $N=5000$. \textbf{No} se ejecutaron BIRCH, ODM, RW grande ni TSP enormes del paper; tampoco
+se reejecutó Zebra. Por lo tanto no se reportan números locales para esos benchmarks. Cuando se
+mencionan, se marcan como resultados del paper o como trabajo futuro.

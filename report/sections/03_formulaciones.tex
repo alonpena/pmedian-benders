@@ -37,23 +37,26 @@ $N=M=10^4$ son $\sim 10^8$ variables, inviable. Esto motiva las formulaciones or
 
 \subsection{Distancias ordenadas y radios}
 Para cada cliente $i$ sea $K_i\le M$ el número de \emph{distancias distintas} a los sitios,
-ordenadas $D^1_i<D^2_i<\dots<D^{K_i}_i$. Se introduce $z^k_i=1$ si y solo si el cliente $i$
-\emph{aún no está cubierto} al radio $D^k_i$ (no hay sitio abierto a distancia $\le D^k_i$).
+ordenadas $D^1_i<D^2_i<\dots<D^{K_i}_i$. Se introduce $z^k_i=1$ para
+$k=1,\dots,K_i-1$ si y solo si el cliente $i$ \emph{aún no está cubierto} al radio $D^k_i$ (no
+hay sitio abierto a distancia $\le D^k_i$). No se necesita variable $z_i^{K_i}$: al último radio
+ya se alcanzaron todos los sitios y, como $p\ge1$, algún sitio abierto existe.
 
 \subsection{Por qué F2 mejora a F1: radios y umbral de distancia (Cornuejols, Nemhauser \& Wolsey, 1980)}
 \textbf{La idea (antes del álgebra).} F1 razona por \emph{asignación}: ``¿a qué sitio mando cada
 cliente?'', lo que cuesta una variable $x_{ij}$ por cada par. F2 razona por \emph{umbral de
 distancia}: para cada cliente, ``¿a qué \textbf{radio} llega su sitio abierto más cercano?''.
 Como muchos pares cliente--sitio comparten distancia (sobre todo si $N=M$), basta una variable
-$z^k_i$ por cada \emph{radio distinto} $D^k_i$, y los radios distintos $K_i$ suelen ser muchos
-menos que $M$. Esa es la razón estructural por la que F2 nunca es mayor que F1 y normalmente es
-mucho menor, manteniendo la misma cota LP.
+$z^k_i$ por cada \emph{radio intermedio} $D^k_i$, $k=1,\dots,K_i-1$, y los radios distintos
+$K_i$ suelen ser muchos menos que $M$. Esa es la razón estructural por la que F2 nunca es mayor
+que F1 y normalmente es mucho menor, manteniendo la misma cota LP.
 
 \begin{align}
   \min\ & \sum_{i=1}^{N}\Big[\,D^1_i + \sum_{k=1}^{K_i-1}\big(D^{k+1}_i-D^k_i\big)z^k_i\,\Big] \label{eq:f2obj}\\
   \text{s.a.}\ & \sum_{j=1}^{M} y_j=p \nonumber\\
-  & z^k_i + \!\!\sum_{j:\,d_{ij}\le D^k_i}\!\! y_j \ge 1 && i\in[N],\,k\in[K_i] \label{eq:f2cov}\\
-  & z^k_i\ge 0,\quad y_j\in\{0,1\}. \nonumber
+  & z^k_i + \!\!\sum_{j:\,d_{ij}\le D^k_i}\!\! y_j \ge 1 && i\in[N],\,k=1,\dots,K_i-1 \label{eq:f2cov}\\
+  & z^k_i\ge 0 && i\in[N],\,k=1,\dots,K_i-1 \nonumber\\
+  & y_j\in\{0,1\}. \nonumber
 \end{align}
 
 \begin{intuicion}[Peajes crecientes]
@@ -64,7 +67,7 @@ sitio abierto; al aparecer, se deja de pagar.
 \end{intuicion}
 
 La restricción \eqref{eq:f2cov} fuerza $z^k_i=1$ cuando no hay sitio abierto dentro de $D^k_i$.
-F2 tiene $K=\sum_i K_i$ variables $z$ (con $K\le N\times M$, usualmente $K\ll N\times M$) y
+F2 tiene $K=\sum_i (K_i-1)$ variables $z$ (con $K\le N\times M$, usualmente $K\ll N\times M$) y
 \textbf{la misma relajación lineal} que F1.
 
 \subsection{Por qué F3 mejora a F2: la misma formulación con matriz mucho más rala (Elloumi, 2010)}
@@ -75,8 +78,9 @@ $D^k_i$:
   \min\ & \sum_{i=1}^{N}\Big[\,D^1_i + \sum_{k=1}^{K_i-1}\big(D^{k+1}_i-D^k_i\big)z^k_i\,\Big] \label{eq:f3obj}\\
   \text{s.a.}\ & \sum_{j=1}^{M} y_j=p \nonumber\\
   & z^1_i + \!\!\sum_{j:\,d_{ij}=D^1_i}\!\! y_j \ge 1 && i\in[N] \label{eq:f3base}\\
-  & z^k_i + \!\!\sum_{j:\,d_{ij}=D^k_i}\!\! y_j \ge z^{k-1}_i && i\in[N],\,k=2,\dots,K_i \label{eq:f3rec}\\
-  & z^k_i\ge 0,\quad y_j\in\{0,1\}. \nonumber
+  & z^k_i + \!\!\sum_{j:\,d_{ij}=D^k_i}\!\! y_j \ge z^{k-1}_i && i\in[N],\,k=2,\dots,K_i-1 \label{eq:f3rec}\\
+  & z^k_i\ge 0 && i\in[N],\,k=1,\dots,K_i-1 \nonumber\\
+  & y_j\in\{0,1\}. \nonumber
 \end{align}
 Al usar ``$=$'' en lugar de ``$\le$'', cada $y_j$ aparece en \emph{muchas menos} restricciones: la
 matriz es mucho más rala. F2 y F3 comparten variables, objetivo y relajación lineal, pero F3
@@ -110,6 +114,6 @@ Relajación lineal & \multicolumn{4}{c}{idéntica en las cuatro} \\
 Rol en este trabajo & referencia & previa & \textbf{base de Benders} & cortes generados \\
 \bottomrule
 \end{tabular}
-\caption{$K=\sum_i K_i\le N\times M$. Las cuatro tienen el mismo óptimo entero y la misma cota LP;
+\caption{$K=\sum_i (K_i-1)\le N\times M$. Las cuatro tienen el mismo óptimo entero y la misma cota LP;
 difieren en cómo el solver las maneja.}
 \end{table}

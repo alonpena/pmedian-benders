@@ -7,11 +7,12 @@
         $LB_1=UB_1=$ óptimo (Tabla~\ref{tab:orlib}): la relajación lineal del maestro de Benders es
         muy ajustada y el redondeo encuentra la solución óptima. La Fase 2 solo \emph{certifica}.
         Coincide con lo reportado por el paper (su Fase 1 ya deja muchas instancias resueltas).
-  \item \textbf{El método es correcto en la escala local probada.} 15/15 óptimos en OR-Library y
-        9/9 en \texttt{rl1304} ($N=1304$, hasta $p=500$) con $\Delta=0$ respecto del paper
-        (Tabla~\ref{tab:paper}). El separador, validado por tres vías (mano, test, oráculo), es la
-        base de esta confianza. Esta es evidencia de replicación computacional parcial, no de la
-        campaña completa del paper.
+  \item \textbf{El método es correcto en la escala local probada.} La evidencia consolidada
+        verifica OR-Library \texttt{pmed1}--\texttt{pmed40} contra óptimos oficiales
+        (Tabla~\ref{tab:orlib40}) y 9/9 óptimos en \texttt{rl1304} ($N=1304$, hasta $p=500$) con
+        $\Delta=0$ respecto del paper (Tabla~\ref{tab:paper}). El separador, validado por tres
+        vías (mano, test, oráculo), es la base de esta confianza. Esta es evidencia de replicación
+        computacional parcial, no de la campaña completa del paper.
   \item \textbf{El warm-start reduce el árbol, no necesariamente el tiempo.} Heredar los cortes de
         Fase 1 baja los nodos de B\&B de cientos a $1$--$7$ (Tabla~\ref{tab:warm}), pero en
         instancias sub-segundo la precarga de cientos de cortes puede costar más que el ahorro: el
@@ -39,13 +40,14 @@
 
 \subsection{Limitaciones}
 \begin{itemize}[noitemsep]
-  \item \textbf{Escala probada moderada:} hasta $N=1304$. Los benchmarks enormes del paper (TSP
-        $>10^4$, BIRCH, ODM, RW grande) \emph{no} se ejecutaron; las afirmaciones de
-        escalabilidad son conceptuales, no medidas localmente.
+  \item \textbf{Escala probada:} benchmarks con óptimo externo hasta \texttt{rl1304} ($N=1304$) y
+        OR-Library hasta \texttt{pmed40}; estrés sintético local hasta $N=5000$ sin timeouts. Los
+        benchmarks enormes del paper (TSP $>10^4$, BIRCH, ODM, RW grande) \emph{no} se ejecutaron;
+        las afirmaciones sobre ellos son trabajo futuro, no resultados locales.
   \item \textbf{Sin comparación directa con Zebra:} no se reejecutó. Sí es válido mostrar que el
         método local reproduce óptimos del paper y contrastar, como literatura, contra los tiempos
-        Zebra reportados por Duran-Mateluna, Ales \& Elloumi (2023). Lo que no es válido es decir
-        ``nuestro código supera localmente a Zebra'' sin ejecutar Zebra bajo un protocolo propio.
+        Zebra reportados por Duran-Mateluna, Ales \& Elloumi (2023). Lo que no es válido es
+        presentar una superioridad local frente a Zebra sin ejecutar Zebra bajo un protocolo propio.
   \item \textbf{Mejoras no implementadas:} PopStar, reduced-cost fixing y constraint reduction
         quedan documentadas pero fuera del alcance.
   \item \textbf{Construcción de $S$:} a gran escala dominaría el tiempo total ($O(NM\log M)$); no
@@ -69,11 +71,12 @@
 
 \subsection{Conclusión}
 Se replicó e implementó en C, de forma modular y reproducible, la descomposición de Benders
-eficiente para el pMP. La contribución local es una \textbf{replicación algorítmica completa} del
-mecanismo central del paper —F3, Benders, separación cerrada, dos fases y warm-start— más una
+eficiente para el pMP. La contribución local es una \textbf{implementación y verificación completa} del
+mecanismo Benders central del paper —F3, Benders, separación cerrada, dos fases y warm-start— más una
 \textbf{replicación computacional parcial documentada}. El método alcanza el óptimo en todas las
-instancias probadas (OR-Library 15/15, \texttt{rl1304} 9/9 vs paper; catálogo local
-\texttt{paperbench} 26/26 OK), con un separador verificado por tres vías independientes. No se
+instancias probadas (OR-Library \texttt{pmed1}--\texttt{pmed40} con óptimos oficiales,
+\texttt{rl1304} 9/9 vs paper; catálogo local \texttt{paperbench} 26/26 OK; estrés sintético
+$N=5000$ sin timeouts), con un separador verificado por tres vías independientes. No se
 reejecutó Zebra ni la campaña completa de gran escala. El trabajo cumple los objetivos del curso:
 formulación rigurosa, propuesta lagrangiana, diseño y justificación de Benders, e implementación
 con análisis honesto de alcances y límites.
