@@ -1,4 +1,4 @@
-% main.tex — Presentación Beamer (8 diapositivas, ~15 min)
+% main.tex — Presentación Beamer (~12-15 min)
 % Descomposición de Benders para el problema de las p-medianas.
 % Compilar: pdflatex main.tex
 \documentclass[10pt,aspectratio=169]{beamer}
@@ -15,7 +15,7 @@
 \newcommand{\kt}{\tilde{k}}
 
 \title[Benders para p-medianas]{Descomposición de Benders eficiente\\para el problema de las \textit{p}-medianas}
-\subtitle{Replicación algorítmica completa + replicación computacional parcial documentada}
+\subtitle{Implementación del mecanismo Benders central + replicación computacional parcial documentada}
 \author{Alonso Peña Domarchi}
 \institute[PUCV]{Optimización Computacional — PUCV}
 \date{Junio 2026}
@@ -25,199 +25,288 @@
 \begin{frame}\titlepage\end{frame}
 
 % ---------- 1 ----------
-\begin{frame}{1. Problema y motivación}
-\textbf{$p$-medianas (pMP):} elegir $p$ sitios de $M$ candidatos para servir a $N$ clientes,
-minimizando la suma de distancias de cada cliente a su sitio abierto más cercano.
+\begin{frame}{1. Problema de decisión: $p$-medianas}
+\textbf{Decisión:} abrir exactamente $p$ sitios de $M$ candidatos para atender $N$ clientes.
+Cada cliente se asigna al sitio abierto más cercano.
 \[
-  \min_{|S|=p}\ \sum_{i=1}^{N}\ \min_{j\in S}\ d_{ij}
+  \min_{S\subseteq\{1,\dots,M\},\ |S|=p}\ \sum_{i=1}^{N}\min_{j\in S} d_{ij}
 \]
 \begin{columns}
 \begin{column}{0.58\textwidth}
-\textbf{¿Qué decisión apoya?} dónde instalar bodegas, refugios, o centros (\textit{k-medoids}).
+\textbf{Lectura industrial:}
 \begin{itemize}
-  \item Sin costos fijos; número de aperturas fijo en $p$.
-  \item ``Una vez fijadas las antenas, cada casa elige la más cercana.''
+  \item bodegas / centros de distribución;
+  \item refugios o puntos de atención;
+  \item \textit{k-medoids}: centros representativos.
 \end{itemize}
 \end{column}
-\begin{column}{0.40\textwidth}
-\centering
-\fbox{\parbox{0.9\textwidth}{\centering\footnotesize
-Lo \textbf{difícil}: \emph{cuáles} $p$ sitios.\\[4pt]
-Lo \textbf{fácil}: la asignación,\\ dado $S$ (cada cliente $\to$ más cercano).}}
+\begin{column}{0.38\textwidth}
+\begin{block}{Estructura clave}
+Fijados los sitios abiertos, asignar clientes es trivial.\\[3pt]
+Lo difícil es elegir los $p$ sitios.
+\end{block}
 \end{column}
 \end{columns}
 \vfill
-\footnotesize Referencia: Duran-Mateluna, Ales \& Elloumi (2023), \textit{EJOR}. Alcance: se replica el mecanismo algorítmico central; la campaña computacional local es parcial.
+\footnotesize Problema NP-duro (Kariv \& Hakimi, 1979). Paper base: Duran-Mateluna, Ales \& Elloumi (2023).
 \end{frame}
 
 % ---------- 2 ----------
-\begin{frame}{2. Dificultad computacional}
+\begin{frame}{2. Por qué una formulación directa no escala}
+\textbf{F1 clásica:} variables de apertura $y_j$ y asignación $x_{ij}$.
+\[
+\min \sum_i\sum_j d_{ij}x_{ij}\quad
+\sum_j y_j=p,\quad \sum_j x_{ij}=1,\quad x_{ij}\le y_j
+\]
 \begin{itemize}
-  \item \textbf{NP-duro} (Kariv \& Hakimi, 1979): elegir $p$ de $M$ son $\binom{M}{p}$ opciones.
-  \item Formulación clásica \textbf{F1} tiene $N\times M$ variables de asignación $x_{ij}$ y
-        $\sim N\times M$ restricciones.
-  \item Para $N=M=10^4 \Rightarrow \sim 10^8$ variables: los solvers genéricos colapsan.
+  \item Tamaño: $N\times M$ variables $x_{ij}$ y $N\times M$ restricciones de enlace.
+  \item Si $N=M=10^4$: orden $10^8$ variables de asignación.
+  \item El objetivo correcto no basta: el \textbf{modelo} debe entregar buenas cotas y matriz manejable.
 \end{itemize}
-\begin{block}{Idea para escalar}
-No atacar el problema entero de frente, sino \textbf{explotar su estructura}: si fijamos qué
-sitios abrir, el problema se separa por cliente y se vuelve trivial.
+\begin{block}{Idea de performance}
+No resolver F1 “a fuerza bruta”. Reescribir el problema para explotar: radios ordenados, matriz rala, separación por cliente y lazy cuts.
 \end{block}
-$\Rightarrow$ esa observación es la semilla de la \textbf{relajación lagrangiana} y de
-\textbf{Benders}.
 \end{frame}
 
 % ---------- 3 ----------
-\begin{frame}{3. Formulaciones F1 / F2 / F3 / F4}
+\begin{frame}{3. Formulaciones F1--F4: qué cambia realmente}
 \small
 \begin{tabular}{lll}
 \toprule
- & idea & estructura \\
+ & idea & rol en este proyecto \\
 \midrule
-\textbf{F1} & asignación $x_{ij}\le y_j$ & $N\!\times\!M$ variables, densa \\
-\textbf{F2} & ``radios'' $z^k_i$, objetivo telescópico & $K\le NM$ variables \\
-\textbf{F3} & misma, cobertura ``$=D^k_i$'' & \textbf{matriz rala} (la mejor) \\
-\textbf{F4} & cortes sobre $\theta_i$, compacta & $N\!+\!M$ var., pero densa \\
+\textbf{F1} & asignación $x_{ij}\le y_j$ & baseline monolítico parcial \\
+\textbf{F2} & radios $z_i^k$, objetivo telescópico & antecedente teórico \\
+\textbf{F3} & radios con cobertura exacta $d_{ij}=D_i^k$ & base de Benders \\
+\textbf{F4} & cortes sobre $\theta_i$ & implementada como lazy cuts \\
 \bottomrule
 \end{tabular}
 \vfill
-\textbf{Objetivo telescópico (F2/F3):} cada cliente paga $D^1_i + \sum_k (D^{k+1}_i-D^k_i)\,z^k_i$;
-se ``pagan peajes'' $D^{k+1}-D^k$ mientras no aparezca un sitio abierto.
+\textbf{Punto de curso:} mismo óptimo entero y misma relajación LP; cambia densidad/tamaño.
 \vfill
 \begin{itemize}
-  \item Las cuatro: \emph{mismo óptimo, misma relajación LP}. Difieren en \textbf{densidad}.
-  \item \textbf{Implementado en C:} Benders/F4 perezosa derivada de F3; F1--F4 monolíticas solo teoría/oráculo pequeño.
+  \item F3 preserva fortaleza LP, pero con matriz más rala.
+  \item F4 completa sería densa; por eso no se carga entera: se generan cortes bajo demanda.
+  \item Solver C principal: \textbf{Benders/F4 con lazy cuts derivada de F3}. No hay F2/F3/F4 monolíticas completas.
 \end{itemize}
 \end{frame}
 
 % ---------- 4 ----------
-\begin{frame}{4. Relajación lagrangiana (propuesta teórica)}
-Relajamos la \textbf{asignación} $\sum_j x_{ij}=1$ (restricción complicante) con multiplicadores
-$\lambda_i$:
+\begin{frame}{4. Relajación lagrangiana: contraste útil}
+Desde F1, relajo asignación $\sum_j x_{ij}=1$ con multiplicadores $\lambda_i$:
 \[
-  L(\lambda)=\sum_i\lambda_i+\min_{\sum_j y_j=p}\sum_j \beta_j(\lambda)\,y_j,
-  \quad \beta_j(\lambda)=\sum_i \min(0,\ d_{ij}-\lambda_i).
+  L(\lambda)=\sum_i\lambda_i+
+  \min_{\sum_j y_j=p}\sum_j \beta_j(\lambda)y_j,
+  \qquad
+  \beta_j(\lambda)=\sum_i\min(0,d_{ij}-\lambda_i).
 \]
 \begin{itemize}
-  \item El subproblema se separa \textbf{por sitio}: abrir los $p$ sitios con $\beta_j$ más
-        negativo (¡por inspección, sin solver!).
-  \item Cota inferior $L(\lambda)\le \OPT$; dual lagrangiano $\max_\lambda L(\lambda)$ vía
-        \textbf{subgradiente} $g_i=1-\sum_j x_{ij}$.
-  \item Recuperación primal: asignar cada cliente a su sitio abierto más cercano $\Rightarrow UB$.
+  \item Subproblema lagrangiano separa por \textbf{sitio}: abrir los $p$ menores $\beta_j$.
+  \item Entrega cota inferior: $L(\lambda)\le \OPT$.
+  \item Recuperación primal: asignar a sitio abierto más cercano $\Rightarrow$ cota superior.
 \end{itemize}
-\begin{block}{Contraste con Benders}
-Lagrangiana separa por \textbf{sitio}; Benders fija $y$ y separa por \textbf{cliente}. Ambas dan
-cota inferior.
+\begin{block}{Por qué lo incluyo}
+Muestra misma motivación del curso: relajar/acotar para explotar estructura. Benders usa otra partición: fija $y$ y separa por cliente.
 \end{block}
 \end{frame}
 
 % ---------- 5 ----------
-\begin{frame}{5. Descomposición de Benders}
-\textbf{Maestro:} $\min\sum_i\theta_i$ s.a. $\sum_j y_j=p$, $y_j\in\{0,1\}$, + cortes.
-\quad\textbf{Subproblema} $SP_i(\bar y)$: distancia del cliente $i$.
+\begin{frame}{5. Benders: maestro pequeño + subproblemas por cliente}
+\textbf{Maestro:}
 \[
-  \theta_i \ge D^{\kt_i+1}_i-\!\!\sum_{j:\,d_{ij}\le D^{\kt_i}_i}\!\!\big(D^{\kt_i+1}_i-d_{ij}\big)y_j
-  \qquad\text{(corte de optimalidad)}
+  \min\sum_i\theta_i \quad
+  \sum_j y_j=p,\quad y_j\in\{0,1\},\quad \theta_i\ge0,
 \]
+con cortes de Benders agregados iterativamente.
+\vfill
+\textbf{Subproblema $SP_i(\bar y)$:} dado $\bar y$, calcular distancia/costo del cliente $i$.
 \begin{columns}
-\begin{column}{0.54\textwidth}
+\begin{column}{0.52\textwidth}
 \begin{itemize}
-  \item $SP_i$ \textbf{siempre factible y acotado} $\Rightarrow$ \textbf{solo cortes de
-        optimalidad}, nunca de factibilidad.
-  \item Dual con \textbf{forma cerrada}: el corte se separa en $O(NM)$ \emph{sin resolver ningún
-        LP} (índice $\kt_i$, Alg.\ 2).
+  \item Fijar $y$ separa F3 en $N$ subproblemas independientes.
+  \item Las variables $z_i^k$ desaparecen del maestro.
+  \item $\theta_i$ aproxima el costo real del cliente.
 \end{itemize}
 \end{column}
 \begin{column}{0.44\textwidth}
-\footnotesize
-\textbf{Por qué se separa por cliente:} fijado $\bar y$, F3 se parte en $N$ problemas
-independientes. Las variables $z$ desaparecen del maestro; las reemplaza un $\theta_i$.
+\begin{block}{Sin feasibility cuts}
+$SP_i$ siempre es factible y acotado: no hay capacidades ni asignaciones prohibidas, y $p\ge1$.\\
+Solo hay optimality cuts.
+\end{block}
 \end{column}
 \end{columns}
-\vfill
-\footnotesize \textbf{Validez:} cada corte es cota inferior válida de $\theta_i$ (no excluye el
-óptimo); hay finitos cortes $\Rightarrow$ el branch-and-cut termina exacto.
 \end{frame}
 
 % ---------- 6 ----------
-\begin{frame}{6. Implementación}
-\textbf{Núcleo en C} (Benders/F4 lazy) + \textbf{capa de solver} (Gurobi) + \textbf{oráculo Python}.
+\begin{frame}{6. Corte cerrado y Algoritmo 2 ($O(NM)$)}
+Para cada cliente, ordenar sitios por distancia: $S_i=(S_{i1},\dots,S_{iM})$.
+\[
+  \kt_i=\text{último radio no cubierto por } \bar y.
+\]
+\vspace{-2mm}
+\[
+  \theta_i \ge D_i^{\kt_i+1}
+  -\sum_{j:\ d_{ij}\le D_i^{\kt_i}}(D_i^{\kt_i+1}-d_{ij})y_j
+\]
 \begin{columns}
-\begin{column}{0.5\textwidth}
-\small
-\begin{tabular}{ll}
-\toprule
-matemática & módulo C \\
-\midrule
-$d_{ij}$, $S$, $D^k_i$ & \texttt{instance.c}, \texttt{sortsites.c} \\
-$\kt_i$ (Alg.\,2) & \texttt{separation.c} \\
-$\OPT(SP_i)$, corte & \texttt{separation.c} \\
-Fase 1 (LP) & \texttt{phase1.c} \\
-Fase 2 (lazy cb) & \texttt{phase2.c} \\
-\bottomrule
-\end{tabular}
-\end{column}
-\begin{column}{0.5\textwidth}
-\textbf{Dos fases:}
-\begin{enumerate}
-  \item LP del maestro + cortes + redondeo $\to LB_1,UB_1$.
-  \item Branch-and-Benders-cut: callback de \emph{lazy constraints} separa en cada solución entera.
-\end{enumerate}
-\alert{Separador verificado 3 vías:} a mano (toy1), test unitario en C, y oráculo Python
-(\textbf{0 diferencias}).
-\end{column}
-\end{columns}
-\end{frame}
-
-% ---------- 7 ----------
-\begin{frame}{7. Resultados}
-\begin{columns}
-\begin{column}{0.5\textwidth}
-\textbf{Corrección (óptimo exacto):}
+\begin{column}{0.55\textwidth}
+\textbf{Algoritmo 2:}
 \begin{itemize}
-  \item OR-Library \texttt{pmed1–15}: \textbf{15/15} al óptimo oficial, $\Delta=0$.
-  \item \texttt{rl1304} ($N{=}1304$, $p$ hasta $500$): \textbf{9/9} óptimos $=$ paper.
-  \item Callback real: \texttt{pmed1} lazy\_cuts$=90$, nodos$=1$; \texttt{rl1304} $p5$
-        lazy\_cuts$=1850$.
+  \item recorre $S_i$ del sitio más cercano al más lejano;
+  \item acumula masa $\bar y_j$ hasta cubrir 1;
+  \item cuenta saltos estrictos de radio para obtener $\kt_i$.
 \end{itemize}
 \end{column}
-\begin{column}{0.5\textwidth}
-\textbf{Warm-start (nodos B\&B):}
-\begin{center}\small
-\begin{tabular}{lrr}
-\toprule
-inst. & cold & warm \\
-\midrule
-pmed1  & 223 & \textbf{1} \\
-pmed6  & 632 & \textbf{7} \\
-pmed11 & 352 & \textbf{1} \\
-\bottomrule
-\end{tabular}
-\end{center}
-\footnotesize Nodos $\downarrow$ fuerte; wall-time mixto en sub-segundo (precarga de cortes).
+\begin{column}{0.40\textwidth}
+\begin{block}{Performance}
+No resuelvo LPs de subproblema.\\
+$O(M)$ por cliente, $O(NM)$ por separación.
+\end{block}
 \end{column}
 \end{columns}
 \vfill
-\footnotesize Fase 1 a menudo ya cierra: $LB_1=UB_1=$ óptimo en muchas instancias. Fuente:
-\texttt{results/curated/*.csv}; validado por \texttt{scripts/validate\_results.py}.
+\footnotesize Esta es la mejora central del paper: Benders, pero con dual cerrado.
+\end{frame}
+
+% ---------- 7 ----------
+\begin{frame}{7. Implementación y verificación del núcleo}
+\begin{columns}
+\begin{column}{0.50\textwidth}
+\small
+\begin{tabular}{ll}
+\toprule
+componente & archivo \\
+\midrule
+instancia / $d_{ij}$ & \texttt{instance.c} \\
+matriz $S$ & \texttt{sortsites.c} \\
+$\kt_i$, corte, $\OPT(SP_i)$ & \texttt{separation.c} \\
+Phase 1 LP & \texttt{phase1.c} \\
+Phase 2 lazy cuts & \texttt{phase2.c} \\
+warm-start de cortes & \texttt{cutpool.c} \\
+\bottomrule
+\end{tabular}
+\end{column}
+\begin{column}{0.47\textwidth}
+\textbf{Verificación independiente:}
+\begin{itemize}
+  \item derivación manual en \texttt{toy1};
+  \item test unitario C: \texttt{RESULT: PASS};
+  \item oráculo Python \texttt{prototype/pmp\_benders.py}: \textbf{0 diferencias} en constantes y coeficientes.
+\end{itemize}
+\end{column}
+\end{columns}
+\vfill
+\begin{block}{Qué defiendo si preguntan}
+La parte crítica no es “llamar a Gurobi”; es que el separador analítico calcule exactamente los cuts del paper.
+\end{block}
 \end{frame}
 
 % ---------- 8 ----------
-\begin{frame}{8. Conclusiones}
+\begin{frame}{8. Protocolo experimental y artefactos}
+\small
+\begin{tabular}{lll}
+\toprule
+bloque & evidencia & resultado \\
+\midrule
+Benders 300s & \texttt{benders\_300s\_campaign.csv} & 26 filas, 25 match, 0 timeout \\
+OR-Library & \texttt{pmed1--pmed40} consolidado & 40/40 óptimos oficiales \\
+\texttt{rl1304} & Tabla 2 paper & 9/9 óptimos coinciden \\
+F1 baseline & \texttt{monolithic\_f1\_300s.csv} & 5 filas, parcial \\
+Sintético & \texttt{synthetic\_stress\_300s.csv} & 18 filas hasta $N=5000$, 0 timeout \\
+\bottomrule
+\end{tabular}
+\vfill
 \begin{itemize}
-  \item \textbf{La formulación importa más que el solver:} F1–F4 igual óptimo y cota LP, pero la
-        \emph{densidad} decide qué es resoluble.
-  \item \textbf{Separación $O(NM)$ en forma cerrada} + \textbf{solo cortes de optimalidad}
-        (subproblema siempre factible/acotado) = método simple y veloz.
-  \item \textbf{Buenas cotas tempranas} (Fase 1) son accionables para un decisor real.
-  \item \textbf{Verificar el componente crítico paga:} separador validado por 3 vías.
+  \item Timeout externo: 300 s por wrapper Python.
+  \item Objetivo/óptimo: sirve para validar correctitud.
+  \item Tiempo/nodos/lazy cuts: sirven para discutir performance.
+  \item Zebra/PopStar no ejecutados localmente: solo literatura del paper.
 \end{itemize}
-\begin{block}{Alcance y limitaciones (honestas)}
-Replicación algorítmica completa + replicación computacional parcial documentada. Escala probada
-hasta $N=1304$; familias grandes (TSP $>10^4$, BIRCH, ODM, RW grande) y Zebra \emph{no}
-reejecutadas. La superioridad frente a Zebra es un resultado reportado por el paper, no local.
-PopStar / reduced-cost fixing / constraint reduction no implementados.
+\end{frame}
+
+% ---------- 9 ----------
+\begin{frame}{9. Resultados de correctitud y escala local}
+\begin{columns}
+\begin{column}{0.52\textwidth}
+\textbf{Correctitud:}
+\begin{itemize}
+  \item OR-Library \texttt{pmed1--pmed40}: \textbf{40/40} óptimos oficiales.
+  \item \texttt{rl1304}: \textbf{9/9} óptimos iguales al paper.
+  \item \texttt{kroA100}: resuelto localmente, sin óptimo externo cargado.
+\end{itemize}
+\end{column}
+\begin{column}{0.44\textwidth}
+\textbf{Escala local:}
+\begin{itemize}
+  \item Benders 300s: máximo $14.191$s (\texttt{rl1304\_p10}).
+  \item Sintético $N=5000$: máximo $44.248$s, sin timeout.
+  \item No es campaña huge del paper.
+\end{itemize}
+\end{column}
+\end{columns}
+\vfill
+\begin{block}{Interpretación}
+Los óptimos verifican que el modelo y los cuts son correctos. La discusión de rendimiento debe mirar tiempos, nodos y cantidad de lazy cuts.
 \end{block}
-\centering \textbf{¿Preguntas?}
+\end{frame}
+
+% ---------- 10 ----------
+\begin{frame}{10. Performance: comparación local y estado del arte}
+\begin{columns}
+\begin{column}{0.48\textwidth}
+\textbf{Benders vs F1 monolítico (solape parcial):}
+\begin{center}\scriptsize
+\begin{tabular}{lrr}
+\toprule
+instancia & Benders & F1 \\
+\midrule
+\texttt{toy1} & 0.0406 & \textbf{0.0248} \\
+\texttt{pmed1} & \textbf{0.0355} & 0.4361 \\
+\texttt{pmed2} & \textbf{0.0838} & 0.4414 \\
+\texttt{pmed6} & \textbf{0.3103} & 6.9919 \\
+\texttt{kroA100} & \textbf{0.0680} & 0.4615 \\
+\bottomrule
+\end{tabular}
+\end{center}
+\footnotesize Segundos, 300s externo. F1 baseline parcial, no F1--F4 completo.
+\end{column}
+\begin{column}{0.48\textwidth}
+\textbf{Warm-start por cortes:}
+\begin{center}\scriptsize
+\begin{tabular}{lrr}
+\toprule
+inst. & cold nodes & warm nodes \\
+\midrule
+\texttt{pmed1} & 223 & \textbf{1} \\
+\texttt{pmed6} & 632 & \textbf{7} \\
+\texttt{pmed11} & 352 & \textbf{1} \\
+\bottomrule
+\end{tabular}
+\end{center}
+\footnotesize Nodos bajan fuerte; wall-time mixto por precarga de cortes.
+\end{column}
+\end{columns}
+\vfill
+\begin{alertblock}{Estado del arte}
+El paper reporta mejora frente a Zebra. Yo no ejecuté Zebra localmente; por tanto no afirmo superioridad local frente a Zebra.
+\end{alertblock}
+\end{frame}
+
+% ---------- 11 ----------
+\begin{frame}{11. Cierre: qué se logró y qué queda fuera}
+\textbf{Logro principal:} implementación verificable del mecanismo Benders central del paper:
+\begin{itemize}
+  \item F3 como base, F4 como lazy cuts;
+  \item separación cerrada $O(NM)$ sin LPs de subproblema;
+  \item Phase 1 + Phase 2 + warm-start por cortes;
+  \item separador validado contra derivación manual, test C y oráculo Python.
+\end{itemize}
+\begin{block}{Limitaciones explícitas}
+No implementé PopStar, reduced-cost fixing, constraint reduction, ODM ni Zebra. BIRCH/RW grande y TSP huge del paper quedan como trabajo futuro. Las comparaciones con Zebra/PopStar son literatura reportada por el paper, no resultados locales.
+\end{block}
+\vfill
+\centering
+\textbf{Mensaje final:} la ganancia no viene de “usar Gurobi”, sino de formular y separar bien.
 \end{frame}
 
 \end{document}
